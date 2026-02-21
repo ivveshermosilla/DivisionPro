@@ -1,26 +1,30 @@
 # 🌟 DivisionPro
 
-**DivisionPro** is a comprehensive educational web application built to help students master the long division process through an interactive, visual, and highly structured experience. It adapts to different learning stages by offering two distinct modes and a professional feedback system.
+### 🎮 [Play DivisionPro Live Here](https://ivveshermosilla.github.io/DivisionPro/)
+
+**DivisionPro** is a comprehensive educational web application built to help students master the long division process through an interactive, visual, and highly structured experience. 
+
+## 👨‍👩‍👦 The Inspiration Behind the Project
+This project is deeply personal. It was fueled by the learning journey of **my 10-year-old son**, who has been the true engine and primary "beta tester" for these modules. His curiosity and need for clear mathematical structures inspired me to create tools that support his growth and development in mathematics.
+
+DivisionPro is the direct successor to [**MatPro**](https://github.com/ivveshermosilla/matpro-triple-method), a previous module we developed to help him master multiplication tables using the "Triple Method." Once that foundation was solid, **DivisionPro** was born to cement his long division skills by applying everything learned in the previous stage.
 
 ## 🚀 Key Features
+* **🎓 Guided Mode (Learn to Divide)**: A step-by-step assisted system that prevents common errors and teaches the "Select-Divide-Subtract-Bring Down" cycle.
+* **🚀 Pro Mode (DivisionPro)**: Independent practice with advanced aids like visual highlighting and a smart scratchpad.
+* **📊 Dual Grading System (V1.2.2)**: Performance evaluation tailored for both **USA (A-F)** and **Chile (1.0-7.0)** standards.
+* **🌎 Multilingual Support**: Switch between English and Spanish seamlessly.
 
-* **🎓 Guided Mode (Learn to Divide)**: A step-by-step assisted system. Students interact directly with the dividend, selecting digits while receiving real-time instructions on how to divide, subtract, and bring down numbers. Perfect for beginners.
-* **🚀 Pro Mode (DivisionPro)**: A challenge mode where students solve divisions independently. It includes advanced visual aids:
-    * **Visual Highlighting**: Tap numbers in the work area to organize mental calculations.
-    * **Smart Scratchpad**: Optional boxes for provisional remainders that clear automatically as you progress.
-    * **Final Remainder Validation**: A flashing visual indicator ensures the final step is never forgotten.
-* **📊 Dual Grading System (V1.2.2)**: Performance is calculated using a **70% Quotient / 30% Remainder** weighted score.
-    * **Chilean Scale**: Grades from 1.0 to 7.0 (60% difficulty threshold).
-    * **USA Scale**: Traditional Letter Grades (A, B, C, D, F).
-* **🏆 Detailed Scoreboard**: Persistent history of sessions using LocalStorage. It allows users to review specific errors made in each question for targeted improvement.
-* **🌎 Multilingual Support**: Full support for **English 🇺🇸** and **Spanish 🇪🇸**, switchable at any time without losing progress.
+## 🛠️ Technical Overview
+* **Logic**: Vanilla JavaScript with custom algorithms for division scaffolding.
+* **Persistence**: LocalStorage for keeping track of progress and historical scores.
+* **Design**: Pure HTML5/CSS3 focused on a distraction-free environment for students.
 
-## 🛠️ Built With
+## 📈 Future Roadmap
+DivisionPro is a living project. Future updates will focus on:
+* **Advanced Analytics**: Deeper insights for tutors to identify specific learning gaps.
+* **New Game Modes**: Expanding to decimal divisions and advanced remainders.
+* **MatPro Integration**: Better synergy between the multiplication and division modules.
 
-* **HTML5 / CSS3**: Responsive design with custom animations and zero external dependencies.
-* **Vanilla JavaScript**: Core game logic, random problem generation, and evaluation algorithms.
-* **LocalStorage API**: For persistent user data and score history.
-
-## 📦 Getting Started
-
-No installation required. Simply clone the repository and open the `index.html` file in any modern web browser.
+---
+*Developed with ❤️ for my son and students everywhere.*
