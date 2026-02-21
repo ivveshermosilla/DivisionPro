@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DivisionesPro V1.0.4</title>
+    <style>
+        :root {
+            --primary: #2c3e50; --success: #27ae60; --error: #e74c3c;
+            --highlight: #f1c40f; --bg: #ecf0f1; --blue: #3498db;
+        }
+        body { font-family: 'Arial', sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        #header { width: 100%; max-width: 900px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .game-container { display: flex; gap: 40px; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); align-items: flex-start; }
+        .division-area { font-size: 3rem; display: flex; flex-direction: column; gap: 10px; min-width: 500px; }
+        .main-row { display: flex; align-items: center; gap: 12px; height: 85px; }
+        .digit { 
+            box-sizing: border-box; width: 60px; height: 75px; border: 3px solid #bdc3c7; 
+            display: inline-flex; justify-content: center; align-items: center;
+            border-radius: 10px; cursor: pointer; background: #f9f9f9; user-select: none;
+        }
+        .digit.selected { background: var(--highlight); border-color: #d35400; }
+        .digit.used { text-decoration: line-through; opacity: 0.3; cursor: default; background: #ddd; }
+        .blink-soft { animation: blink-animation 1.5s infinite; border-color: var(--blue) !important; box-shadow: 0 0 15px var(--blue); }
+        @keyframes blink-animation { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .drop-zone {
+            box-sizing: border-box; width: 60px; height: 75px; border: 3px dashed #bdc3c7; 
+            display: inline-flex; justify-content: center; align-items: center; 
+            border-radius: 10px; background: #fff; font-weight: bold; font-size: 2.8rem; transition: background 0.2s;
+        }
+        .drop-zone.correct { background: var(--success); color: white; border: 3px solid #1e8449; }
+        .drop-zone.incorrect { background: var(--error); color: white; border: 3px solid #922b21; cursor: pointer; }
+        .drop-zone.residue-blue { background: var(--blue); color: white; border: 3px solid #21618c; }
+        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .num-key {
+            width: 65px; height: 65px; background: var(--primary); color: white;
+            display: flex; justify-content: center; align-items: center; border-radius: 10px;
+            cursor: grab; font-size: 1.6rem; font-weight: bold; box-shadow: 0 4px 0 #1a252f;
+        }
+        .zero-key { grid-column: 2; }
+        .residue-row { display: flex; gap: 10px; margin-top: 5px; height: 80px; align-items: center; }
+        .row-history { opacity: 0.5; pointer-events: none; }
+        #message-box {
+            margin-top: 25px; padding: 20px; background: var(--primary); color: white;
+            border-radius: 12px; min-width: 600px; text-align: center; font-size: 1.3rem; min-height: 60px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+        }
+        .next-btn { background: var(--success); padding: 8px 25px; border: none; color: white; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        button#lang-btn { padding: 8px 15px; border-radius: 5px; border: none; background: var(--primary); color: white; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div id="header">
+    <h2 id="score-text">Pregunta: 1 / 10</h2>
+    <button onclick="toggleLanguage()" id="lang-btn">English</button>
+</div>
+
+<div class="game-container">
+    <div class="division-area">
+        <div class="main-row">
+            <div id="dividend-display" style="display:flex; gap:5px;"></div>
+            <span>:</span>
+            <div id="divisor-display" style="font-weight:bold;"></div>
+            <span>=</span>
+            <div id="quotient-display" style="display:flex; gap:5px;"></div>
+        </div>
+        <div id="work-area"></div>
+    </div>
+    <div class="numpad" id="numpad"></div>
+</div>
+
+<div id="message-box"></div>
+
+<script>
+    let currentLang = 'es';
+    const texts = {
+        es: { 
+            lang: 'English', select: 'Toca el número del dividendo',
+            howmany: (a, b) => `¿Cuántas veces cabe el ${a} en el ${b}?`,
+            residue: '¿Cuánto sobra? Pon el residuo en la casilla azul',
+            bringdown: 'Arrastra el siguiente número del dividendo hacia abajo',
+            confirm: (d, v, q, r) => `¡Correcto! ${d} : ${v} = ${q}${r>0 ? ' y sobran ' + r : ''}`,
+            next: 'Siguiente Pregunta'
+        },
+        en: { 
+            lang: 'Español', select: 'Tap the dividend number',
+            howmany: (a, b) => `How many times does ${a} fit into ${b}?`,
+            residue: 'How much is left? Put the residue in the blue box',
+            bringdown: 'Drag the next dividend number down',
+            confirm: (d, v, q, r) => `Correct! ${d} : ${v} = ${q}${r>0 ? ' and ' + r + ' left over' : ''}`,
+            next: 'Next Question'
+        }
+    };
+
+    let game = {
+        qIndex: 1, dividend: 0, divisor: 0, divDigits: [],
+        step: 'SELECT', selectedIndices: [], currentWorkingVal: 0,
+        quotientFound: [], rows: [], // Cada row: {residue: val, nextDigit: val, targetR: val, targetQ: val}
+        targetQ: 0, targetR: 0, usedIndices: []
+    };
+
+    function init() {
+        const pad = document.getElementById('numpad');
+        [1,2,3,4,5,6,7,8,9,0].forEach(n => {
+            const btn = document.createElement('div');
+            btn.className = `num-key ${n===0?'zero-key':''}`;
+            btn.innerText = n;
+            btn.draggable = true;
+            btn.ondragstart = (e) => { e.dataTransfer.setData("text", n); e.dataTransfer.setData("type", "number"); };
+            pad.appendChild(btn);
+        });
+        newQuestion();
+    }
+
+    function newQuestion() {
+        game.dividend = Math.floor(Math.random() * 900) + 100;
+        game.divisor = Math.floor(Math.random() * 11) + 2;
+        game.divDigits = game.dividend.toString().split('').map(Number);
+        game.quotientLength = Math.floor(game.dividend / game.divisor).toString().length;
+        game.selectedIndices = []; game.usedIndices = []; game.quotientFound = [];
+        game.rows = []; game.step = 'SELECT';
+        render();
+    }
+
+    function render() {
+        // 1. Dividendo
+        const divDisp = document.getElementById('dividend-display');
+        divDisp.innerHTML = '';
+        game.divDigits.forEach((d, i) => {
+            const span = document.createElement('span');
+            span.className = 'digit';
+            if (game.usedIndices.includes(i)) span.classList.add('used');
+            else if (game.selectedIndices.includes(i)) span.classList.add('selected');
+            
+            if (!hasError() && game.step === 'SELECT' && i === game.selectedIndices.length) span.classList.add('blink-soft');
+            if (!hasError() && game.step === 'BRINGDOWN' && i === (Math.max(...game.selectedIndices) + 1)) {
+                span.classList.add('blink-soft');
+                span.draggable = true;
+                span.ondragstart = (e) => { e.dataTransfer.setData("type", "bringdown"); e.dataTransfer.setData("idx", i); };
+            }
+            span.innerText = d;
+            span.onclick = () => handleDigitClick(i);
+            divDisp.appendChild(span);
+        });
+
+        document.getElementById('divisor-display').innerText = game.divisor;
+
+        // 2. Cociente
+        const quoDisp = document.getElementById('quotient-display');
+        quoDisp.innerHTML = '';
+        for(let i=0; i < game.quotientLength; i++) {
+            const val = game.quotientFound[i];
+            const box = document.createElement('div');
+            box.className = 'drop-zone';
+            if(val !== undefined) {
+                box.innerText = val;
+                const isCorrect = (val === Math.floor(game.currentWorkingVal / game.divisor));
+                box.classList.add(isCorrect ? 'correct' : 'incorrect');
+                if(!isCorrect) box.onclick = () => { game.quotientFound.splice(i, 1); render(); };
+            } else if(!hasError() && game.step === 'QUOTIENT' && i === game.quotientFound.length) {
+                box.classList.add('active-blink');
+            }
+            box.ondragover = e => e.preventDefault();
+            box.ondrop = e => handleDrop(e, 'Q', i);
+            quoDisp.appendChild(box);
+        }
+
+        // 3. Área de trabajo (Residuos por filas)
+        const work = document.getElementById('work-area');
+        work.innerHTML = '';
+        game.rows.forEach((rowData, idx) => {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'residue-row' + (idx < game.rows.length - 1 ? ' row-history' : '');
+            
+            // Residuo
+            const rBox = document.createElement('div');
+            rBox.className = 'drop-zone residue-blue';
+            rBox.innerText = rowData.residue;
+            rowDiv.appendChild(rBox);
+
+            // Si hay un número bajado en esta fila
+            if(rowData.nextDigit !== undefined) {
+                const bBox = document.createElement('div');
+                bBox.className = 'drop-zone';
+                bBox.style.background = '#f1c40f';
+                bBox.innerText = rowData.nextDigit;
+                rowDiv.appendChild(bBox);
+            }
+            work.appendChild(rowDiv);
+        });
+
+        // Fila activa para el residuo actual
+        if(game.step === 'RESIDUE' || game.step === 'BRINGDOWN') {
+            const activeRow = document.createElement('div');
+            activeRow.className = 'residue-row';
+            const rBox = document.createElement('div');
+            rBox.className = 'drop-zone';
+            if(game.currentResidueValue !== undefined) {
+                rBox.innerText = game.currentResidueValue;
+                const isCorrect = (game.currentResidueValue === game.targetR);
+                rBox.classList.add(isCorrect ? 'residue-blue' : 'incorrect');
+                if(!isCorrect) rBox.onclick = () => { game.currentResidueValue = undefined; render(); };
+            } else if(!hasError() && game.step === 'RESIDUE') rBox.classList.add('active-blink');
+            
+            rBox.ondragover = e => e.preventDefault();
+            rBox.ondrop = e => handleDrop(e, 'R');
+            activeRow.appendChild(rBox);
+
+            if(game.step === 'BRINGDOWN') {
+                const bBox = document.createElement('div');
+                bBox.className = 'drop-zone' + (!hasError()?' active-blink':'');
+                bBox.style.borderStyle = 'dotted';
+                bBox.ondragover = e => e.preventDefault();
+                bBox.ondrop = e => handleDrop(e, 'B');
+                activeRow.appendChild(bBox);
+            }
+            work.appendChild(activeRow);
+        }
+
+        updateMessage();
+        document.getElementById('score-text').innerText = (currentLang === 'es'?'Pregunta: ':'Question: ') + game.qIndex + ' / 10';
+    }
+
+    function hasError() {
+        return document.querySelector('.incorrect') !== null;
+    }
+
+    function handleDigitClick(i) {
+        if(game.step === 'SELECT' && !hasError()) {
+            if(game.selectedIndices.includes(i)) {
+                if(i === game.selectedIndices[game.selectedIndices.length-1]) game.selectedIndices.pop();
+            } else if(i === game.selectedIndices.length) {
+                game.selectedIndices.push(i);
+                let val = parseInt(game.selectedIndices.map(idx => game.divDigits[idx]).join(''));
+                if(val >= game.divisor || (i === 1 && game.divDigits[0] < game.divisor)) {
+                    game.currentWorkingVal = val;
+                    game.targetR = val % game.divisor;
+                    game.step = 'QUOTIENT';
+                }
+            }
+            render();
+        }
+    }
+
+    function handleDrop(e, zoneType, idx) {
+        e.preventDefault();
+        const val = parseInt(e.dataTransfer.getData("text"));
+        const dragType = e.dataTransfer.getData("type");
+
+        if(dragType === "number") {
+            if(zoneType === 'Q' && game.step === 'QUOTIENT') {
+                game.quotientFound[idx] = val;
+                if(val === Math.floor(game.currentWorkingVal / game.divisor)) game.step = 'RESIDUE';
+            } else if(zoneType === 'R' && game.step === 'RESIDUE') {
+                game.currentResidueValue = val;
+                if(val === game.targetR) {
+                    game.selectedIndices.forEach(idx => { if(!game.usedIndices.includes(idx)) game.usedIndices.push(idx); });
+                    if(game.usedIndices.length < game.divDigits.length) game.step = 'BRINGDOWN';
+                    else {
+                        game.rows.push({residue: val}); // Guardar último residuo
+                        game.step = 'FINISH';
+                    }
+                }
+            }
+        } else if(dragType === "bringdown" && zoneType === 'B' && !hasError()) {
+            const nextIdx = parseInt(e.dataTransfer.getData("idx"));
+            const nextDigit = game.divDigits[nextIdx];
+            game.rows.push({residue: game.currentResidueValue, nextDigit: nextDigit});
+            game.selectedIndices.push(nextIdx);
+            game.currentWorkingVal = parseInt(game.currentResidueValue.toString() + nextDigit);
+            game.targetR = game.currentWorkingVal % game.divisor;
+            game.currentResidueValue = undefined;
+            game.step = 'QUOTIENT';
+        }
+        render();
+    }
+
+    function updateMessage() {
+        const msg = document.getElementById('message-box');
+        if(game.step === 'FINISH') {
+            const q = game.quotientFound.join('');
+            const r = game.rows[game.rows.length-1].residue;
+            msg.innerHTML = `<div>${texts[currentLang].confirm(game.dividend, game.divisor, q, r)}</div>
+                             <button class="next-btn" onclick="nextQuestion()">${texts[currentLang].next}</button>`;
+        } else if(game.step === 'QUOTIENT') {
+            msg.innerText = texts[currentLang].howmany(game.divisor, game.currentWorkingVal);
+        } else {
+            msg.innerText = texts[currentLang][game.step.toLowerCase()] || "";
+        }
+    }
+
+    function nextQuestion() {
+        if(game.qIndex < 10) { game.qIndex++; newQuestion(); }
+        else { alert(texts[currentLang].confirm(game.dividend, game.divisor, game.quotientFound.join(''), 0)); location.reload(); }
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'es' ? 'en' : 'es';
+        document.getElementById('lang-btn').innerText = texts[currentLang].lang;
+        render();
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DivisionesPro V1.1.0</title>
+    <style>
+        :root {
+            --primary: #2c3e50; --success: #27ae60; --error: #c0392b;
+            --highlight: #f1c40f; --bg: #ecf0f1; --blue: #2980b9;
+            --grey-disabled: #bdc3c7;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; user-select: none; }
+        
+        .top-bar { width: 100%; max-width: 900px; display: flex; justify-content: flex-end; margin-bottom: 10px; }
+        .lang-btn {
+            background: var(--primary); color: white; border: none; padding: 8px 15px;
+            border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        .lang-btn:hover { background: #34495e; }
+
+        .game-container { 
+            display: flex; gap: 40px; background: white; padding: 40px; 
+            border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+            align-items: flex-start; flex-wrap: wrap; justify-content: center; position: relative;
+        }
+
+        .division-area { font-size: 3rem; display: flex; flex-direction: column; gap: 5px; min-width: 500px; }
+        .main-row { display: flex; align-items: center; gap: 10px; height: 90px; }
+        
+        /* Cajas de números (Tamaño base 60px + Gap 10px = 70px de paso) */
+        .digit, .drop-zone {
+            box-sizing: border-box; width: 60px; height: 75px; 
+            display: inline-flex; justify-content: center; align-items: center; 
+            border-radius: 12px; font-weight: bold; transition: all 0.2s; position: relative;
+        }
+
+        /* --- ESTILOS DE ESTADO --- */
+        
+        /* 1. Dividendo Principal */
+        .digit { border: 3px solid #bdc3c7; background: #f9f9f9; cursor: pointer; }
+        .digit.selected { background: var(--highlight); border-color: #d35400; color: #000; transform: scale(1.05); }
+        .digit.used { 
+            text-decoration: line-through; opacity: 0.5; background: #e0e0e0; 
+            border-color: #bdc3c7; cursor: default; color: #7f8c8d; 
+        }
+        
+        /* 2. Zonas de Arrastre (General) */
+        .drop-zone { border: 3px dashed #bdc3c7; background: #fff; color: #7f8c8d; }
+        
+        /* Correcto/Incorrecto */
+        .drop-zone.correct { background: var(--success); color: white; border: 3px solid #1e8449; border-style: solid; }
+        .drop-zone.incorrect { background: var(--error); color: white; border: 3px solid #922b21; border-style: solid; cursor: pointer; }
+        .drop-zone.incorrect::after { content: "✕"; position: absolute; font-size: 1rem; top: 2px; right: 5px; opacity: 0.7; }
+
+        /* 3. Estados de Filas de Residuo */
+        
+        /* Input Azul (Solo el residuo antes de bajar cifra) */
+        .drop-zone.active-residue-input { background: var(--blue); border: 3px solid #1abc9c; color: white; border-style: solid; }
+        
+        /* Fila Activa (Amarillo - Estamos trabajando aquí) */
+        .drop-zone.working-row { background: var(--highlight); border: 3px solid #d35400; color: black; border-style: solid; }
+        
+        /* Fila Histórica (Gris y Tachado - Ya pasamos de aquí) */
+        .drop-zone.history-row { 
+            background: #e0e0e0; border: 3px solid #bdc3c7; color: #95a5a6; 
+            border-style: solid; text-decoration: line-through; 
+        }
+
+        /* Animaciones */
+        .blink-soft { animation: blink-animation 1.5s infinite; border-color: var(--blue) !important; box-shadow: 0 0 10px var(--blue); }
+        @keyframes blink-animation { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+        /* Teclado Numérico */
+        .numpad { 
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; 
+            background: #dfe6e9; padding: 20px; border-radius: 15px;
+        }
+        .num-key {
+            width: 70px; height: 70px; background: white; color: var(--primary);
+            display: flex; justify-content: center; align-items: center; border-radius: 50%;
+            cursor: grab; font-size: 1.8rem; font-weight: bold;
+            box-shadow: 0 4px 0 #b2bec3; transition: transform 0.1s;
+        }
+        .num-key:active { transform: translateY(4px); box-shadow: none; }
+        .num-key:last-child { grid-column: 2; } 
+
+        /* Contenedor de filas */
+        .residue-row { display: flex; gap: 10px; height: 80px; align-items: center; transition: margin 0.3s; }
+
+        #message-box {
+            margin-top: 25px; padding: 20px; background: var(--primary); color: white;
+            border-radius: 12px; min-width: 300px; width: 80%; text-align: center; font-size: 1.4rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .next-btn { 
+            background: var(--success); padding: 12px 30px; border: none; 
+            color: white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.2rem; margin-top: 10px;
+        }
+        .next-btn:hover { background: #219150; }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <button class="lang-btn" onclick="toggleLanguage()">ES / EN</button>
+</div>
+
+<div class="game-container">
+    <div class="division-area">
+        <div class="main-row">
+            <div id="dividend-display" style="display:flex; gap:10px;"></div>
+            <span style="color:var(--primary); font-weight:bold;">:</span>
+            <div id="divisor-display" style="font-weight:bold; color:var(--primary);"></div>
+            <span style="color:var(--primary); font-weight:bold;">=</span>
+            <div id="quotient-display" style="display:flex; gap:5px;"></div>
+        </div>
+        <div id="work-area"></div>
+    </div>
+    <div class="numpad" id="numpad"></div>
+</div>
+<div id="message-box"></div>
+
+<script>
+    // --- TEXTOS ---
+    let currentLang = 'es';
+    const TEXTS = {
+        es: {
+            select: "Toca los números del dividendo para empezar",
+            quotient: (div, val) => `¿Cuántas veces cabe el ${div} en ${val}?`,
+            residue: (val, q, div) => `Multiplica y resta: ${val} - (${q} x ${div})`,
+            bringdown: "Arrastra el siguiente número del dividendo a la casilla amarilla",
+            finish: (q, r) => `¡Muy bien! Resultado: ${q} (Resto: ${r})`,
+            repeat: "Siguiente Pregunta"
+        },
+        en: {
+            select: "Tap the dividend numbers to start",
+            quotient: (div, val) => `How many times does ${div} fit into ${val}?`,
+            residue: (val, q, div) => `Multiply and subtract: ${val} - (${q} x ${div})`,
+            bringdown: "Drag the next number from the dividend to the yellow box",
+            finish: (q, r) => `Great job! Result: ${q} (Remainder: ${r})`,
+            repeat: "Next Question"
+        }
+    };
+
+    function t() { return TEXTS[currentLang]; }
+    function toggleLanguage() {
+        currentLang = currentLang === 'es' ? 'en' : 'es';
+        render();
+    }
+
+    // --- CONFIGURACIÓN ---
+    let game = {
+        dividend: 0, divisor: 0, divDigits: [],
+        step: 'SELECT',
+        selectedIndices: [], 
+        usedIndices: [], 
+        // Rows guardará: {residue: X, brought: Y, alignIndex: Z}
+        rows: [], 
+        quotientFound: [], 
+        currentWorkingVal: 0, 
+        tempResidue: null, 
+        tempBringdown: null
+    };
+
+    function init() {
+        const pad = document.getElementById('numpad');
+        pad.innerHTML = '';
+        [1,2,3,4,5,6,7,8,9,0].forEach(n => {
+            const btn = document.createElement('div');
+            btn.className = 'num-key';
+            btn.innerText = n;
+            btn.draggable = true;
+            btn.ondragstart = (e) => { 
+                e.dataTransfer.setData("text", n); 
+                e.dataTransfer.setData("type", "number"); 
+            };
+            pad.appendChild(btn);
+        });
+        newQuestion();
+    }
+
+    function newQuestion() {
+        game.dividend = Math.floor(Math.random() * 9999);
+        game.divisor = Math.floor(Math.random() * 11) + 2; // Evitar 1
+        if(game.dividend < game.divisor) game.dividend = game.divisor * Math.floor(Math.random()*20 + 2);
+
+        game.divDigits = game.dividend.toString().split('').map(Number);
+        game.quotientLength = Math.floor(game.dividend / game.divisor).toString().length;
+        
+        game.selectedIndices = [];
+        game.usedIndices = [];
+        game.quotientFound = [];
+        game.rows = [];
+        game.tempResidue = null;
+        game.tempBringdown = null;
+        game.step = 'SELECT';
+        
+        render();
+    }
+
+    function render() {
+        const divDisp = document.getElementById('dividend-display');
+        const quoDisp = document.getElementById('quotient-display');
+        const workArea = document.getElementById('work-area');
+        const msg = document.getElementById('message-box');
+
+        // 1. DIVIDENDO
+        divDisp.innerHTML = '';
+        game.divDigits.forEach((d, i) => {
+            const span = document.createElement('div');
+            span.className = 'digit';
+            
+            if (game.usedIndices.includes(i)) span.classList.add('used');
+            else if (game.selectedIndices.includes(i)) span.classList.add('selected');
+
+            // Blink Logic
+            if (game.step === 'SELECT' && !game.usedIndices.includes(i)) {
+                if (game.selectedIndices.length === 0 && i === 0) span.classList.add('blink-soft');
+                if (game.selectedIndices.length > 0 && i === game.selectedIndices[game.selectedIndices.length-1]+1) span.classList.add('blink-soft');
+            }
+            
+            // Logic Bringdown Visual
+            const nextIndexToBring = Math.max(...(game.selectedIndices.length ? game.selectedIndices : [-1])) + 1;
+            if (game.step === 'BRINGDOWN' && i === nextIndexToBring) {
+                span.classList.add('blink-soft');
+                span.style.cursor = 'grab';
+                span.draggable = true;
+                span.ondragstart = (e) => { 
+                    e.dataTransfer.setData("type", "bringdown"); 
+                    e.dataTransfer.setData("val", d);
+                    e.dataTransfer.setData("idx", i);
+                };
+            }
+
+            span.innerText = d;
+            span.onclick = () => { if(game.step === 'SELECT') handleDigitClick(i); };
+            divDisp.appendChild(span);
+        });
+
+        document.getElementById('divisor-display').innerText = game.divisor;
+
+        // 2. COCIENTE
+        quoDisp.innerHTML = '';
+        for(let i=0; i < game.quotientLength; i++) {
+            const box = document.createElement('div');
+            box.className = 'drop-zone';
+            const qObj = game.quotientFound[i];
+
+            if(qObj) {
+                box.innerText = qObj.val;
+                if(qObj.status === 'correct') box.classList.add('correct');
+                else {
+                    box.classList.add('incorrect');
+                    box.onclick = () => { game.quotientFound.splice(i, 1); render(); }; 
+                    box.ondragover = e => e.preventDefault();
+                    box.ondrop = e => handleDrop(e, 'QUOTIENT', i);
+                }
+            } else if(game.step === 'QUOTIENT' && i === game.quotientFound.length) {
+                box.classList.add('blink-soft');
+                box.ondragover = e => e.preventDefault();
+                box.ondrop = e => handleDrop(e, 'QUOTIENT', i);
+            }
+            quoDisp.appendChild(box);
+        }
+
+        // 3. ÁREA DE TRABAJO (RESTO - ESCALERA)
+        workArea.innerHTML = '';
+        
+        // Renderizar Historial + Fila Activa
+        // Unificamos la lógica: todo es una fila.
+        // Las filas en game.rows son las completadas.
+        // La fila activa se construye al final.
+
+        // A) Filas Históricas
+        game.rows.forEach((row, idx) => {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'residue-row';
+            
+            // CÁLCULO DE ESCALERA: 
+            // Cada bloque (digit) mide 60px + 10px gap = 70px.
+            // El residuo debe alinearse con el último dígito del dividendo anterior.
+            const marginLeft = row.alignIndex * 70; 
+            rowDiv.style.marginLeft = marginLeft + 'px';
+
+            const rBox = document.createElement('div');
+            // Si hay más filas después de esta, o si ya estamos en un paso avanzado, esta fila es historia.
+            // Historia = Gris Tachado.
+            // ¿Cuándo es historia? Cuando ya se ha usado para calcular un cociente y estamos buscando el SIGUIENTE residuo.
+            // O simplemente: si está en game.rows, es historia, EXCEPTO si es la ultimísima y estamos calculando su cociente.
+            
+            // Lógica refinada: 
+            // Si game.step es QUOTIENT y es la última fila de rows => Es la fila ACTIVA (Amarilla).
+            // Si game.step es RESIDUE, ya calculamos cociente, así que esta fila pasa a ser HISTORIA (Gris).
+            
+            const isLastRow = idx === game.rows.length - 1;
+            const isWorkingRow = isLastRow && (game.step === 'QUOTIENT');
+
+            if(isWorkingRow) {
+                rBox.className = 'drop-zone working-row';
+            } else {
+                rBox.className = 'drop-zone history-row';
+            }
+            rBox.innerText = row.residue;
+            rowDiv.appendChild(rBox);
+            
+            if(row.brought !== null) {
+                const bBox = document.createElement('div');
+                if(isWorkingRow) bBox.className = 'drop-zone working-row';
+                else bBox.className = 'drop-zone history-row';
+                bBox.innerText = row.brought;
+                rowDiv.appendChild(bBox);
+            }
+            workArea.appendChild(rowDiv);
+        });
+
+        // B) Fila de Input Activa (Residuo suelto o Bajada pendiente)
+        // Se muestra cuando estamos buscando residuo o bajando cifra para formar una nueva fila en game.rows
+        
+        if (game.step === 'RESIDUE' || game.step === 'BRINGDOWN' || game.step === 'FINISH') {
+            const activeRow = document.createElement('div');
+            activeRow.className = 'residue-row';
+            
+            // Calcular indentación para el residuo actual
+            // Se alinea con el último índice seleccionado
+            const currentAlignIndex = game.selectedIndices.length > 0 ? 
+                                      game.selectedIndices[game.selectedIndices.length - 1] : 0;
+            
+            activeRow.style.marginLeft = (currentAlignIndex * 70) + 'px';
+
+            // Casilla Residuo
+            const rBox = document.createElement('div');
+            rBox.className = 'drop-zone';
+            
+            if (game.tempResidue) {
+                rBox.innerText = game.tempResidue.val;
+                if (game.tempResidue.status === 'correct') {
+                    if (game.step === 'FINISH') rBox.classList.add('active-residue-input'); // Final Azul
+                    else rBox.classList.add('working-row'); // Parte de la futura fila amarilla
+                } else {
+                    rBox.classList.add('incorrect');
+                    rBox.onclick = () => { game.tempResidue = null; render(); };
+                    rBox.ondragover = e => e.preventDefault();
+                    rBox.ondrop = e => handleDrop(e, 'RESIDUE');
+                }
+            } else if (game.step === 'RESIDUE') {
+                rBox.classList.add('active-residue-input', 'blink-soft'); // Input Azul
+                rBox.ondragover = e => e.preventDefault();
+                rBox.ondrop = e => handleDrop(e, 'RESIDUE');
+            }
+            activeRow.appendChild(rBox);
+
+            // Casilla Bajar Cifra
+            if (game.step === 'BRINGDOWN') {
+                const bBox = document.createElement('div');
+                bBox.className = 'drop-zone working-row blink-soft'; // Amarillo esperando
+                bBox.style.border = '3px dashed #d35400';
+                bBox.ondragover = e => e.preventDefault();
+                bBox.ondrop = e => handleDrop(e, 'BRINGDOWN');
+                activeRow.appendChild(bBox);
+            }
+            workArea.appendChild(activeRow);
+        }
+
+        // 4. MENSAJES
+        msg.style.background = "var(--primary)";
+        switch(game.step) {
+            case 'SELECT': msg.innerText = t().select; break;
+            case 'QUOTIENT': 
+                const lastQ = game.quotientFound.length > 0 ? game.quotientFound[game.quotientFound.length-1] : null;
+                if (lastQ && lastQ.status === 'incorrect') msg.innerText = "Corrige el número rojo";
+                else msg.innerText = t().quotient(game.divisor, game.currentWorkingVal); 
+                break;
+            case 'RESIDUE': 
+                if(game.tempResidue && game.tempResidue.status === 'incorrect') msg.innerText = "Corrige el número rojo";
+                else {
+                    const lq = game.quotientFound[game.quotientFound.length-1].val;
+                    msg.innerText = t().residue(game.currentWorkingVal, lq, game.divisor); 
+                }
+                break;
+            case 'BRINGDOWN': msg.innerText = t().bringdown; break;
+            case 'FINISH': 
+                const qStr = game.quotientFound.map(o => o.val).join('');
+                const rVal = game.tempResidue ? game.tempResidue.val : 0;
+                msg.innerHTML = `<div>${t().finish(qStr, rVal)}</div>
+                                 <button class="next-btn" onclick="newQuestion()">${t().repeat}</button>`;
+                break;
+        }
+    }
+
+    // --- LÓGICA ---
+
+    function handleDigitClick(idx) {
+        // Lógica de selección contigua
+        if (game.selectedIndices.includes(idx)) {
+            if(idx === game.selectedIndices[game.selectedIndices.length-1]) game.selectedIndices.pop();
+        } else {
+            if (game.selectedIndices.length === 0 || idx === game.selectedIndices[game.selectedIndices.length-1] + 1) {
+                game.selectedIndices.push(idx);
+            }
+        }
+        
+        const valStr = game.selectedIndices.map(i => game.divDigits[i]).join('');
+        const val = parseInt(valStr || 0);
+
+        if (val >= game.divisor) {
+            game.currentWorkingVal = val;
+            game.step = 'QUOTIENT';
+        }
+        render();
+    }
+
+    function handleDrop(e, actionType, qIdx) {
+        e.preventDefault();
+        const droppedVal = parseInt(e.dataTransfer.getData("text"));
+        const dragType = e.dataTransfer.getData("type");
+        
+        // 1. COCIENTE
+        if (actionType === 'QUOTIENT' && dragType === 'number') {
+            const correctQ = Math.floor(game.currentWorkingVal / game.divisor);
+            const isCorrect = (droppedVal === correctQ);
+            
+            if (game.quotientFound[qIdx]) {
+                game.quotientFound[qIdx] = { val: droppedVal, status: isCorrect ? 'correct' : 'incorrect' };
+            } else {
+                game.quotientFound.push({ val: droppedVal, status: isCorrect ? 'correct' : 'incorrect' });
+            }
+
+            if (isCorrect) game.step = 'RESIDUE';
+        }
+
+        // 2. RESIDUO
+        else if (actionType === 'RESIDUE' && dragType === 'number') {
+            const lastQ = game.quotientFound[game.quotientFound.length-1].val;
+            const remainder = game.currentWorkingVal - (lastQ * game.divisor);
+            const isCorrect = (droppedVal === remainder);
+
+            game.tempResidue = { val: droppedVal, status: isCorrect ? 'correct' : 'incorrect' };
+            
+            if (isCorrect) {
+                // Marcar usados la primera vez
+                if (game.rows.length === 0) {
+                     game.selectedIndices.forEach(i => {
+                        if(!game.usedIndices.includes(i)) game.usedIndices.push(i);
+                    });
+                }
+                
+                if (game.usedIndices.length < game.divDigits.length) {
+                    game.step = 'BRINGDOWN';
+                } else {
+                    game.step = 'FINISH';
+                }
+            }
+        }
+
+        // 3. BAJAR CIFRA
+        else if (actionType === 'BRINGDOWN' && dragType === 'bringdown') {
+            const originIdx = parseInt(e.dataTransfer.getData("idx"));
+            const originVal = parseInt(e.dataTransfer.getData("val"));
+            
+            // Guardar fila completada en historial
+            // IMPORTANTE: Guardamos el alignIndex del residuo actual
+            const alignIdx = game.selectedIndices[game.selectedIndices.length - 1];
+
+            game.rows.push({
+                residue: game.tempResidue.val,
+                brought: originVal,
+                alignIndex: alignIdx
+            });
+
+            game.usedIndices.push(originIdx);
+            
+            const newValStr = game.tempResidue.val.toString() + originVal.toString();
+            game.currentWorkingVal = parseInt(newValStr);
+            
+            // El nuevo índice de alineación será el de la cifra que acabamos de bajar
+            game.selectedIndices.push(originIdx);
+            
+            game.tempResidue = null;
+            game.step = 'QUOTIENT';
+        }
+
+        render();
+    }
+
+    init();
+</script>
+</body>
+</html>

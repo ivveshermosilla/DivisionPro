@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DivisionesPro V1.1.7</title>
+    <style>
+        :root {
+            --primary: #2c3e50; --success: #27ae60; --error: #c0392b;
+            --highlight: #f1c40f; --bg: #ecf0f1; --blue: #2980b9;
+            --grey-disabled: #bdc3c7;
+            --text-dark: #2c3e50;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 0; margin: 0; height: 100vh; overflow: hidden; user-select: none; }
+        
+        /* --- SISTEMA DE PANTALLAS --- */
+        .screen {
+            width: 100%; height: 100%; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; position: absolute;
+            top: 0; left: 0; background: var(--bg); transition: opacity 0.3s;
+        }
+        .hidden { display: none !important; opacity: 0; pointer-events: none; }
+        .scrollable { overflow-y: auto; padding: 40px 0; justify-content: flex-start; }
+
+        /* --- BOTÓN IDIOMA FLOTANTE --- */
+        .lang-toggle-float {
+            position: fixed; top: 15px; right: 15px; z-index: 2000;
+            background: white; border: 2px solid var(--primary); color: var(--primary);
+            padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: all 0.2s;
+        }
+        .lang-toggle-float:hover { background: var(--primary); color: white; }
+
+        /* --- UI ELEMENTS --- */
+        .btn-main {
+            background: var(--blue); color: white; border: none; padding: 15px 40px;
+            font-size: 1.5rem; border-radius: 15px; cursor: pointer; margin: 10px;
+            box-shadow: 0 5px 0 #1a5276; transition: transform 0.1s; min-width: 250px;
+        }
+        .btn-main:active { transform: translateY(5px); box-shadow: none; }
+        .btn-secondary {
+            background: var(--primary); color: white; border: none; padding: 10px 20px;
+            font-size: 1rem; border-radius: 10px; cursor: pointer; margin: 5px; font-weight: bold;
+        }
+        .btn-back {
+            position: absolute; top: 20px; left: 20px; background: #95a5a6;
+            color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer;
+            font-weight: bold; z-index: 10;
+        }
+
+        .menu-title { font-size: 3rem; color: var(--primary); margin-bottom: 20px; text-align: center; margin-top: 40px; }
+        .config-panel {
+            background: white; padding: 30px; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 80%; max-width: 650px;
+            margin-bottom: 40px;
+        }
+        
+        .instructions-card {
+            background: #e8f4f8; border-left: 5px solid var(--blue); padding: 20px;
+            border-radius: 10px; margin-bottom: 25px; color: var(--text-dark);
+            line-height: 1.5; font-size: 1.1rem;
+        }
+        .instructions-card h3 { margin-top: 0; color: var(--primary); }
+
+        /* Config & Inputs */
+        .config-row { margin-bottom: 20px; }
+        .config-label { font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; display: block; }
+        .slider-container { display: flex; align-items: center; gap: 15px; }
+        input[type=range] { flex-grow: 1; cursor: pointer; }
+        input[type=number], input[type=text] { padding: 8px; font-size: 1.2rem; text-align: center; border-radius: 5px; border: 1px solid #bdc3c7; }
+        input[type=text] { width: 80%; margin-bottom: 15px; }
+
+        .difficulty-selector { display: flex; gap: 10px; justify-content: center; }
+        .diff-btn {
+            flex: 1; padding: 15px; border: 2px solid var(--blue); background: white;
+            color: var(--blue); border-radius: 10px; cursor: pointer; font-weight: bold;
+            transition: all 0.2s; text-align: center;
+        }
+        .diff-btn.selected { background: var(--blue); color: white; transform: scale(1.05); }
+
+        /* --- GAME UI --- */
+        .top-bar-game {
+            width: 100%; max-width: 1000px; display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 20px; box-sizing: border-box; margin-top: 20px;
+        }
+        .timer-display { font-size: 1.5rem; font-weight: bold; color: var(--primary); background: white; padding: 5px 15px; border-radius: 10px; }
+        
+        .game-container { 
+            display: flex; gap: 40px; background: white; padding: 40px; 
+            border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+            align-items: flex-start; flex-wrap: wrap; justify-content: center; position: relative;
+        }
+
+        .division-area { font-size: 3rem; display: flex; flex-direction: column; gap: 5px; min-width: 500px; }
+        .main-row { display: flex; align-items: center; gap: 10px; height: 90px; }
+        
+        .digit, .drop-zone {
+            box-sizing: border-box; width: 60px; height: 75px; 
+            display: inline-flex; justify-content: center; align-items: center; 
+            border-radius: 12px; font-weight: bold; transition: all 0.2s; position: relative;
+        }
+
+        .digit { border: 3px solid #bdc3c7; background: #f9f9f9; cursor: pointer; }
+        .digit.selected { background: var(--highlight); border-color: #d35400; color: #000; transform: scale(1.05); }
+        .digit.used { text-decoration: line-through; opacity: 0.5; background: #e0e0e0; border-color: #bdc3c7; cursor: default; color: #7f8c8d; }
+        
+        .drop-zone { border: 3px dashed #bdc3c7; background: #fff; color: #7f8c8d; }
+        .drop-zone.correct { background: var(--success); color: white; border: 3px solid #1e8449; border-style: solid; }
+        .drop-zone.incorrect { background: var(--error); color: white; border: 3px solid #922b21; border-style: solid; cursor: pointer; z-index: 10; }
+        .drop-zone.incorrect::after { content: "✕"; position: absolute; font-size: 1rem; top: 2px; right: 5px; opacity: 0.7; pointer-events: none; }
+
+        .drop-zone.active-residue-input { background: var(--blue); border: 3px solid #1abc9c; color: white; border-style: solid; }
+        .drop-zone.working-row { background: var(--highlight); border: 3px solid #d35400; color: black; border-style: solid; }
+        .drop-zone.history-row { background: #e0e0e0; border: 3px solid #bdc3c7; color: #95a5a6; border-style: solid; text-decoration: line-through; }
+
+        .blink-soft { animation: blink-animation 1.5s infinite; border-color: var(--blue) !important; box-shadow: 0 0 10px var(--blue); }
+        @keyframes blink-animation { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; background: #dfe6e9; padding: 20px; border-radius: 15px; }
+        .num-key {
+            width: 70px; height: 70px; background: white; color: var(--primary);
+            display: flex; justify-content: center; align-items: center; border-radius: 50%;
+            cursor: grab; font-size: 1.8rem; font-weight: bold; box-shadow: 0 4px 0 #b2bec3; transition: transform 0.1s;
+        }
+        .num-key:active { transform: translateY(4px); box-shadow: none; }
+        .num-key:last-child { grid-column: 2; } 
+
+        .residue-row { display: flex; gap: 10px; height: 80px; align-items: center; transition: margin 0.3s; }
+
+        #message-box {
+            margin-top: 25px; padding: 20px; background: var(--primary); color: white;
+            border-radius: 12px; min-width: 300px; width: 80%; text-align: center; font-size: 1.4rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .next-btn { background: var(--success); padding: 12px 30px; border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.2rem; margin-top: 10px; }
+
+        /* --- MODALES Y SCOREBOARD --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background: white; padding: 30px; border-radius: 15px; text-align: center; max-width: 500px; width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3); max-height: 80vh; overflow-y: auto;
+        }
+        .modal-title { font-size: 1.5rem; color: var(--primary); margin-bottom: 15px; font-weight: bold; }
+        .modal-text { font-size: 1.1rem; color: #555; margin-bottom: 25px; line-height: 1.5; }
+
+        .score-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .score-table th { background: var(--primary); color: white; padding: 12px 10px; }
+        .score-table td { border-bottom: 1px solid #ddd; padding: 10px; text-align: center; color: var(--text-dark); cursor: pointer; }
+        .score-table tr:hover td { background: #f0f3f4; }
+        
+        .score-summary { display: flex; justify-content: space-around; width: 100%; margin-bottom: 20px; }
+        .score-card { background: #ecf0f1; padding: 20px; border-radius: 10px; text-align: center; min-width: 120px; }
+        .score-card h3 { margin: 0; font-size: 0.9rem; color: #7f8c8d; }
+        .score-card p { margin: 5px 0 0; font-size: 1.8rem; font-weight: bold; color: var(--primary); }
+        .details-container { max-height: 400px; overflow-y: auto; width: 100%; border: 1px solid #ddd; border-radius: 5px; padding: 15px; box-sizing: border-box; background: #fafafa; }
+
+        /* Child-Friendly Error Log */
+        .error-log-list { text-align: left; width: 100%; }
+        .log-item { background: white; border-left: 5px solid var(--error); padding: 15px; margin-bottom: 15px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .log-q { font-weight: bold; color: var(--primary); font-size: 1.1rem; margin-bottom: 5px; }
+        .log-err-count { color: #7f8c8d; font-size: 0.9rem; margin-bottom: 10px; font-style: italic; }
+        .log-ul { margin: 0; padding-left: 20px; color: var(--error); font-size: 1rem; line-height: 1.4; }
+        .log-ul li { margin-bottom: 5px; }
+        .log-perfect { color: var(--success); font-weight: bold; font-size: 1.2rem; text-align: center; padding: 20px; }
+
+    </style>
+</head>
+<body>
+
+<button class="lang-toggle-float hidden" id="global-lang-btn" onclick="toggleInGameLang()">ES / EN</button>
+
+<div id="screen-lang" class="screen">
+    <h1 style="font-size: 2rem; color: var(--primary); margin-bottom: 30px;">Select Language / Selecciona Idioma</h1>
+    <button class="btn-main" onclick="setLanguage('es')">Español 🇪🇸</button>
+    <button class="btn-main" onclick="setLanguage('en')">English 🇺🇸</button>
+</div>
+
+<div id="screen-menu" class="screen hidden">
+    <h1 class="menu-title" id="menu-title-text">DivisionesPro</h1>
+    <button class="btn-main" onclick="goToConfig()">🎮 <span id="btn-play">Aprende a Dividir</span></button>
+    <button class="btn-main" style="background: #95a5a6; cursor: not-allowed; opacity: 0.7;">⚙️ <span id="btn-settings">Próximamente</span></button>
+    <button class="btn-back" onclick="goToLang()">⬅</button>
+</div>
+
+<div id="screen-config" class="screen hidden scrollable">
+    <button class="btn-back" onclick="goToMenu()">⬅</button>
+    <h2 class="menu-title" id="config-title">Aprende a Dividir</h2>
+    
+    <div class="config-panel">
+        <div class="instructions-card">
+            <h3 id="inst-title">Cómo jugar</h3>
+            <p id="inst-text"></p>
+        </div>
+
+        <div style="text-align: right; margin-bottom: 20px;">
+            <button class="btn-secondary" style="background: var(--highlight); color: black;" onclick="showGlobalHistory()">🏆 <span id="btn-history-text">Tabla de Resultados</span></button>
+        </div>
+
+        <div class="config-row">
+            <label class="config-label" id="lbl-difficulty">Nivel de Dificultad</label>
+            <div class="difficulty-selector">
+                <div class="diff-btn selected" id="diff-easy" onclick="setDifficulty('easy')">Fácil</div>
+                <div class="diff-btn" id="diff-normal" onclick="setDifficulty('normal')">Normal</div>
+                <div class="diff-btn" id="diff-hard" onclick="setDifficulty('hard')">Difícil</div>
+            </div>
+            <p id="diff-desc" style="font-size: 0.9rem; color: #7f8c8d; margin-top: 5px; text-align: center;"></p>
+        </div>
+
+        <div class="config-row">
+            <label class="config-label" id="lbl-qcount">Cantidad de Preguntas</label>
+            <div class="slider-container">
+                <input type="range" id="q-slider" min="1" max="50" value="10" oninput="syncInputs('slider')">
+                <input type="number" id="q-input" min="1" max="50" value="10" oninput="syncInputs('input')">
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn-main" style="background: var(--success);" onclick="startGame()">🚀 <span id="btn-start">¡Comenzar!</span></button>
+        </div>
+    </div>
+</div>
+
+<div id="screen-game" class="screen hidden">
+    <div class="top-bar-game">
+        <button class="btn-secondary" style="background: var(--error);" onclick="confirmExit()">✖ <span id="btn-exit">Salir</span></button>
+        <div class="timer-display">⏱ <span id="game-timer">00:00</span></div>
+        <div style="font-weight: bold; color: var(--primary); font-size: 1.2rem;">
+            <span id="q-progress">1 / 10</span>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <div class="division-area">
+            <div class="main-row">
+                <div id="dividend-display" style="display:flex; gap:10px;"></div>
+                <span style="color:var(--primary); font-weight:bold;">:</span>
+                <div id="divisor-display" style="font-weight:bold; color:var(--primary);"></div>
+                <span style="color:var(--primary); font-weight:bold;">=</span>
+                <div id="quotient-display" style="display:flex; gap:5px;"></div>
+            </div>
+            <div id="work-area"></div>
+        </div>
+        <div class="numpad" id="numpad"></div>
+    </div>
+    <div id="message-box"></div>
+</div>
+
+<div id="screen-score" class="screen hidden scrollable">
+    <h2 class="menu-title" id="score-title">¡Partida Terminada!</h2>
+    <div class="config-panel" style="max-width: 800px;">
+        <div class="score-summary">
+            <div class="score-card">
+                <h3 id="lbl-total-time"></h3>
+                <p id="score-total-time">00:00</p>
+            </div>
+            <div class="score-card">
+                <h3 id="lbl-total-errors"></h3>
+                <p id="score-total-errors" style="color: var(--error);">0</p>
+            </div>
+        </div>
+        
+        <h3 style="color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px;" id="lbl-details-title">Errores a mejorar</h3>
+        
+        <div class="details-container error-log-list" id="score-detailed-log"></div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn-main" onclick="goToConfig()">🏠 <span id="btn-home"></span></button>
+        </div>
+    </div>
+</div>
+
+<div id="screen-history" class="screen hidden scrollable">
+    <button class="btn-back" onclick="goToConfig()">⬅</button>
+    <h2 class="menu-title" id="history-title"></h2>
+    <div class="config-panel">
+        <div style="text-align: right; margin-bottom: 10px;">
+            <button class="btn-secondary" style="background: var(--error);" onclick="confirmResetHistory()" id="btn-reset">🗑 Borrar Historial</button>
+        </div>
+        <p style="text-align:center; color:#7f8c8d; font-style:italic;" id="history-hint"></p>
+        <div class="details-container" style="max-height: 400px; padding: 0;">
+            <table class="score-table">
+                <thead>
+                    <tr>
+                        <th id="th-h-date">Fecha</th>
+                        <th id="th-h-name">Nombre</th>
+                        <th id="th-h-mode">Modo</th>
+                        <th id="th-h-time">Tiempo</th>
+                        <th id="th-h-err">Err</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body"></tbody>
+            </table>
+            <p id="history-empty" style="text-align: center; color: #7f8c8d; padding: 20px;"></p>
+        </div>
+    </div>
+</div>
+
+<div id="modal-exit" class="modal-overlay hidden">
+    <div class="modal-content">
+        <h3 class="modal-title" id="modal-exit-title"></h3>
+        <p class="modal-text" id="modal-exit-text"></p>
+        <button class="btn-secondary" style="background: var(--error);" onclick="exitToMenu()" id="btn-confirm-exit">Si, Salir</button>
+        <button class="btn-main" onclick="closeModal('modal-exit')" id="btn-cancel-exit">Continuar</button>
+    </div>
+</div>
+
+<div id="modal-name" class="modal-overlay hidden">
+    <div class="modal-content">
+        <h3 class="modal-title" id="modal-name-title"></h3>
+        <input type="text" id="player-name-input" placeholder="Nombre">
+        <br>
+        <button class="btn-main" style="background: var(--success);" onclick="saveSessionWithName()" id="btn-save-name">Guardar en Historial</button>
+        <br>
+        <button class="btn-secondary" style="margin-top: 15px; background: #95a5a6;" onclick="skipSaving()" id="btn-skip-name">Saltar y ver errores</button>
+    </div>
+</div>
+
+<div id="modal-details" class="modal-overlay hidden">
+    <div class="modal-content" style="text-align: left; max-width: 700px;">
+        <h3 class="modal-title" id="modal-details-title">Detalles</h3>
+        <div class="details-container error-log-list" id="modal-details-content"></div>
+        <div style="text-align: center; margin-top:20px;">
+            <button class="btn-main" onclick="closeModal('modal-details')" id="btn-close-details">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- ESTADO GLOBAL ---
+    let appState = {
+        lang: 'es',
+        config: { difficulty: 'easy', qCount: 10 },
+        game: {
+            currentQ: 0, questions: [], stats: [], timerInterval: null,
+            startTime: 0, questionStartTime: 0, currentErrors: 0,
+            currentLogs: [],
+            lastName: "", // Guarda el nombre para mantenerlo al cambiar de idioma
+            currentlyViewingHistory: null // Guarda la partida actual vista en el modal
+        }
+    };
+
+    const TEXTS = {
+        es: {
+            menuTitle: "DivisionesPro", play: "Aprende a Dividir", settings: "Próximamente",
+            configTitle: "Aprende a Dividir", diff: "Nivel de Dificultad", easy: "Fácil", normal: "Normal", hard: "Difícil",
+            diffDescEasy: "Tablas del 1-12. Divisiones exactas (sin resto). Ideal para empezar.",
+            diffDescNormal: "Números hasta 500. Puede haber resto.",
+            diffDescHard: "Reto completo. Números hasta 9999.",
+            qCount: "Cantidad de Preguntas", start: "¡Comenzar!",
+            exit: "Salir", exitConfirm: "¿Salir al Menú?", exitWarn: "Se perderá el progreso actual.", yes: "Sí, Salir", cancel: "Continuar Jugando",
+            instTitle: "Cómo jugar", instText: "1. <b>Selecciona:</b> Toca los números del dividendo.<br>2. <b>Divide:</b> Arrastra el resultado al cuadro verde.<br>3. <b>Resta:</b> Arrastra lo que sobra al cuadro azul.<br>4. <b>Baja:</b> Arrastra el siguiente número.<br><i>💡 Consejo: Si eres principiante, empieza en modo Fácil.</i>",
+            gameSelect: "Toca los números del dividendo para empezar",
+            gameQuotient: (div, val) => `¿Cuántas veces cabe el ${div} en ${val}?`,
+            gameResidue: (val, q, div) => `¡Perfecto! Como ${div} x ${q} es ${div*q}, ¿cuánto nos va sobrando para llegar a ${val}?`,
+            gameBringdown: "Arrastra el siguiente número del dividendo a la casilla amarilla",
+            gameFinish: (q, r) => `¡Muy bien! Resultado: ${q} (Resto: ${r})`,
+            nextQ: "Siguiente Pregunta",
+            errorCorrection: "¡Vuelve a intentarlo! Corrige el número rojo",
+            scoreTitle: "¡Partida Terminada!", time: "Tiempo Total", errors: "Errores Totales", menu: "Volver al Menú",
+            historyBtn: "Tabla de Resultados", historyTitle: "Tabla de Resultados", hDate: "Fecha", hName: "Nombre", hMode: "Modo", hTime: "Tiempo", hErr: "Err", hEmpty: "Aún no hay partidas jugadas.", hHint: "Haz clic en una fila para ver detalles",
+            nameTitle: "¡Muy bien! Escribe tu nombre para guardar:", save: "Guardar en Historial", skip: "Saltar y ver errores", namePlaceholder: "Nombre",
+            detailsTitle: "Errores a mejorar", close: "Cerrar",
+            resetBtn: "🗑 Borrar Historial", resetConfirm: "¿Seguro que quieres borrar todo el historial de resultados?",
+            logHeader: (qNum, tot, divd, divr, q, r) => `Pregunta ${qNum}/${tot}: ${divd} ÷ ${divr} = Resultado correcto es ${q} con resto ${r}`,
+            logErrCount: (c) => `Número de errores: ${c}`,
+            logPerfectSession: "¡Increíble! Respondiste todo perfectamente sin errores. 🎉",
+            errQuotient: (wv, d, input, exp) => `Error: al dividir ${wv} ÷ ${d} respondiste ${input} en lugar de ${exp}`,
+            errResidue: (wv, sub, rem, input, exp) => `Error en el Resto: hacen falta ${rem} para que ${sub} llegue a ${wv}, respondiste ${input} en lugar de ${exp}`
+        },
+        en: {
+            menuTitle: "DivisionPro", play: "Learn to Divide", settings: "Coming Soon",
+            configTitle: "Learn to Divide", diff: "Difficulty Level", easy: "Easy", normal: "Normal", hard: "Hard",
+            diffDescEasy: "Times tables 1-12. Exact divisions (no remainder). Great for starting.",
+            diffDescNormal: "Numbers up to 500. Can have remainders.",
+            diffDescHard: "Full challenge. Numbers up to 9999.",
+            qCount: "Number of Questions", start: "Start!",
+            exit: "Exit", exitConfirm: "Exit to Menu?", exitWarn: "Current progress will be lost.", yes: "Yes, Exit", cancel: "Keep Playing",
+            instTitle: "How to Play", instText: "1. <b>Select:</b> Tap the dividend numbers.<br>2. <b>Divide:</b> Drag the answer to the green box.<br>3. <b>Subtract:</b> Drag the remainder to the blue box.<br>4. <b>Bring Down:</b> Drag the next number down.<br><i>💡 Tip: Start on Easy mode!</i>",
+            gameSelect: "Tap the dividend numbers to start",
+            gameQuotient: (div, val) => `How many times does ${div} fit into ${val}?`,
+            gameResidue: (val, q, div) => `Perfect! Since ${div} x ${q} is ${div*q}, how much is missing to reach ${val}?`,
+            gameBringdown: "Drag the next number from the dividend to the yellow box",
+            gameFinish: (q, r) => `Great job! Result: ${q} (Remainder: ${r})`,
+            nextQ: "Next Question",
+            errorCorrection: "Try again! Correct the red number",
+            scoreTitle: "Session Finished!", time: "Total Time", errors: "Total Errors", menu: "Back to Menu",
+            historyBtn: "Scoreboard", historyTitle: "Scoreboard", hDate: "Date", hName: "Name", hMode: "Mode", hTime: "Time", hErr: "Err", hEmpty: "No games played yet.", hHint: "Click on a row to see details",
+            nameTitle: "Great job! Enter your name to save:", save: "Save to Scoreboard", skip: "Skip and view errors", namePlaceholder: "Name",
+            detailsTitle: "Errors to Review", close: "Close",
+            resetBtn: "🗑 Reset History", resetConfirm: "Are you sure you want to delete all history?",
+            logHeader: (qNum, tot, divd, divr, q, r) => `Question ${qNum}/${tot}: ${divd} ÷ ${divr} = Correct result is ${q} with remainder ${r}`,
+            logErrCount: (c) => `Number of errors: ${c}`,
+            logPerfectSession: "Amazing! You answered everything perfectly with no errors. 🎉",
+            errQuotient: (wv, d, input, exp) => `Error: when dividing ${wv} ÷ ${d}, you answered ${input} instead of ${exp}`,
+            errResidue: (wv, sub, rem, input, exp) => `Remainder Error: ${rem} is needed for ${sub} to reach ${wv}, you answered ${input} instead of ${exp}`
+        }
+    };
+
+    function t() { return TEXTS[appState.lang]; }
+
+    // --- NAVIGATION Y REACTIVIDAD ---
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+        
+        // Manejo del botón flotante global
+        const floatBtn = document.getElementById('global-lang-btn');
+        if (id === 'screen-lang') {
+            floatBtn.classList.add('hidden');
+        } else {
+            floatBtn.classList.remove('hidden');
+        }
+    }
+
+    // EL CEREBRO DE LA TRADUCCIÓN INSTANTÁNEA
+    function toggleInGameLang() {
+        // Cambiar estado
+        appState.lang = appState.lang === 'es' ? 'en' : 'es';
+        
+        // 1. Actualizar textos duros (botones, titulos)
+        updateUITexts();
+
+        // 2. Si estamos en JUEGO, recargar el motor gráfico (mensajes de guía instantáneos)
+        if (!document.getElementById('screen-game').classList.contains('hidden')) {
+            renderGame();
+        }
+
+        // 3. Si estamos viendo el RESULTADO ACTUAL, recargar el log de errores
+        if (!document.getElementById('screen-score').classList.contains('hidden')) {
+            renderDetailedLog(appState.game.stats, 'score-detailed-log');
+            // Restaurar nombre en el título si aplica
+            if (appState.game.lastName && document.getElementById('modal-name').classList.contains('hidden')) {
+                document.getElementById('score-title').innerText = t().scoreTitle + " " + appState.game.lastName;
+            }
+        }
+
+        // 4. Si estamos en el HISTORIAL GLOBAL, recargar la tabla completa (traducción de "Fácil", etc)
+        if (!document.getElementById('screen-history').classList.contains('hidden')) {
+            showGlobalHistory();
+        }
+
+        // 5. Si el MODAL DE DETALLES del historial está abierto, recargar su contenido interno
+        if (!document.getElementById('modal-details').classList.contains('hidden')) {
+            if (appState.game.currentlyViewingHistory) {
+                showSessionDetails(appState.game.currentlyViewingHistory);
+            }
+        }
+    }
+
+    function setLanguage(l) { appState.lang = l; updateUITexts(); showScreen('screen-menu'); }
+    function goToMenu() { stopTimers(); showScreen('screen-menu'); }
+    function goToLang() { showScreen('screen-lang'); }
+    function goToConfig() { showScreen('screen-config'); }
+    
+    function closeModal(id) { 
+        document.getElementById(id).classList.add('hidden'); 
+        if (id === 'modal-details') {
+            appState.game.currentlyViewingHistory = null;
+        }
+    }
+    
+    function confirmExit() { document.getElementById('modal-exit').classList.remove('hidden'); }
+    function exitToMenu() { closeModal('modal-exit'); goToConfig(); }
+
+    function confirmResetHistory() {
+        if(confirm(t().resetConfirm)) {
+            localStorage.removeItem('divisiones_history');
+            showGlobalHistory();
+        }
+    }
+
+    function updateUITexts() {
+        const txt = t();
+        const ids = {
+            'menu-title-text': txt.menuTitle, 'btn-play': txt.play, 'btn-settings': txt.settings,
+            'config-title': txt.configTitle, 'inst-title': txt.instTitle, 'inst-text': txt.instText,
+            'btn-history-text': txt.historyBtn, 'lbl-difficulty': txt.diff, 'diff-easy': txt.easy,
+            'diff-normal': txt.normal, 'diff-hard': txt.hard, 'lbl-qcount': txt.qCount,
+            'btn-start': txt.start, 'btn-exit': txt.exit, 'modal-exit-title': txt.exitConfirm,
+            'modal-exit-text': txt.exitWarn, 'btn-confirm-exit': txt.yes, 'btn-cancel-exit': txt.cancel,
+            'score-title': txt.scoreTitle, 'lbl-total-time': txt.time, 'lbl-total-errors': txt.errors,
+            'btn-home': txt.menu, 'history-title': txt.historyTitle, 'th-h-date': txt.hDate,
+            'th-h-name': txt.hName, 'th-h-mode': txt.hMode, 'th-h-time': txt.hTime, 'th-h-err': txt.hErr,
+            'history-empty': txt.hEmpty, 'history-hint': txt.hHint, 'modal-name-title': txt.nameTitle,
+            'btn-save-name': txt.save, 'btn-skip-name': txt.skip, 'lbl-details-title': txt.detailsTitle,
+            'modal-details-title': txt.detailsTitle, 'btn-close-details': txt.close, 'btn-reset': txt.resetBtn
+        };
+        
+        for (const [id, val] of Object.entries(ids)) {
+            const el = document.getElementById(id);
+            if(el) {
+                if(id === 'inst-text') el.innerHTML = val;
+                else if (id === 'score-title') {
+                    // Mantener el nombre personalizado si ya fue ingresado
+                    if (appState.game.lastName && document.getElementById('modal-name').classList.contains('hidden')) {
+                        el.innerText = val + " " + appState.game.lastName;
+                    } else {
+                        el.innerText = val;
+                    }
+                }
+                else el.innerText = val;
+            }
+        }
+        document.getElementById('player-name-input').placeholder = txt.namePlaceholder;
+        updateDiffDesc();
+    }
+
+    function syncInputs(source) {
+        const slider = document.getElementById('q-slider');
+        const input = document.getElementById('q-input');
+        if (source === 'slider') input.value = slider.value;
+        else slider.value = input.value;
+        appState.config.qCount = parseInt(input.value);
+    }
+    function setDifficulty(d) {
+        appState.config.difficulty = d;
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
+        document.getElementById('diff-' + d).classList.add('selected');
+        updateDiffDesc();
+    }
+    function updateDiffDesc() {
+        const d = appState.config.difficulty;
+        const p = document.getElementById('diff-desc');
+        if(d === 'easy') p.innerText = t().diffDescEasy;
+        else if(d === 'normal') p.innerText = t().diffDescNormal;
+        else p.innerText = t().diffDescHard;
+    }
+
+    // --- GAME ENGINE ---
+    let gameLogic = {
+        divDigits: [], step: 'SELECT', selectedIndices: [], usedIndices: [], 
+        rows: [], quotientFound: [], currentWorkingVal: 0, 
+        expectedRemainderString: "", tempResidues: null
+    };
+
+    function startGame() {
+        appState.game.questions = [];
+        appState.game.stats = [];
+        appState.game.currentQ = 0;
+        appState.game.lastName = ""; // Resetear nombre para la nueva partida
+        
+        for(let i=0; i<appState.config.qCount; i++) appState.game.questions.push(generateQuestionLogic());
+        appState.game.startTime = Date.now();
+        startTimer();
+        showScreen('screen-game');
+        loadQuestion(0);
+    }
+
+    function generateQuestionLogic() {
+        const mode = appState.config.difficulty;
+        let div, divisor;
+        if (mode === 'easy') {
+            divisor = Math.floor(Math.random() * 11) + 2; 
+            let quotient = Math.floor(Math.random() * 12) + 1; 
+            div = divisor * quotient;
+        } else if (mode === 'normal') {
+            div = Math.floor(Math.random() * 490) + 10;
+            divisor = Math.floor(Math.random() * 11) + 2;
+        } else {
+            div = Math.floor(Math.random() * 9900) + 100;
+            divisor = Math.floor(Math.random() * 11) + 2;
+        }
+        if(div < divisor) div = divisor * Math.floor(Math.random()*5 + 1);
+        return { dividend: div, divisor: divisor };
+    }
+
+    function loadQuestion(idx) {
+        if (idx >= appState.game.questions.length) {
+            showSessionSummary();
+            return;
+        }
+        appState.game.currentQ = idx;
+        appState.game.questionStartTime = Date.now();
+        appState.game.currentErrors = 0;
+        appState.game.currentLogs = []; 
+        document.getElementById('q-progress').innerText = `${idx + 1} / ${appState.config.qCount}`;
+
+        const q = appState.game.questions[idx];
+        const g = gameLogic;
+        g.dividend = q.dividend;
+        g.divisor = q.divisor;
+        g.divDigits = q.dividend.toString().split('').map(Number);
+        g.quotientLength = Math.floor(q.dividend / q.divisor).toString().length;
+        g.selectedIndices = [];
+        g.usedIndices = [];
+        g.quotientFound = []; 
+        g.rows = [];
+        g.tempResidues = null;
+        g.expectedRemainderString = "";
+        g.step = 'SELECT';
+
+        renderGame();
+        
+        const pad = document.getElementById('numpad');
+        if(pad.innerHTML === '') {
+            [1,2,3,4,5,6,7,8,9,0].forEach(n => {
+                const btn = document.createElement('div');
+                btn.className = 'num-key';
+                btn.innerText = n;
+                btn.draggable = true;
+                btn.ondragstart = (e) => { e.dataTransfer.setData("text", n); e.dataTransfer.setData("type", "number"); };
+                pad.appendChild(btn);
+            });
+        }
+    }
+
+    function renderGame() {
+        const divDisp = document.getElementById('dividend-display');
+        const quoDisp = document.getElementById('quotient-display');
+        const workArea = document.getElementById('work-area');
+        const msg = document.getElementById('message-box');
+        const g = gameLogic;
+
+        // DIVIDEND
+        divDisp.innerHTML = '';
+        g.divDigits.forEach((d, i) => {
+            const span = document.createElement('div');
+            span.className = 'digit';
+            if (g.usedIndices.includes(i)) span.classList.add('used');
+            else if (g.selectedIndices.includes(i)) span.classList.add('selected');
+            
+            if (g.step === 'SELECT' && !g.usedIndices.includes(i)) {
+                if (g.selectedIndices.length === 0 && i === 0) span.classList.add('blink-soft');
+                if (g.selectedIndices.length > 0 && i === g.selectedIndices[g.selectedIndices.length-1]+1) span.classList.add('blink-soft');
+            }
+            const nextIndexToBring = Math.max(...(g.selectedIndices.length ? g.selectedIndices : [-1])) + 1;
+            if (g.step === 'BRINGDOWN' && i === nextIndexToBring) {
+                span.classList.add('blink-soft');
+                span.style.cursor = 'grab';
+                span.draggable = true;
+                span.ondragstart = (e) => { e.dataTransfer.setData("type", "bringdown"); e.dataTransfer.setData("val", d); e.dataTransfer.setData("idx", i); };
+            }
+            span.innerText = d;
+            span.onclick = () => { if(g.step === 'SELECT') handleDigitClick(i); };
+            divDisp.appendChild(span);
+        });
+        document.getElementById('divisor-display').innerText = g.divisor;
+
+        // QUOTIENT
+        quoDisp.innerHTML = '';
+        for(let i=0; i < g.quotientLength; i++) {
+            const box = document.createElement('div');
+            box.className = 'drop-zone';
+            const qObj = g.quotientFound[i];
+            
+            if(qObj) {
+                box.innerText = qObj.val;
+                if(qObj.status === 'correct') {
+                    box.classList.add('correct');
+                } else {
+                    box.classList.add('incorrect');
+                    box.ondragover = e => e.preventDefault();
+                    box.ondrop = e => handleDrop(e, 'QUOTIENT', i);
+                    box.onclick = function() { 
+                        g.quotientFound.splice(i, 1); 
+                        renderGame(); 
+                    };
+                }
+            } else {
+                const isNext = (i === g.quotientFound.length);
+                const noErrorsInQuotient = !g.quotientFound.some(q => q.status === 'incorrect');
+                const noErrorsInResidue = !(g.tempResidues && g.tempResidues.some(r => r && r.status === 'incorrect'));
+
+                if(g.step === 'QUOTIENT' && isNext && noErrorsInQuotient && noErrorsInResidue) {
+                    box.classList.add('blink-soft');
+                    box.ondragover = e => e.preventDefault();
+                    box.ondrop = e => handleDrop(e, 'QUOTIENT', i);
+                }
+            }
+            quoDisp.appendChild(box);
+        }
+
+        // WORK AREA
+        workArea.innerHTML = '';
+        g.rows.forEach((row, idx) => {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'residue-row';
+            const residueChars = row.residueStr.split('');
+            const offsetMultiplier = row.alignIndex - residueChars.length + 1;
+            rowDiv.style.marginLeft = (offsetMultiplier * 70) + 'px';
+            const isLastRow = idx === g.rows.length - 1;
+            const isWorkingRow = isLastRow && (g.step === 'QUOTIENT');
+            const styleClass = isWorkingRow ? 'working-row' : 'history-row';
+
+            residueChars.forEach(char => {
+                const rBox = document.createElement('div');
+                rBox.className = `drop-zone ${styleClass}`;
+                rBox.innerText = char;
+                rowDiv.appendChild(rBox);
+            });
+            if(row.brought !== null) {
+                const bBox = document.createElement('div');
+                bBox.className = `drop-zone ${styleClass}`;
+                bBox.innerText = row.brought;
+                rowDiv.appendChild(bBox);
+            }
+            workArea.appendChild(rowDiv);
+        });
+
+        // Active Residue Row
+        if (g.step === 'RESIDUE' || g.step === 'BRINGDOWN' || g.step === 'FINISH') {
+            const activeRow = document.createElement('div');
+            activeRow.className = 'residue-row';
+            const currentAlignIndex = g.selectedIndices.length > 0 ? g.selectedIndices[g.selectedIndices.length - 1] : 0;
+            const resLen = g.tempResidues ? g.tempResidues.length : 1;
+            activeRow.style.marginLeft = ((currentAlignIndex - resLen + 1) * 70) + 'px';
+
+            if (g.tempResidues) {
+                g.tempResidues.forEach((resItem, rIdx) => {
+                    const rBox = document.createElement('div');
+                    rBox.className = 'drop-zone';
+                    
+                    if (resItem) {
+                        rBox.innerText = resItem.val;
+                        if (resItem.status === 'correct') {
+                            if (g.step === 'FINISH') rBox.classList.add('active-residue-input');
+                            else rBox.classList.add('working-row');
+                        } else {
+                            rBox.classList.add('incorrect');
+                            rBox.ondragover = e => e.preventDefault();
+                            rBox.ondrop = e => handleDrop(e, 'RESIDUE', rIdx);
+                            rBox.onclick = function() { 
+                                g.tempResidues[rIdx] = null; 
+                                renderGame(); 
+                            };
+                        }
+                    } else if (g.step === 'RESIDUE') {
+                        const noErrorsInResidue = !g.tempResidues.some(r => r && r.status === 'incorrect');
+                        const targetIdx = g.tempResidues.indexOf(null);
+                        
+                        if(rIdx === targetIdx && noErrorsInResidue) {
+                            rBox.classList.add('active-residue-input', 'blink-soft');
+                            rBox.ondragover = e => e.preventDefault();
+                            rBox.ondrop = e => handleDrop(e, 'RESIDUE', rIdx);
+                        } else if (!noErrorsInResidue && resItem === null) {
+                            rBox.classList.add('active-residue-input');
+                        }
+                    }
+                    activeRow.appendChild(rBox);
+                });
+            }
+
+            if (g.step === 'BRINGDOWN') {
+                const bBox = document.createElement('div');
+                bBox.className = 'drop-zone working-row blink-soft';
+                bBox.style.border = '3px dashed #d35400';
+                bBox.ondragover = e => e.preventDefault();
+                bBox.ondrop = e => handleDrop(e, 'BRINGDOWN');
+                activeRow.appendChild(bBox);
+            }
+            workArea.appendChild(activeRow);
+        }
+
+        // MESSAGES
+        msg.style.background = "var(--primary)";
+        let hasError = false;
+        if(g.quotientFound.some(q => q.status === 'incorrect')) hasError = true;
+        if(g.tempResidues && g.tempResidues.some(r => r && r.status === 'incorrect')) hasError = true;
+
+        if (hasError) {
+            msg.innerText = t().errorCorrection;
+            msg.style.background = "var(--error)";
+        } else {
+            switch(g.step) {
+                case 'SELECT': msg.innerText = t().gameSelect; break;
+                case 'QUOTIENT': 
+                    msg.innerText = t().gameQuotient(g.divisor, g.currentWorkingVal); 
+                    break;
+                case 'RESIDUE': 
+                    const lq = g.quotientFound[g.quotientFound.length-1].val;
+                    msg.innerText = t().gameResidue(g.currentWorkingVal, lq, g.divisor); 
+                    break;
+                case 'BRINGDOWN': msg.innerText = t().gameBringdown; break;
+                case 'FINISH': 
+                    const qStr = g.quotientFound.map(o => o.val).join('');
+                    const rVal = g.expectedRemainderString;
+                    msg.innerHTML = `<div>${t().gameFinish(qStr, rVal)}</div>
+                                     <button class="next-btn" onclick="saveAndNext()">${t().nextQ}</button>`;
+                    break;
+            }
+        }
+    }
+
+    function logDetailedError(type, input, expected, workingVal, divisor, sub, fullRem) {
+        appState.game.currentErrors++;
+        appState.game.currentLogs.push({
+            type: type, input: input, expected: expected,
+            workingVal: workingVal, div: divisor, sub: sub, fullRem: fullRem
+        });
+    }
+
+    function handleDigitClick(idx) {
+        const g = gameLogic;
+        if (g.selectedIndices.includes(idx)) {
+            if(idx === g.selectedIndices[g.selectedIndices.length-1]) g.selectedIndices.pop();
+        } else {
+            if (g.selectedIndices.length === 0 || idx === g.selectedIndices[g.selectedIndices.length-1] + 1) {
+                g.selectedIndices.push(idx);
+            }
+        }
+        const valStr = g.selectedIndices.map(i => g.divDigits[i]).join('');
+        const val = parseInt(valStr || 0);
+        if (val >= g.divisor) {
+            g.currentWorkingVal = val;
+            g.step = 'QUOTIENT';
+        }
+        renderGame();
+    }
+
+    function handleDrop(e, actionType, boxIdx) {
+        e.preventDefault();
+        const droppedVal = parseInt(e.dataTransfer.getData("text"));
+        const dragType = e.dataTransfer.getData("type");
+        const g = gameLogic;
+
+        if (actionType === 'QUOTIENT' && dragType === 'number') {
+            const correctQ = Math.floor(g.currentWorkingVal / g.divisor);
+            const isCorrect = (droppedVal === correctQ);
+            
+            if(!isCorrect) logDetailedError('QUOTIENT', droppedVal, correctQ, g.currentWorkingVal, g.divisor, null, null);
+
+            if (g.quotientFound[boxIdx]) {
+                g.quotientFound[boxIdx] = { val: droppedVal, status: isCorrect ? 'correct' : 'incorrect' };
+            } else {
+                g.quotientFound.push({ val: droppedVal, status: isCorrect ? 'correct' : 'incorrect' });
+            }
+            
+            if (isCorrect) {
+                g.step = 'RESIDUE';
+                const expectedRemainder = g.currentWorkingVal - (correctQ * g.divisor);
+                g.expectedRemainderString = expectedRemainder.toString();
+                g.tempResidues = new Array(g.expectedRemainderString.length).fill(null);
+            }
+        }
+        else if (actionType === 'RESIDUE' && dragType === 'number') {
+            const expectedDigit = parseInt(g.expectedRemainderString[boxIdx]);
+            const isCorrect = (droppedVal === expectedDigit);
+
+            if(!isCorrect) {
+                const lastQ = g.quotientFound[g.quotientFound.length-1].val;
+                const sub = lastQ * g.divisor;
+                const fullRem = g.currentWorkingVal - sub;
+                logDetailedError('RESIDUE', droppedVal, expectedDigit, g.currentWorkingVal, g.divisor, sub, fullRem);
+            }
+
+            g.tempResidues[boxIdx] = { val: droppedVal, status: isCorrect ? 'correct' : 'incorrect' };
+            
+            const allCorrect = g.tempResidues.every(r => r && r.status === 'correct');
+            if (allCorrect) {
+                if (g.rows.length === 0) {
+                     g.selectedIndices.forEach(i => { if(!g.usedIndices.includes(i)) g.usedIndices.push(i); });
+                }
+                if (g.usedIndices.length < g.divDigits.length) g.step = 'BRINGDOWN';
+                else g.step = 'FINISH';
+            }
+        }
+        else if (actionType === 'BRINGDOWN' && dragType === 'bringdown') {
+            const originIdx = parseInt(e.dataTransfer.getData("idx"));
+            const originVal = parseInt(e.dataTransfer.getData("val"));
+            
+            const alignIdx = g.selectedIndices[g.selectedIndices.length - 1];
+            g.rows.push({ residueStr: g.expectedRemainderString, brought: originVal, alignIndex: alignIdx });
+            g.usedIndices.push(originIdx);
+            
+            const newValStr = g.expectedRemainderString + originVal.toString();
+            g.currentWorkingVal = parseInt(newValStr);
+            g.selectedIndices.push(originIdx);
+            g.tempResidues = null;
+            g.step = 'QUOTIENT';
+        }
+        renderGame();
+    }
+
+    // --- TIMERS & SCORE ---
+    function startTimer() {
+        stopTimers();
+        appState.game.timerInterval = setInterval(() => {
+            const now = Date.now();
+            const delta = Math.floor((now - appState.game.startTime) / 1000);
+            const mins = Math.floor(delta / 60).toString().padStart(2, '0');
+            const secs = (delta % 60).toString().padStart(2, '0');
+            document.getElementById('game-timer').innerText = `${mins}:${secs}`;
+        }, 1000);
+    }
+    function stopTimers() { if(appState.game.timerInterval) clearInterval(appState.game.timerInterval); }
+
+    function saveAndNext() {
+        const endTime = Date.now();
+        const duration = Math.floor((endTime - appState.game.questionStartTime) / 1000);
+        const qData = appState.game.questions[appState.game.currentQ];
+        
+        appState.game.stats.push({ 
+            qNum: appState.game.currentQ + 1,
+            dividend: qData.dividend,
+            divisor: qData.divisor,
+            correctQuotient: Math.floor(qData.dividend / qData.divisor),
+            correctRemainder: qData.dividend % qData.divisor,
+            time: duration, 
+            errors: appState.game.currentErrors,
+            logs: [...appState.game.currentLogs]
+        });
+        
+        loadQuestion(appState.game.currentQ + 1);
+    }
+
+    // --- FLUJO DE FIN DE PARTIDA ---
+    function showSessionSummary() {
+        stopTimers();
+        showScreen('screen-score');
+        
+        const totalDuration = Math.floor((Date.now() - appState.game.startTime) / 1000);
+        const totalErrors = appState.game.stats.reduce((acc, curr) => acc + curr.errors, 0);
+        const tm = Math.floor(totalDuration / 60).toString().padStart(2, '0');
+        const ts = (totalDuration % 60).toString().padStart(2, '0');
+        
+        document.getElementById('score-title').innerText = t().scoreTitle;
+        document.getElementById('score-total-time').innerText = `${tm}:${ts}`;
+        document.getElementById('score-total-errors').innerText = totalErrors;
+
+        renderDetailedLog(appState.game.stats, 'score-detailed-log');
+
+        document.getElementById('player-name-input').value = ""; 
+        document.getElementById('modal-name').classList.remove('hidden');
+    }
+
+    function skipSaving() {
+        closeModal('modal-name');
+    }
+
+    function saveSessionWithName() {
+        const name = document.getElementById('player-name-input').value || "Anon";
+        appState.game.lastName = name;
+        closeModal('modal-name');
+        saveGlobalStats(name);
+        document.getElementById('score-title').innerText = t().scoreTitle + " " + name;
+    }
+
+    // --- RENDERIZADO DE LOG AMIGABLE (SOLO ERRORES) ---
+    function renderDetailedLog(statsArray, containerId) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+        let hasErrorsInSession = false;
+        
+        statsArray.forEach(stat => {
+            if(stat.errors === 0) return; 
+            hasErrorsInSession = true;
+
+            const div = document.createElement('div');
+            div.className = 'log-item';
+            
+            const header = document.createElement('div');
+            header.className = 'log-q';
+            header.innerText = t().logHeader(stat.qNum, appState.config.qCount, stat.dividend, stat.divisor, stat.correctQuotient, stat.correctRemainder);
+            div.appendChild(header);
+
+            const countStr = document.createElement('div');
+            countStr.className = 'log-err-count';
+            countStr.innerText = t().logErrCount(stat.errors);
+            div.appendChild(countStr);
+
+            const ul = document.createElement('ul');
+            ul.className = 'log-ul';
+            
+            if (stat.logs) {
+                stat.logs.forEach(err => {
+                    const li = document.createElement('li');
+                    if(err.type === 'QUOTIENT') {
+                        li.innerText = t().errQuotient(err.workingVal, err.div, err.input, err.expected);
+                    } else if(err.type === 'RESIDUE') {
+                        li.innerText = t().errResidue(err.workingVal, err.sub, err.fullRem, err.input, err.expected);
+                    }
+                    ul.appendChild(li);
+                });
+            }
+            div.appendChild(ul);
+            container.appendChild(div);
+        });
+
+        if(!hasErrorsInSession) {
+            container.innerHTML = `<div class="log-perfect">${t().logPerfectSession}</div>`;
+        }
+    }
+
+    // --- HISTORIAL GLOBAL ---
+    function saveGlobalStats(name) {
+        let history = JSON.parse(localStorage.getItem('divisiones_history') || '[]');
+        const totalDuration = Math.floor((Date.now() - appState.game.startTime) / 1000);
+        const totalErrors = appState.game.stats.reduce((acc, curr) => acc + curr.errors, 0);
+        const now = new Date();
+        const dateString = `${now.getDate()}/${now.getMonth()+1} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+        
+        history.push({
+            date: dateString, name: name, mode: appState.config.difficulty,
+            time: totalDuration, errors: totalErrors, totalQs: appState.config.qCount,
+            stats: appState.game.stats
+        });
+        localStorage.setItem('divisiones_history', JSON.stringify(history));
+    }
+
+    function showGlobalHistory() {
+        showScreen('screen-history');
+        const history = JSON.parse(localStorage.getItem('divisiones_history') || '[]');
+        const tbody = document.getElementById('history-body');
+        const emptyMsg = document.getElementById('history-empty');
+        
+        tbody.innerHTML = '';
+        if (history.length === 0) {
+            emptyMsg.style.display = 'block';
+        } else {
+            emptyMsg.style.display = 'none';
+            history.slice().reverse().forEach(game => {
+                const tr = document.createElement('tr');
+                const mins = Math.floor(game.time / 60).toString().padStart(2, '0');
+                const secs = (game.time % 60).toString().padStart(2, '0');
+                
+                tr.onclick = () => showSessionDetails(game);
+                
+                let modeText = game.mode;
+                if(game.mode === 'easy') modeText = t().easy;
+                if(game.mode === 'normal') modeText = t().normal;
+                if(game.mode === 'hard') modeText = t().hard;
+
+                tr.innerHTML = `<td>${game.date}</td><td>${game.name || '-'}</td><td>${modeText}</td><td>${mins}:${secs}</td><td style="${game.errors>0?'color:var(--error); font-weight:bold;':''}">${game.errors}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+    }
+
+    function showSessionDetails(gameData) {
+        appState.game.currentlyViewingHistory = gameData;
+        if(!gameData.stats) {
+            document.getElementById('modal-details-content').innerHTML = "<p style='padding:20px;text-align:center;'>Esta partida no contiene detalles guardados.</p>";
+        } else {
+            const originalQCount = appState.config.qCount;
+            if(gameData.totalQs) appState.config.qCount = gameData.totalQs; 
+            renderDetailedLog(gameData.stats, 'modal-details-content');
+            appState.config.qCount = originalQCount;
+        }
+        document.getElementById('modal-details').classList.remove('hidden');
+    }
+
+    // Init
+    updateUITexts();
+
+</script>
+</body>
+</html>

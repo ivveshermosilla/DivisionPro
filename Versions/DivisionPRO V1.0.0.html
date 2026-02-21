@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matpro Divisiones V1</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --success: #27ae60;
+            --error: #e74c3c;
+            --highlight: #f1c40f;
+            --bg: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #header {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .game-container {
+            display: flex;
+            gap: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        /* Zona de la División */
+        .division-area {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            font-size: 2.5rem;
+            min-width: 400px;
+        }
+
+        .main-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .digit {
+            border: 2px solid #bdc3c7;
+            padding: 5px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            background: #eee;
+        }
+
+        .digit.selected { background-color: var(--highlight); border-color: orange; }
+        .digit.used { text-decoration: line-through; opacity: 0.5; background: #ddd; }
+
+        .drop-zone {
+            width: 50px;
+            height: 60px;
+            border: 2px dashed #95a5a6;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            margin: 2px;
+        }
+
+        .drop-zone.blink { animation: blinker 1s linear infinite; border-color: var(--primary); }
+        .drop-zone.correct { background-color: var(--success); color: white; border-style: solid; }
+        .drop-zone.incorrect { background-color: var(--error); color: white; border-style: solid; }
+        .drop-zone.active-residue { background-color: #3498db; color: white; border-style: solid; }
+
+        @keyframes blinker { 50% { opacity: 0.3; } }
+
+        /* Teclado Numérico */
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .num-key {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            cursor: grab;
+            font-weight: bold;
+            user-select: none;
+        }
+
+        .residue-row { margin-left: 10px; display: flex; gap: 5px; }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: none;
+            background: var(--primary);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div id="header">
+    <div id="score-text">Pregunta: 1 / 10</div>
+    <button onclick="toggleLanguage()" id="lang-btn">English</button>
+</div>
+
+<div class="game-container">
+    <div class="division-area">
+        <div class="main-row">
+            <div id="dividend-container"></div>
+            <span>:</span>
+            <div id="divisor-display" style="font-weight: bold;"></div>
+            <span>=</span>
+            <div id="result-container"></div>
+        </div>
+        
+        <div id="work-area"></div>
+    </div>
+
+    <div class="numpad" id="numpad">
+        </div>
+</div>
+
+<div id="message" style="margin-top: 20px; font-weight: bold; height: 30px;"></div>
+
+<script>
+    let currentLang = 'es';
+    const texts = {
+        es: { lang: 'English', win: '¡Excelente!', select: 'Selecciona los números del dividendo', drag: 'Arrastra el número correcto', down: 'Baja el siguiente número', end: '¡Juego Terminado!' },
+        en: { lang: 'Español', win: 'Excellent!', select: 'Select dividend numbers', drag: 'Drag the correct number', down: 'Bring down the next number', end: 'Game Over!' }
+    };
+
+    let gameState = {
+        qIndex: 1,
+        dividend: 0,
+        divisor: 0,
+        currentStep: 'SELECT_DIGITS', // SELECT_DIGITS, GUESS_QUOTIENT, INPUT_RESIDUE, BRING_DOWN
+        selectedDigits: [],
+        workingValue: 0,
+        quotientIndex: 0,
+        dividendDigits: [],
+        fullQuotient: [],
+        remainingDigits: []
+    };
+
+    function initGame() {
+        const numpad = document.getElementById('numpad');
+        for(let i=0; i<=9; i++) {
+            const div = document.createElement('div');
+            div.className = 'num-key';
+            div.innerText = i;
+            div.draggable = true;
+            div.ondragstart = (e) => e.dataTransfer.setData("text", i);
+            numpad.appendChild(div);
+        }
+        generateQuestion();
+    }
+
+    function generateQuestion() {
+        gameState.dividend = Math.floor(Math.random() * 900) + 100;
+        gameState.divisor = Math.floor(Math.random() * 11) + 2;
+        gameState.dividendDigits = gameState.dividend.toString().split('');
+        gameState.remainingDigits = [...gameState.dividendDigits];
+        gameState.selectedDigits = [];
+        gameState.currentStep = 'SELECT_DIGITS';
+        
+        renderDivision();
+        updateMessage('select');
+    }
+
+    function renderDivision() {
+        const divCont = document.getElementById('dividend-container');
+        divCont.innerHTML = '';
+        gameState.dividendDigits.forEach((d, i) => {
+            const span = document.createElement('span');
+            span.className = `digit ${gameState.selectedDigits.includes(i) ? 'selected' : ''}`;
+            if (i < (gameState.dividendDigits.length - gameState.remainingDigits.length)) span.classList.add('used');
+            span.innerText = d;
+            span.onclick = () => handleDigitClick(i);
+            divCont.appendChild(span);
+        });
+
+        document.getElementById('divisor-display').innerText = gameState.divisor;
+
+        const resCont = document.getElementById('result-container');
+        resCont.innerHTML = '';
+        // Mostramos 2 o 3 casillas de resultado según la magnitud
+        for(let i=0; i<2; i++) {
+            const box = document.createElement('div');
+            box.className = 'drop-zone' + (gameState.currentStep === 'GUESS_QUOTIENT' && i === gameState.quotientIndex ? ' blink' : '');
+            box.id = `q-${i}`;
+            box.ondragover = (e) => e.preventDefault();
+            box.ondrop = (e) => handleDrop(e, 'QUOTIENT', i);
+            resCont.appendChild(box);
+        }
+
+        renderWorkArea();
+    }
+
+    function renderWorkArea() {
+        const area = document.getElementById('work-area');
+        area.innerHTML = '';
+        // En V1 mostramos una fila de residuo activa
+        if(gameState.currentStep === 'INPUT_RESIDUE' || gameState.currentStep === 'BRING_DOWN') {
+            const row = document.createElement('div');
+            row.className = 'residue-row';
+            const box = document.createElement('div');
+            box.className = 'drop-zone' + (gameState.currentStep === 'INPUT_RESIDUE' ? ' blink' : ' active-residue');
+            box.innerText = gameState.currentStep === 'BRING_DOWN' ? gameState.lastResidue : '';
+            box.ondragover = (e) => e.preventDefault();
+            box.ondrop = (e) => handleDrop(e, 'RESIDUE');
+            row.appendChild(box);
+            area.appendChild(row);
+        }
+    }
+
+    function handleDigitClick(index) {
+        if(gameState.currentStep !== 'SELECT_DIGITS') return;
+        
+        if(!gameState.selectedDigits.includes(index)) {
+            gameState.selectedDigits.push(index);
+            let val = parseInt(gameState.selectedDigits.map(i => gameState.dividendDigits[i]).join(''));
+            
+            if(val >= gameState.divisor) {
+                gameState.workingValue = val;
+                gameState.currentStep = 'GUESS_QUOTIENT';
+                updateMessage('drag');
+                renderDivision();
+            } else {
+                renderDivision();
+            }
+        }
+    }
+
+    function handleDrop(e, type, index) {
+        const val = parseInt(e.dataTransfer.getData("text"));
+        const target = e.target;
+
+        if(type === 'QUOTIENT') {
+            const correct = Math.floor(gameState.workingValue / gameState.divisor);
+            if(val === correct) {
+                target.innerText = val;
+                target.classList.remove('blink');
+                target.classList.add('correct');
+                gameState.lastResidue = gameState.workingValue % gameState.divisor;
+                gameState.currentStep = 'INPUT_RESIDUE';
+                // Tachamos los usados arriba
+                gameState.remainingDigits.splice(0, gameState.selectedDigits.length);
+                renderDivision();
+            } else {
+                target.classList.add('incorrect');
+                setTimeout(() => target.classList.remove('incorrect'), 500);
+            }
+        } else if(type === 'RESIDUE') {
+            if(val === gameState.lastResidue) {
+                target.innerText = val;
+                target.classList.add('active-residue');
+                gameState.currentStep = 'BRING_DOWN';
+                updateMessage('down');
+                // En esta V1, simplificamos: si ya no hay más números, termina
+                if(gameState.remainingDigits.length === 0) {
+                     setTimeout(() => {
+                        alert(texts[currentLang].win);
+                        nextQuestion();
+                     }, 500);
+                }
+            }
+        }
+    }
+
+    function nextQuestion() {
+        if(gameState.qIndex < 10) {
+            gameState.qIndex++;
+            document.getElementById('score-text').innerText = `Pregunta: ${gameState.qIndex} / 10`;
+            generateQuestion();
+        } else {
+            alert(texts[currentLang].end);
+            location.reload();
+        }
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'es' ? 'en' : 'es';
+        document.getElementById('lang-btn').innerText = texts[currentLang].lang;
+        updateMessage(gameState.currentStep.toLowerCase().split('_')[0]); 
+    }
+
+    function updateMessage(key) {
+        document.getElementById('message').innerText = texts[currentLang][key] || "";
+    }
+
+    window.onload = initGame;
+</script>
+
+</body>
+</html>
