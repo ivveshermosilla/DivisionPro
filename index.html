@@ -64,7 +64,7 @@
         .timer-hidden { display: none !important; } 
         .counter-display { font-weight: bold; color: var(--primary); font-size: 1.3rem; }
 
-        /* Botones Superiores Derecha (Siempre visibles sobre modales) */
+        /* Botones Superiores Derecha */
         .top-right-container {
             position: fixed; top: 15px; right: 15px; z-index: 3001;
             display: flex; gap: 10px;
@@ -81,7 +81,6 @@
         }
         .btn-history-float:hover { background: #e6b800; }
         
-        /* Botón Atrás (z-index 2000 para quedar bajo la zona oscura del modal) */
         .btn-back { position: fixed; top: 15px; left: 15px; background: #95a5a6; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background 0.2s; }
         .btn-back:hover { background: #7f8c8d; }
 
@@ -111,11 +110,9 @@
         /* PANEL DE CONFIGURACIÓN */
         .config-panel { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 850px; margin-bottom: 20px; box-sizing: border-box; }
         
-        /* TARJETA DE INSTRUCCIONES CON SCROLL INTERNO */
         .instructions-card { 
             background: #e8f4f8; border-left: 5px solid var(--blue); padding: 20px; border-radius: 10px; margin-bottom: 0; color: var(--text-dark); line-height: 1.5; font-size: 1.1rem; 
-            box-sizing: border-box;
-            flex: 1; overflow-y: auto; max-height: 450px; 
+            box-sizing: border-box; flex: 1; overflow-y: auto; max-height: 450px; 
         }
         .instructions-card::-webkit-scrollbar { width: 8px; }
         .instructions-card::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; }
@@ -184,10 +181,11 @@
         .score-table td { border-bottom: 1px solid #ddd; padding: 10px; text-align: center; color: var(--text-dark); cursor: pointer; }
         .score-table tr:hover td { background: #f0f3f4; }
         
-        .score-summary { display: flex; justify-content: space-around; width: 100%; margin-bottom: 20px; }
-        .score-card { background: #ecf0f1; padding: 20px; border-radius: 10px; text-align: center; min-width: 120px; }
+        .score-summary { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; width: 100%; margin-bottom: 20px; }
+        .score-card { background: #ecf0f1; padding: 15px; border-radius: 10px; text-align: center; flex: 1; min-width: 100px; }
         .score-card h3 { margin: 0; font-size: 0.9rem; color: #7f8c8d; }
         .score-card p { margin: 5px 0 0; font-size: 1.8rem; font-weight: bold; color: var(--primary); }
+        
         .details-container { max-height: 400px; overflow-y: auto; width: 100%; border: 1px solid #ddd; border-radius: 5px; padding: 15px; box-sizing: border-box; background: #fafafa; }
 
         .error-log-list { text-align: left; width: 100%; }
@@ -197,6 +195,10 @@
         .log-ul { margin: 0; padding-left: 20px; color: var(--error); font-size: 1rem; line-height: 1.4; }
         .log-ul li { margin-bottom: 5px; }
         .log-perfect { color: var(--success); font-weight: bold; font-size: 1.2rem; text-align: center; padding: 20px; }
+
+        /* Soporte Táctil Móvil */
+        .num-key, .digit { touch-action: none; }
+        .drop-zone, .drop-zone-pro { touch-action: manipulation; }
 
         /* Responsive Móvil Seguro */
         @media (max-width: 900px) {
@@ -209,6 +211,10 @@
             .btn-history-float, .lang-toggle-float { padding: 8px 12px; font-size: 0.9rem; }
         }
     </style>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/default.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/scroll-behaviour.min.js"></script>
 </head>
 <body>
 
@@ -398,8 +404,7 @@
                             <th id="th-h-mode"></th>
                             <th id="th-h-time"></th>
                             <th id="th-h-err"></th>
-                            <th id="th-h-score"></th>
-                        </tr>
+                            <th id="th-h-score"></th> </tr>
                     </thead>
                     <tbody id="history-body"></tbody>
                 </table>
@@ -440,6 +445,12 @@
 </div>
 
 <script>
+    // --- ACTIVAR SOPORTE MÓVIL (Drag & Drop en pantallas táctiles) ---
+    MobileDragDrop.polyfill({
+        dragImageTranslateOverride: MobileDragDrop.scrollBehaviourDragImageTranslateOverride
+    });
+    window.addEventListener('touchmove', function() {}, {passive: false});
+
     // --- ESTADO GLOBAL ---
     let appState = {
         lang: 'es', currentMode: 'learn', config: { difficulty: 'easy', qCount: 10 },
@@ -447,7 +458,7 @@
             currentQ: 0, questions: [], stats: [], timerFn: null, 
             secondsElapsed: 0, currentErrors: 0, currentLogs: [], 
             lastName: "", currentlyViewingHistory: null, isPaused: false,
-            scoreData: null 
+            scoreData: null // V1.2.2: Almacena la calificación
         },
         proGame: { answers: [], selections: { div: [], res: [] } }
     };
@@ -488,6 +499,7 @@
             proErrRemOmitted: (exp) => `El resto final fue omitido, debía ser ${exp}`,
             proErrResidue: (input, exp) => `En el resto final respondiste ${input} en lugar de ${exp}`,
             finish: "Finalizar",
+            // V1.2.2: Traducciones de Calificación
             scoreNotaCL: "Nota (Chile)", scoreGradeUS: "Grade (USA)", hScore: "Calificación" 
         },
         en: {
@@ -525,6 +537,7 @@
             proErrRemOmitted: (exp) => `The final remainder was omitted, it should be ${exp}`,
             proErrResidue: (input, exp) => `For the final remainder, you answered ${input} instead of ${exp}`,
             finish: "Finish",
+            // V1.2.2
             scoreNotaCL: "Score (Chile)", scoreGradeUS: "Grade (USA)", hScore: "Grade" 
         }
     };
@@ -624,6 +637,7 @@
             'history-empty': txt.hEmpty, 'history-hint': txt.hHint, 'modal-name-title': txt.nameTitle,
             'btn-save-name': txt.save, 'btn-skip-name': txt.skip, 'lbl-details-title': txt.detailsTitle,
             'modal-details-title': txt.detailsTitle, 'btn-close-details': txt.close, 'btn-reset': txt.resetBtn,
+            // V1.2.2 Texts
             'lbl-nota-cl': txt.scoreNotaCL, 'lbl-grade-us': txt.scoreGradeUS, 'th-h-score': txt.hScore
         };
         
@@ -988,10 +1002,11 @@
                 localLogs.push({ type: 'PRO_RESIDUE', input: uRemStr, expected: cRem });
             }
 
+            // V1.2.2 PUNTUACIÓN (70/30). Si cociente está mal, son 0 puntos totales.
             if (!qHasError) {
-                earnedPoints += 7; 
+                earnedPoints += 7; // Cociente Correcto
                 if (!remHasError) {
-                    earnedPoints += 3; 
+                    earnedPoints += 3; // Resto correcto
                 }
             }
 
@@ -1005,8 +1020,10 @@
         
         appState.game.currentErrors = tErr;
 
+        // CALCULO DE NOTAS V1.2.2
         let percent = (earnedPoints / maxPoints) * 100;
         
+        // Sistema Chileno (Exigencia 60%)
         let notaCL = 1.0;
         if (percent < 60) {
             notaCL = 3 * (percent / 60) + 1;
@@ -1015,6 +1032,7 @@
         }
         notaCL = Math.round(notaCL * 10) / 10; 
 
+        // Sistema US (Escala estándar)
         let gradeUS = 'F';
         if (percent >= 90) gradeUS = 'A';
         else if (percent >= 80) gradeUS = 'B';
@@ -1149,6 +1167,7 @@
         document.getElementById('score-total-time').innerText = `${mins}:${secs}`;
         document.getElementById('score-total-errors').innerText = errs;
 
+        // V1.2.2: Lógica para mostrar las notas si es modo PRO
         if(appState.currentMode === 'pro' && appState.game.scoreData) {
             document.querySelectorAll('.pro-score-card').forEach(el => el.classList.remove('hidden'));
             let sd = appState.game.scoreData;
@@ -1157,6 +1176,7 @@
             nCL.innerText = sd.notaCL;
             gUS.innerText = sd.gradeUS;
             
+            // Colores basados en aprobación
             nCL.style.color = parseFloat(sd.notaCL) >= 4.0 ? 'var(--success)' : 'var(--error)';
             gUS.style.color = (sd.gradeUS === 'F' || sd.gradeUS === 'D') ? 'var(--error)' : 'var(--success)';
         } else {
@@ -1225,6 +1245,7 @@
         const tbody = document.getElementById('history-body'), emptyMsg = document.getElementById('history-empty');
         tbody.innerHTML = '';
         
+        // Mostrar/Ocultar columna de Notas según el modo
         const scoreTh = document.getElementById('th-h-score');
         if(appState.currentMode === 'pro') scoreTh.style.display = 'table-cell';
         else scoreTh.style.display = 'none';
