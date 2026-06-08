@@ -60,6 +60,7 @@
         const m = appState.currentMode;
         
         const ids = {
+	            'txt-nav-brand': txt.navBrand,
 	            'txt-nav-subtitle': txt.navSubtitle,
 	            'txt-config-back': txt.configBack,
 	            'txt-history-back': txt.historyBack,
@@ -148,7 +149,7 @@
         for (const [id, val] of Object.entries(ids)) {
             const el = document.getElementById(id);
             if(el) {
-                if(id === 'inst-text' || id === 'txt-home-title') el.innerHTML = val;
+                if(id === 'inst-text' || id === 'txt-home-title' || id === 'menu-title-text') el.innerHTML = val;
                 else if (id === 'score-title') {
                     el.innerText = (appState.game.lastName && document.getElementById('modal-name').classList.contains('hidden')) ? val + " " + appState.game.lastName : val;
                 }

@@ -1,7 +1,7 @@
 # DivisionPro Technical Spec
 
 Last updated: 2026-06-08
-Current version: DivisionesPro V1.3.8
+Current version: DivisionesPro V1.3.9
 
 ## Project Purpose
 

@@ -1,0 +1,4625 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DivisionesPro V1.3.8</title>
+    <style>
+:root {
+            --bg: #f6f8fc;
+            --bg-wash: #eaf7f8;
+            --surface: #ffffff;
+            --surface-soft: #eef6ff;
+            --surface-strong: #dff7f3;
+            --text: #162033;
+            --muted: #64748b;
+            --soft: #f8fafc;
+            --brand: #0ea5e9;
+            --brand-strong: #2563eb;
+            --mint: #14b8a6;
+            --orange: #f97316;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: rgba(15, 23, 42, 0.12);
+            --shadow: 0 22px 70px rgba(15, 23, 42, 0.14);
+            --radius-xl: 28px;
+            --radius-lg: 22px;
+            --radius-md: 16px;
+            --primary: var(--text);
+            --error: var(--danger);
+            --highlight: #facc15;
+            --blue: var(--brand);
+            --grey-disabled: #cbd5e1;
+            --text-dark: var(--text);
+            --pro-color: #8b5cf6;
+            --box-size: clamp(42px, 7.1vw, 60px);
+            --box-height: clamp(52px, 8.6vw, 75px);
+            --box-gap: clamp(5px, 1.2vw, 10px);
+            color-scheme: light;
+        }
+
+        * { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                linear-gradient(135deg, rgba(14, 165, 233, .10), transparent 34%),
+                linear-gradient(225deg, rgba(20, 184, 166, .13), transparent 42%),
+                linear-gradient(180deg, var(--bg), var(--bg-wash));
+            color: var(--text);
+            user-select: none;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        button, input { font: inherit; }
+        button {
+            border: 0;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        .digit:focus-visible,
+        .drop-zone:focus-visible,
+        .drop-zone-pro:focus-visible {
+            outline: 3px solid rgba(14, 165, 233, .35);
+            outline-offset: 3px;
+        }
+
+        .hidden { display: none !important; opacity: 0; pointer-events: none; }
+
+        .app {
+            width: min(1180px, calc(100% - 28px));
+            margin: 0 auto;
+            padding: 18px 0 54px;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 12px;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            background: rgba(255, 255, 255, .86);
+            box-shadow: 0 14px 40px rgba(15, 23, 42, .10);
+            backdrop-filter: blur(18px);
+        }
+
+        .brand-lockup {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            min-width: 0;
+        }
+
+        .logo {
+            display: grid;
+            place-items: center;
+            width: 46px;
+            height: 46px;
+            border-radius: 16px;
+            color: white;
+            background: linear-gradient(135deg, var(--brand-strong), var(--mint));
+            box-shadow: 0 12px 30px rgba(37, 99, 235, .22);
+            font-weight: 1000;
+        }
+
+        .brand-title {
+            min-width: 0;
+            line-height: 1.06;
+        }
+
+        .brand-title strong {
+            display: block;
+            font-size: 1.04rem;
+            letter-spacing: 0;
+        }
+
+        .brand-title span {
+            display: block;
+            color: var(--muted);
+            font-size: .78rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 52vw;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .screen { margin-top: 22px; }
+
+        .content-wrapper {
+            width: 100%;
+            display: block;
+            min-height: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        .content-wrapper.semi-center {
+            display: grid;
+            place-items: center;
+            min-height: min(680px, calc(100vh - 120px));
+        }
+
+        .panel {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            background: rgba(255, 255, 255, .88);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .language-panel {
+            width: min(660px, 100%);
+            padding: clamp(24px, 5vw, 44px);
+            text-align: center;
+        }
+
+        .language-panel h1,
+        .hero-panel h1,
+        .card-header h2,
+        .result-title {
+            margin: 0;
+            letter-spacing: 0;
+            line-height: .98;
+        }
+
+        .language-panel h1 {
+            font-size: clamp(3rem, 8vw, 68px);
+        }
+
+        .language-panel p,
+        .hero-panel p,
+        .card-header p,
+        .result-note {
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .language-actions,
+        .hero-actions,
+        .result-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 26px;
+        }
+
+        .language-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .btn-main,
+        .btn-secondary,
+        .btn,
+        .top-link-btn,
+        .btn-history-float,
+        .lang-toggle-float {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 52px;
+            border-radius: 18px;
+            padding: 14px 18px;
+            color: var(--text);
+            background: var(--surface-soft);
+            font-weight: 900;
+            text-decoration: none;
+            transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+            box-shadow: none;
+            margin: 0;
+        }
+
+        .btn-main:hover,
+        .btn-secondary:hover,
+        .top-link-btn:hover,
+        .btn-history-float:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-main:active,
+        .btn-secondary:active,
+        .top-link-btn:active,
+        .btn-history-float:active {
+            transform: translateY(0);
+        }
+
+        .btn-main,
+        .btn-primary {
+            color: white;
+            background: linear-gradient(135deg, var(--brand-strong), var(--mint));
+            box-shadow: 0 16px 34px rgba(37, 99, 235, .22);
+        }
+
+        .btn-pro {
+            color: white;
+            background: linear-gradient(135deg, var(--pro-color), var(--brand-strong));
+            box-shadow: 0 16px 34px rgba(139, 92, 246, .22);
+        }
+
+        .btn-secondary,
+        .btn-history-float,
+        .top-link-btn {
+            color: var(--brand-strong);
+            background: rgba(14, 165, 233, .10);
+            border: 1px solid rgba(14, 165, 233, .18);
+            white-space: nowrap;
+        }
+
+        .btn-muted {
+            color: var(--text);
+            background: #e2e8f0;
+        }
+
+        .btn-danger,
+        .float-exit {
+            color: white;
+            background: var(--danger) !important;
+        }
+
+        .btn-back {
+            min-height: 42px;
+            padding: 0 13px;
+            border-radius: 999px;
+            color: var(--brand-strong);
+            background: rgba(14, 165, 233, .10);
+            border: 1px solid rgba(14, 165, 233, .22);
+            font-size: .86rem;
+            font-weight: 1000;
+        }
+
+        .lang-toggle-float {
+            display: inline-grid;
+            grid-template-columns: repeat(2, minmax(44px, 1fr));
+            gap: 4px;
+            min-height: 44px;
+            padding: 4px;
+            border: 1px solid rgba(14, 165, 233, .22);
+            border-radius: 999px;
+            color: var(--brand-strong);
+            background: rgba(14, 165, 233, .10);
+            font-weight: 1000;
+            white-space: nowrap;
+        }
+
+        .lang-toggle-float span {
+            display: grid;
+            place-items: center;
+            min-height: 34px;
+            padding: 0 10px;
+            border-radius: 999px;
+        }
+
+        .lang-toggle-float[data-active-lang="en"] .lang-en,
+        .lang-toggle-float[data-active-lang="es"] .lang-es {
+            color: white;
+            background: linear-gradient(135deg, var(--brand-strong), var(--mint));
+            box-shadow: 0 8px 20px rgba(37, 99, 235, .20);
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            width: fit-content;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 12px;
+            border-radius: 999px;
+            color: #075985;
+            background: rgba(14, 165, 233, .12);
+            border: 1px solid rgba(14, 165, 233, .20);
+            font-size: .84rem;
+            font-weight: 900;
+        }
+
+        .home-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.08fr) minmax(330px, .92fr);
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .home-side {
+            display: grid;
+            gap: 20px;
+            align-content: start;
+        }
+
+        .hero-panel {
+            padding: clamp(24px, 4vw, 44px);
+            display: grid;
+            align-content: space-between;
+            min-height: 520px;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,.94), rgba(255,255,255,.82)),
+                linear-gradient(135deg, rgba(14,165,233,.14), rgba(20,184,166,.12));
+        }
+
+        .hero-panel h1 {
+            max-width: 700px;
+            margin-top: 18px;
+            font-size: clamp(48px, 8vw, 96px);
+        }
+
+        .gradient-text {
+            background: linear-gradient(120deg, var(--brand-strong), var(--mint), var(--orange));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .mini-stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 34px;
+        }
+
+        .mini-stat,
+        .method-note,
+        .field,
+        .expert-note,
+        .review-item {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, .72);
+        }
+
+        .mini-stat { padding: 16px; }
+        .mini-stat strong {
+            display: block;
+            font-size: 1.45rem;
+            letter-spacing: 0;
+        }
+        .mini-stat span {
+            color: var(--muted);
+            font-weight: 700;
+            font-size: .86rem;
+        }
+
+        .method-note {
+            margin-top: 18px;
+            padding: 16px;
+            color: var(--muted);
+            line-height: 1.55;
+            background: rgba(223, 247, 243, .70);
+        }
+
+        .method-note strong {
+            display: block;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+
+        .feature-panel,
+        .ranking-panel {
+            padding: 24px;
+        }
+
+        .feature-panel h2 {
+            margin: 0;
+            font-size: clamp(1.45rem, 4vw, 2.1rem);
+        }
+
+        .feature-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .feature-item {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            gap: 12px;
+            align-items: start;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: rgba(248, 250, 252, .86);
+        }
+
+        .feature-icon {
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 15px;
+            color: white;
+            background: linear-gradient(135deg, var(--brand-strong), var(--mint));
+            font-weight: 1000;
+        }
+
+        .feature-item strong {
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .feature-item span,
+        .ranking-panel p {
+            color: var(--muted);
+            line-height: 1.45;
+            font-weight: 700;
+        }
+
+        .menu-title {
+            margin: 0 0 18px;
+            color: var(--text);
+            text-align: left;
+            font-size: clamp(2rem, 6vw, 3.4rem);
+            text-shadow: none;
+        }
+
+        .config-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(290px, .62fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+        .config-panel {
+            width: 100%;
+            max-width: none;
+            padding: 0;
+            margin: 0;
+            background: rgba(255, 255, 255, .88);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 24px 24px 0;
+        }
+
+        .card-header h2 {
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            margin: 0;
+        }
+
+        .card-header p {
+            margin: 6px 0 0;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 42px;
+            padding: 9px 13px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: var(--text);
+            background: rgba(255, 255, 255, .72);
+            font-weight: 800;
+            font-size: .88rem;
+            white-space: nowrap;
+        }
+
+        .config-grid,
+        .result-grid,
+        .ranking-list {
+            display: grid;
+            gap: 14px;
+            padding: 24px;
+        }
+
+        .section-label,
+        .config-label {
+            display: block;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0;
+            font-size: .76rem;
+            font-weight: 1000;
+            margin-bottom: 10px;
+        }
+
+        .instructions-card {
+            display: grid;
+            gap: 10px;
+            padding: 16px;
+            border: 1px solid rgba(14, 165, 233, .20);
+            border-radius: 18px;
+            color: var(--muted);
+            background: rgba(14, 165, 233, .08);
+            line-height: 1.5;
+            max-height: none;
+            overflow: visible;
+        }
+
+        .instructions-card.pro-card {
+            border-color: rgba(139, 92, 246, .22);
+            background: rgba(139, 92, 246, .10);
+        }
+
+        .instructions-card h3 {
+            margin: 0;
+            color: var(--text);
+            font-size: 1.05rem;
+        }
+
+        .difficulty-selector {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 9px;
+        }
+
+        .diff-btn {
+            min-height: 48px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: var(--text);
+            background: rgba(248, 250, 252, .88);
+            font-weight: 900;
+            transition: transform .18s ease, background .18s ease, border-color .18s ease;
+            text-align: center;
+            display: grid;
+            place-items: center;
+        }
+
+        .diff-btn.selected {
+            color: white;
+            border-color: transparent;
+            background: linear-gradient(135deg, var(--brand-strong), var(--mint));
+            box-shadow: 0 12px 28px rgba(37, 99, 235, .18);
+            transform: none;
+        }
+
+        .config-row { margin: 0; }
+        .slider-container {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 90px;
+            gap: 14px;
+            align-items: center;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: rgba(248, 250, 252, .86);
+        }
+
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--brand);
+            cursor: pointer;
+        }
+
+        input[type=number],
+        input[type=text] {
+            width: 100%;
+            min-height: 52px;
+            padding: 0 14px;
+            font-size: 1.08rem;
+            text-align: center;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            color: var(--text);
+            background: #f8fafc;
+            font-weight: 900;
+        }
+
+        .preview-card { padding: 24px; }
+        .preview-phone {
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 14px;
+            background: linear-gradient(180deg, #ffffff, #edf7ff);
+            box-shadow: 0 18px 50px rgba(15, 23, 42, .12);
+        }
+
+        .preview-screen {
+            border-radius: 22px;
+            padding: 16px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+        }
+
+        .preview-problem {
+            margin: 18px 0;
+            text-align: center;
+            font-size: clamp(42px, 9vw, 68px);
+            line-height: .95;
+            font-weight: 1000;
+            color: var(--brand-strong);
+        }
+
+        .preview-options {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+        }
+
+        .preview-options span {
+            display: grid;
+            place-items: center;
+            min-height: 48px;
+            border-radius: 16px;
+            color: var(--text);
+            background: white;
+            border: 1px solid var(--border);
+            font-weight: 1000;
+        }
+
+        .preview-options span.active {
+            color: white;
+            background: linear-gradient(135deg, var(--brand-strong), var(--mint));
+            border-color: transparent;
+        }
+
+        .division-game-panel {
+            padding: clamp(14px, 3vw, 24px);
+            position: relative;
+        }
+
+        .game-top {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .game-meta {
+            min-width: 0;
+            text-align: center;
+            color: var(--muted);
+            font-weight: 800;
+        }
+
+        .timer-display,
+        .counter-display {
+            color: var(--text);
+            font-size: 1.05rem;
+            font-weight: 1000;
+        }
+
+        .timer-hidden { display: none !important; }
+
+        .float-info-center {
+            display: inline-flex;
+            justify-content: center;
+            gap: 12px;
+            align-items: center;
+            min-height: 42px;
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .72);
+        }
+
+        .main-game-layout {
+            display: grid;
+            grid-template-columns: auto minmax(0, max-content) auto;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            padding: 4px 2px 14px;
+            scrollbar-width: thin;
+        }
+
+        .game-container-learn,
+        .game-container-pro {
+            display: flex;
+            flex-direction: row;
+            gap: clamp(18px, 4vw, 40px);
+            border: 1px solid var(--border);
+            background: linear-gradient(180deg, #ffffff, #f8fbff);
+            padding: clamp(18px, 4vw, 34px);
+            border-radius: 26px;
+            align-items: flex-start;
+            justify-content: center;
+            position: relative;
+            flex-wrap: nowrap;
+            width: max-content;
+            max-width: 100%;
+            flex-shrink: 0;
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+
+        .division-area {
+            font-size: clamp(2rem, 5vw, 3rem);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: min(350px, 100%);
+            max-width: 100%;
+            flex-shrink: 0;
+            align-items: flex-start;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            scrollbar-width: thin;
+        }
+
+        .main-row {
+            display: flex;
+            align-items: center;
+            gap: var(--box-gap);
+            min-height: calc(var(--box-height) + 16px);
+        }
+
+        .digit-group { display: flex; gap: var(--box-gap); }
+        .quo-group { gap: calc(var(--box-gap) / 1.5); }
+        .math-sign,
+        .divisor-box {
+            color: var(--text);
+            font-weight: 1000;
+        }
+
+        .digit,
+        .drop-zone,
+        .drop-zone-pro {
+            width: var(--box-size);
+            height: var(--box-height);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 16px;
+            font-weight: 1000;
+            transition: all .18s ease;
+            position: relative;
+            flex: 0 0 auto;
+        }
+
+        .digit {
+            border: 2px solid var(--border);
+            background: #f8fafc;
+            cursor: pointer;
+            color: var(--text);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, .06);
+        }
+
+        .digit.selected {
+            background: var(--highlight);
+            border-color: #d97706;
+            color: #111827;
+            transform: scale(1.04);
+        }
+
+        .digit.used {
+            text-decoration: line-through;
+            opacity: .5;
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+            cursor: default;
+            color: #64748b;
+        }
+
+        .drop-zone,
+        .drop-zone-pro {
+            border: 2px dashed #cbd5e1;
+            background: rgba(255, 255, 255, .90);
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .drop-zone.correct {
+            background: var(--success);
+            color: white;
+            border: 2px solid #15803d;
+        }
+
+        .drop-zone.incorrect {
+            background: var(--danger);
+            color: white;
+            border: 2px solid #b91c1c;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .drop-zone.incorrect::after {
+            content: "x";
+            position: absolute;
+            font-size: 1rem;
+            top: 2px;
+            right: 5px;
+            opacity: .75;
+            pointer-events: none;
+        }
+
+        .drop-zone.active-residue-input {
+            background: var(--brand);
+            border: 2px solid var(--mint);
+            color: white;
+        }
+
+        .drop-zone.working-row,
+        .drop-zone-pro.working-row {
+            background: var(--highlight);
+            border: 2px solid #d97706;
+            color: black;
+        }
+
+        .drop-zone.history-row {
+            background: #e2e8f0;
+            border: 2px solid #cbd5e1;
+            color: #94a3b8;
+            text-decoration: line-through;
+        }
+
+        .drop-zone-pro.filled {
+            border: 2px solid var(--text);
+            background: white;
+        }
+
+        .drop-zone-pro.active-target {
+            border-color: var(--pro-color);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, .12);
+        }
+
+        .blink-soft {
+            animation: blink-animation 1.5s infinite;
+            border-color: var(--brand) !important;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, .13);
+        }
+
+        .blink-pro {
+            animation: blink-pro-anim 1.5s infinite;
+            border-color: var(--pro-color) !important;
+        }
+
+        @keyframes blink-animation { 0%, 100% { opacity: 1; } 50% { opacity: .62; } }
+        @keyframes blink-pro-anim { 0%, 100% { opacity: 1; } 50% { opacity: .62; } }
+
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            background: rgba(226, 232, 240, .76);
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            height: fit-content;
+            flex-shrink: 0;
+        }
+
+        .num-key {
+            width: clamp(48px, 8vw, 68px);
+            height: clamp(48px, 8vw, 68px);
+            background: white;
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            cursor: grab;
+            font-size: clamp(1.35rem, 3vw, 1.8rem);
+            font-weight: 1000;
+            box-shadow: 0 8px 18px rgba(15, 23, 42, .12);
+            transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+        }
+
+        .num-key:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        .num-key:last-child { grid-column: 2; }
+
+        .residue-row {
+            display: grid;
+            grid-template-columns: repeat(var(--division-cols, 1), var(--box-size));
+            column-gap: var(--box-gap);
+            min-height: calc(var(--box-height) + 6px);
+            align-items: center;
+        }
+
+        .side-btn,
+        .action-btn-side {
+            color: white;
+            border: 0;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all .18s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: 1000;
+        }
+
+        .side-btn {
+            background: var(--text);
+            width: 64px;
+            height: 118px;
+            font-size: 2.25rem;
+            box-shadow: 0 12px 24px rgba(15, 23, 42, .18);
+        }
+
+        .action-btn-side {
+            background: linear-gradient(135deg, var(--success), var(--mint));
+            width: 150px;
+            min-height: 96px;
+            font-size: 1.08rem;
+            box-shadow: 0 16px 34px rgba(22, 163, 74, .22);
+            text-align: center;
+            padding: 14px;
+            line-height: 1.25;
+        }
+
+        .side-btn:disabled,
+        .action-btn-side:disabled {
+            background: var(--grey-disabled) !important;
+            color: #64748b !important;
+            box-shadow: none !important;
+            cursor: not-allowed;
+            opacity: .72;
+        }
+
+        .side-btn.finish-btn,
+        .action-btn-side.finish-mode {
+            background: linear-gradient(135deg, var(--success), var(--mint));
+            box-shadow: 0 16px 34px rgba(22, 163, 74, .22);
+        }
+
+        .message-box {
+            margin: 16px auto 0;
+            padding: 18px;
+            background: var(--text);
+            color: white;
+            border-radius: 22px;
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            line-height: 1.45;
+            box-shadow: 0 18px 50px rgba(15, 23, 42, .18);
+        }
+
+        .drag-ghost {
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 4000;
+            width: 62px;
+            height: 62px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            color: white;
+            background: linear-gradient(135deg, var(--brand-strong), var(--mint));
+            box-shadow: 0 18px 46px rgba(37, 99, 235, .32);
+            font-size: 1.8rem;
+            font-weight: 1000;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+        }
+
+        .touch-dragging {
+            opacity: .55;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 80;
+            display: grid;
+            place-items: center;
+            padding: 18px;
+            background: rgba(15, 23, 42, .34);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            width: min(100%, 700px);
+            max-height: min(860px, calc(100vh - 36px));
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            background: rgba(255, 255, 255, .96);
+            box-shadow: 0 28px 90px rgba(15, 23, 42, .24);
+            padding: clamp(20px, 4vw, 34px);
+            text-align: center;
+        }
+
+        .modal-title {
+            margin: 0 0 12px;
+            font-size: clamp(1.45rem, 4vw, 2rem);
+            color: var(--text);
+            font-weight: 1000;
+        }
+
+        .modal-text {
+            color: var(--muted);
+            margin-bottom: 22px;
+            line-height: 1.55;
+        }
+
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+            overflow: hidden;
+            border-radius: 18px;
+        }
+
+        .score-table th {
+            background: var(--text);
+            color: white;
+            padding: 12px 10px;
+            font-size: .88rem;
+        }
+
+        .score-table td {
+            border-bottom: 1px solid rgba(15, 23, 42, .08);
+            padding: 12px 10px;
+            text-align: center;
+            color: var(--text);
+            cursor: pointer;
+            background: white;
+        }
+
+        .score-table tr:hover td {
+            background: #f8fafc;
+        }
+
+        .score-summary {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .score-card {
+            background: #f8fafc;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            text-align: center;
+        }
+
+        .score-card h3 {
+            margin: 0;
+            font-size: .82rem;
+            color: var(--muted);
+        }
+
+        .score-card p {
+            margin: 5px 0 0;
+            font-size: 1.8rem;
+            font-weight: 1000;
+            color: var(--text);
+        }
+
+        .details-container {
+            max-height: 400px;
+            overflow-y: auto;
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 12px;
+            background: #f8fafc;
+        }
+
+        .error-log-list {
+            text-align: left;
+            width: 100%;
+        }
+
+        .log-item {
+            background: white;
+            border-left: 5px solid var(--danger);
+            padding: 14px;
+            margin-bottom: 12px;
+            border-radius: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,.04);
+        }
+
+        .log-q {
+            font-weight: 1000;
+            color: var(--text);
+            font-size: 1.02rem;
+            margin-bottom: 5px;
+        }
+
+        .log-err-count {
+            color: var(--muted);
+            font-size: .9rem;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .log-ul {
+            margin: 0;
+            padding-left: 20px;
+            color: var(--danger);
+            font-size: 1rem;
+            line-height: 1.45;
+        }
+
+        .log-ul li { margin-bottom: 5px; }
+        .log-perfect {
+            color: var(--success);
+            font-weight: 1000;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .num-key,
+        .digit { touch-action: none; }
+        .drop-zone,
+        .drop-zone-pro { touch-action: manipulation; }
+
+        @media (max-width: 900px) {
+            :root {
+                --box-size: clamp(38px, 10.5vw, 48px);
+                --box-height: clamp(48px, 12vw, 58px);
+                --box-gap: 5px;
+            }
+
+            .home-grid,
+            .config-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-panel { min-height: auto; }
+
+            .main-game-layout {
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                gap: 10px;
+                justify-content: center;
+            }
+
+            .game-container-learn,
+            .game-container-pro {
+                grid-column: 1 / -1;
+                order: 1;
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+                max-width: 100%;
+                padding: 14px;
+                gap: 16px;
+            }
+
+            #btn-side-prev,
+            #btn-side-next {
+                order: 2;
+                width: 100%;
+                height: 58px;
+                font-size: 1.8rem;
+                margin: 0;
+            }
+
+            .action-btn-side {
+                order: 2;
+                grid-column: 1 / -1;
+                width: 100%;
+                max-width: none;
+                min-height: 58px;
+                margin: 0;
+            }
+
+            .numpad {
+                grid-template-columns: repeat(5, 1fr);
+                width: 100%;
+                max-width: 350px;
+                gap: 8px;
+                padding: 10px;
+                align-self: center;
+            }
+
+            .num-key {
+                width: 100%;
+                aspect-ratio: 1;
+                height: auto;
+                min-height: 44px;
+            }
+            .num-key:last-child { grid-column: auto; }
+
+            .division-area {
+                min-width: auto;
+                width: 100%;
+                font-size: clamp(1.75rem, 8vw, 2rem);
+                align-items: flex-start;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+
+            .main-row { height: 60px; }
+            .residue-row { height: 60px; }
+        }
+
+        @media (max-width: 680px) {
+            .app {
+                width: min(100% - 18px, 1180px);
+                padding-bottom: 34px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .brand-title span,
+            .top-actions .pill {
+                display: none;
+            }
+
+            .top-actions {
+                flex-wrap: wrap;
+            }
+
+            .language-actions,
+            .mini-stats,
+            .difficulty-selector,
+            .score-summary,
+            .result-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-actions {
+                display: grid;
+            }
+
+            .card-header {
+                flex-direction: column;
+            }
+
+            .game-top {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .division-game-panel .game-top {
+                grid-template-columns: auto minmax(0, 1fr) auto;
+                text-align: center;
+                gap: 8px;
+            }
+
+            .division-game-panel .game-meta span {
+                display: none;
+            }
+
+            .division-game-panel .float-info-center {
+                width: auto;
+                gap: 6px;
+                padding: 6px 8px;
+            }
+
+            .division-game-panel .timer-display,
+            .division-game-panel .counter-display {
+                font-size: .88rem;
+            }
+
+            .division-game-panel .float-exit {
+                min-height: 38px;
+                padding: 8px 10px;
+            }
+
+            .float-info-center {
+                width: 100%;
+            }
+
+            .slider-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 520px) {
+            :root {
+                --box-size: clamp(28px, 7.4vw, 32px);
+                --box-height: clamp(38px, 9.5vw, 44px);
+                --box-gap: 3px;
+            }
+
+            .game-container-learn,
+            .game-container-pro {
+                padding: 12px 10px;
+            }
+
+            .division-area {
+                font-size: clamp(1.38rem, 6.2vw, 1.62rem);
+                padding-bottom: 6px;
+            }
+
+            .digit,
+            .drop-zone,
+            .drop-zone-pro {
+                border-radius: 12px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            :root {
+                --box-size: clamp(24px, 7vw, 28px);
+                --box-height: clamp(34px, 9.5vw, 40px);
+                --box-gap: 3px;
+            }
+
+            .game-container-learn,
+            .game-container-pro {
+                padding: 10px 6px;
+                border-radius: 22px;
+            }
+
+            .division-area {
+                font-size: clamp(1.25rem, 6.2vw, 1.45rem);
+            }
+        }
+
+        @media (max-height: 560px) and (orientation: landscape) {
+            :root {
+                --box-size: clamp(32px, 5.8vh, 38px);
+                --box-height: clamp(34px, 7vh, 42px);
+                --box-gap: 4px;
+            }
+
+            .app { width: min(100% - 16px, 1180px); padding: 8px 0 16px; }
+            .topbar {
+                top: 6px;
+                padding: 6px 8px;
+                border-radius: 18px;
+            }
+            .logo {
+                width: 36px;
+                height: 36px;
+                border-radius: 13px;
+            }
+            .brand-title span { display: none; }
+            .top-link-btn,
+            .btn-history-float,
+            .lang-toggle-float {
+                min-height: 34px;
+                padding: 4px 8px;
+                font-size: .78rem;
+            }
+            .lang-toggle-float span {
+                min-height: 26px;
+                padding: 0 8px;
+            }
+            .screen { margin-top: 8px; }
+            .division-game-panel { padding: 8px; }
+            .game-top {
+                grid-template-columns: auto minmax(0, 1fr) auto;
+                margin-bottom: 8px;
+            }
+            .game-meta span { display: none; }
+            .float-info-center {
+                min-height: 34px;
+                padding: 5px 10px;
+            }
+            .float-exit {
+                min-height: 34px;
+                padding: 6px 10px;
+            }
+            .main-game-layout {
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                overflow-x: hidden;
+                padding-bottom: 6px;
+            }
+            .game-container-learn,
+            .game-container-pro {
+                grid-column: 1 / -1;
+                grid-row: 1;
+                flex-direction: row;
+                align-items: flex-start;
+                width: 100%;
+                max-width: 100%;
+                min-width: 0;
+                padding: 8px;
+                gap: 12px;
+                overflow-x: hidden;
+            }
+            #btn-side-prev { grid-column: 1; grid-row: 2; }
+            #btn-side-next { grid-column: 2; grid-row: 2; }
+            #btn-side-prev,
+            #btn-side-next {
+                width: 100%;
+                height: 46px;
+                font-size: 1.45rem;
+            }
+            .action-btn-side {
+                grid-column: 1 / -1;
+                grid-row: 2;
+                min-height: 46px;
+            }
+            .division-area {
+                flex: 1 1 auto;
+                width: auto;
+                min-width: 0;
+                max-width: calc(100% - 272px);
+                overflow-x: auto;
+                gap: 2px;
+                font-size: clamp(1.45rem, 5.2vh, 1.65rem);
+                padding-bottom: 2px;
+            }
+            .main-row {
+                height: auto;
+                min-height: calc(var(--box-height) + 8px);
+            }
+            .residue-row {
+                height: auto;
+                min-height: calc(var(--box-height) + 4px);
+            }
+            .digit,
+            .drop-zone,
+            .drop-zone-pro { border-radius: 11px; }
+            .numpad {
+                grid-template-columns: repeat(5, minmax(36px, 1fr));
+                width: clamp(220px, 34vw, 260px);
+                max-width: 42vw;
+                flex: 0 0 clamp(220px, 34vw, 260px);
+                padding: 8px;
+                gap: 6px;
+            }
+            .num-key {
+                width: 100%;
+                height: 40px;
+                min-height: 40px;
+                aspect-ratio: auto;
+                font-size: 1.25rem;
+            }
+            .message-box {
+                padding: 10px 12px;
+                margin-top: 8px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+        }
+
+        /* DivisionesPro V1.3.3 modern app shell */
+        :root {
+            --bg-0: #eef5ff;
+            --bg-1: #f8fbff;
+            --surface: rgba(255,255,255,.78);
+            --surface-strong: #ffffff;
+            --stroke: rgba(16,33,71,.10);
+            --stroke-strong: rgba(16,33,71,.18);
+            --text: #102147;
+            --muted: #67738a;
+            --primary: #2563eb;
+            --primary-2: #0ea5e9;
+            --learn: #10b981;
+            --pro-color: #8b5cf6;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --success: #16a34a;
+            --shadow: 0 24px 70px rgba(37,99,235,.14);
+            --shadow-soft: 0 14px 35px rgba(16,33,71,.10);
+            --radius-xl: 32px;
+            --radius-lg: 24px;
+            --radius-md: 18px;
+            --blue: var(--primary);
+            --error: var(--danger);
+            --highlight: #fef3c7;
+            --border: var(--stroke);
+            --box-size: 46px;
+            --box-height: 58px;
+            --box-gap: 5px;
+        }
+
+        body {
+            min-height: 100svh;
+            background:
+                radial-gradient(circle at top left, rgba(37,99,235,.20), transparent 34%),
+                radial-gradient(circle at top right, rgba(139,92,246,.16), transparent 30%),
+                linear-gradient(180deg, var(--bg-0), #fff8ed);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .app-shell {
+            width: min(1180px, calc(100% - 28px));
+            margin: 0 auto;
+            padding: clamp(12px, 2vw, 22px) 0 40px;
+        }
+
+        #dp-topbar { margin-bottom: 14px; }
+        .hidden { display: none !important; }
+
+        .screen {
+            margin: 0;
+            width: 100%;
+        }
+
+        .app-frame {
+            min-height: min(760px, calc(100svh - 28px));
+            border: 1px solid rgba(255,255,255,.72);
+            border-radius: var(--radius-xl);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.74)),
+                radial-gradient(circle at 18% 0%, rgba(37,99,235,.10), transparent 32%),
+                radial-gradient(circle at 95% 5%, rgba(14,165,233,.09), transparent 34%);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .app-frame.dark {
+            color: #fff;
+            background:
+                radial-gradient(circle at 20% 0%, rgba(14,165,233,.36), transparent 34%),
+                radial-gradient(circle at 90% 20%, rgba(139,92,246,.34), transparent 32%),
+                linear-gradient(135deg, #0f172a, #102147 58%, #1e1b4b);
+        }
+
+        .app-frame.pro-accent {
+            background:
+                linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.74)),
+                radial-gradient(circle at 88% 6%, rgba(139,92,246,.18), transparent 34%),
+                radial-gradient(circle at 10% 0%, rgba(37,99,235,.12), transparent 34%);
+        }
+
+        .app-frame.score-bg {
+            background:
+                linear-gradient(180deg, rgba(255,255,255,.90), rgba(255,255,255,.78)),
+                radial-gradient(circle at top, rgba(16,185,129,.16), transparent 38%),
+                radial-gradient(circle at 94% 8%, rgba(245,158,11,.14), transparent 28%);
+        }
+
+        .status-bar {
+            min-height: 68px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .status-group,
+        .center-chip {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .back-chip,
+        .status-chip,
+        .timer-chip,
+        .pill {
+            border: 1px solid var(--stroke);
+            border-radius: 999px;
+            background: rgba(255,255,255,.76);
+            color: var(--text);
+            min-height: 38px;
+            padding: 9px 13px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 950;
+            font-size: .9rem;
+            box-shadow: 0 8px 18px rgba(16,33,71,.06);
+            white-space: nowrap;
+        }
+
+        .app-frame.dark .status-chip,
+        .app-frame.dark .back-chip {
+            border-color: rgba(255,255,255,.18);
+            color: #fff;
+            background: rgba(255,255,255,.10);
+        }
+
+        .back-chip,
+        .status-chip.as-button {
+            cursor: pointer;
+        }
+
+        .lang-toggle-float,
+        .lang-switch-inline {
+            display: inline-grid;
+            grid-template-columns: repeat(2, minmax(38px, 1fr));
+            gap: 4px;
+            min-height: 38px;
+            padding: 4px;
+            border: 1px solid var(--stroke);
+            border-radius: 999px;
+            color: var(--text);
+            background: rgba(255,255,255,.56);
+            box-shadow: none;
+            font-weight: 1000;
+        }
+
+        .app-frame.dark .lang-switch-inline {
+            border-color: rgba(255,255,255,.18);
+            color: #fff;
+            background: rgba(255,255,255,.08);
+        }
+
+        .lang-toggle-float span,
+        .lang-switch-inline span {
+            min-height: 30px;
+            padding: 0 9px;
+            border-radius: 999px;
+            display: grid;
+            place-items: center;
+        }
+
+        .lang-toggle-float[data-active-lang="en"] .lang-en,
+        .lang-toggle-float[data-active-lang="es"] .lang-es,
+        .lang-switch-inline[data-active-lang="en"] .lang-en,
+        .lang-switch-inline[data-active-lang="es"] .lang-es {
+            color: #fff;
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
+            box-shadow: 0 8px 20px rgba(37,99,235,.20);
+        }
+
+        .screen-body {
+            padding: clamp(10px, 2vw, 24px) clamp(16px, 3vw, 34px) clamp(22px, 4vw, 42px);
+        }
+
+        .centered-screen {
+            min-height: calc(min(760px, 100svh - 28px) - 90px);
+            display: grid;
+            place-content: center;
+            justify-items: center;
+            text-align: center;
+        }
+
+        .screen-title,
+        .menu-title,
+        .result-title {
+            margin: 0;
+            color: var(--text);
+            font-size: clamp(2.2rem, 5vw, 4.5rem);
+            line-height: .96;
+            letter-spacing: 0;
+            text-align: inherit;
+            text-shadow: none;
+        }
+
+        .app-frame.dark .screen-title,
+        .app-frame.dark .menu-title {
+            color: #fff;
+        }
+
+        .screen-subtitle,
+        .result-note,
+        .card-header p,
+        #diff-desc,
+        #history-hint {
+            color: var(--muted);
+            margin: 12px 0 0;
+            line-height: 1.55;
+            max-width: 580px;
+        }
+
+        .app-frame.dark .screen-subtitle {
+            color: rgba(255,255,255,.74);
+        }
+
+        .eyebrow {
+            background: rgba(37,99,235,.10);
+            border: 1px solid rgba(37,99,235,.14);
+            color: #1d4ed8;
+            box-shadow: none;
+        }
+
+        .cta-stack {
+            display: grid;
+            gap: 12px;
+            width: min(100%, 420px);
+            margin-top: 28px;
+        }
+
+        .big-cta,
+        .btn-main {
+            border: 0;
+            border-radius: 22px;
+            min-height: 58px;
+            padding: 16px 22px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
+            box-shadow: 0 16px 28px rgba(37,99,235,.22);
+            font-weight: 1000;
+            font-size: 1.08rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            width: 100%;
+            margin: 0;
+        }
+
+        .big-cta.learn,
+        .btn-main.learn {
+            background: linear-gradient(135deg, var(--learn), #22c55e);
+            box-shadow: 0 16px 28px rgba(16,185,129,.22);
+        }
+
+        .big-cta.pro,
+        .btn-main.btn-pro {
+            background: linear-gradient(135deg, var(--pro-color), #a855f7);
+            box-shadow: 0 16px 28px rgba(139,92,246,.24);
+        }
+
+        .big-cta.light,
+        .btn-secondary {
+            color: var(--text);
+            background: rgba(255,255,255,.78);
+            border: 1px solid var(--stroke);
+            box-shadow: 0 12px 24px rgba(16,33,71,.08);
+        }
+
+        .cta-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            background: rgba(255,255,255,.20);
+            font-size: 1.28rem;
+            flex: 0 0 auto;
+        }
+
+        .mode-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 28px;
+            width: 100%;
+        }
+
+        .mode-card {
+            min-height: 210px;
+            border-radius: 28px;
+            padding: 22px;
+            border: 1px solid rgba(255,255,255,.75);
+            color: #fff;
+            display: grid;
+            align-content: space-between;
+            overflow: hidden;
+            position: relative;
+            text-align: left;
+            box-shadow: 0 18px 42px rgba(16,33,71,.12);
+        }
+
+        .mode-card:after {
+            content: "";
+            position: absolute;
+            inset: auto -50px -70px auto;
+            width: 180px;
+            height: 180px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.18);
+        }
+
+        .mode-card.learn { background: linear-gradient(135deg, #10b981, #0ea5e9); }
+        .mode-card.pro { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
+        .mode-card small { opacity: .78; font-weight: 850; text-transform: uppercase; letter-spacing: .08em; }
+        .mode-card h5 { margin: 10px 0 8px; font-size: 1.55rem; letter-spacing: 0; }
+        .mode-card p { margin: 0; opacity: .84; line-height: 1.45; }
+        .mode-card strong { position: relative; z-index: 1; }
+
+        .floating-score {
+            margin-top: 16px;
+            border: 1px solid var(--stroke);
+            border-radius: 20px;
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            background: rgba(255,255,255,.76);
+            color: var(--text);
+        }
+
+        .config-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(290px, .78fr);
+            gap: 18px;
+            align-items: stretch;
+            margin-top: 20px;
+        }
+
+        .info-panel,
+        .settings-panel,
+        .config-panel,
+        .glass-panel {
+            border: 1px solid var(--stroke);
+            background: rgba(255,255,255,.72);
+            border-radius: 28px;
+            padding: 20px;
+            box-shadow: 0 16px 32px rgba(16,33,71,.08);
+            overflow: visible;
+        }
+
+        .info-panel h3,
+        .info-panel h5,
+        .settings-panel h5 {
+            margin: 0 0 12px;
+            color: var(--text);
+            font-size: 1.25rem;
+            letter-spacing: 0;
+        }
+
+        .instructions-card {
+            border: 0;
+            background: transparent;
+            padding: 0;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .instructions-card.pro-card {
+            border: 0;
+            background: transparent;
+        }
+
+        .config-grid {
+            display: grid;
+            gap: 18px;
+            padding: 0;
+        }
+
+        .config-label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text);
+            text-transform: none;
+            letter-spacing: 0;
+            font-size: 1rem;
+            font-weight: 950;
+        }
+
+        .difficulty-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .diff-btn,
+        .seg {
+            border: 1px solid var(--stroke);
+            border-radius: 16px;
+            background: rgba(255,255,255,.70);
+            padding: 12px 9px;
+            text-align: center;
+            font-weight: 950;
+            color: var(--muted);
+            cursor: pointer;
+            min-height: auto;
+            display: grid;
+            place-items: center;
+        }
+
+        .diff-btn.selected {
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 12px 20px rgba(37,99,235,.18);
+        }
+
+        .pro-accent .diff-btn.selected {
+            background: linear-gradient(135deg, var(--pro-color), #a855f7);
+            box-shadow: 0 12px 20px rgba(139,92,246,.20);
+        }
+
+        .slider-container {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 86px;
+            gap: 14px;
+            align-items: center;
+            border: 1px solid var(--stroke);
+            border-radius: 18px;
+            padding: 14px;
+            background: rgba(248,250,252,.72);
+        }
+
+        input[type=range] { accent-color: var(--primary); }
+        .pro-accent input[type=range] { accent-color: var(--pro-color); }
+
+        .game-stage {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 170px;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .math-card {
+            border: 1px solid var(--stroke);
+            background: rgba(255,255,255,.78);
+            border-radius: 30px;
+            padding: clamp(14px, 3vw, 22px);
+            min-height: 300px;
+            box-shadow: 0 18px 32px rgba(16,33,71,.08);
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+
+        .game-container-learn,
+        .game-container-pro {
+            display: block;
+            width: max-content;
+            max-width: 100%;
+            border: 0;
+            background: transparent;
+            padding: 0;
+            box-shadow: none;
+            border-radius: 0;
+            overflow-x: visible;
+        }
+
+        .division-area {
+            min-width: 0;
+            max-width: 100%;
+            font-size: clamp(1.65rem, 3vw, 2.4rem);
+            gap: 10px;
+            overflow-x: visible;
+            padding-bottom: 0;
+        }
+
+        .main-row,
+        .problem-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            min-height: calc(var(--box-height) + 10px);
+            white-space: nowrap;
+        }
+
+        .digit,
+        .drop-zone,
+        .drop-zone-pro,
+        .digit-box,
+        .drop-box {
+            width: var(--box-size);
+            min-width: var(--box-size);
+            height: var(--box-height);
+            border-radius: 16px;
+            display: inline-grid;
+            place-items: center;
+            font-weight: 1000;
+            border: 2px solid rgba(16,33,71,.10);
+            background: #fff;
+            box-shadow: 0 8px 14px rgba(16,33,71,.06);
+            flex: 0 0 auto;
+            color: var(--text);
+        }
+
+        .digit { cursor: pointer; }
+        .digit.selected {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #7c2d12;
+            transform: translateY(-2px);
+        }
+        .digit.used { opacity: .45; text-decoration: line-through; }
+
+        .drop-zone,
+        .drop-zone-pro {
+            border: 2px dashed rgba(16,33,71,.24);
+            color: transparent;
+            box-shadow: none;
+            background: rgba(255,255,255,.54);
+        }
+
+        .drop-zone.correct {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #166534;
+            border-style: solid;
+        }
+
+        .drop-zone.incorrect {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+            border-style: solid;
+        }
+
+        .drop-zone.incorrect::after {
+            content: none !important;
+            display: none !important;
+        }
+
+        .drop-zone.active-residue-input {
+            background: #dbeafe;
+            border-color: var(--primary);
+            color: var(--primary);
+            border-style: solid;
+            box-shadow: 0 0 0 5px rgba(37,99,235,.10);
+        }
+
+        .drop-zone.working-row,
+        .drop-zone-pro.working-row {
+            background: #fef9c3;
+            border-color: #f59e0b;
+            color: #713f12;
+            border-style: solid;
+            box-shadow: 0 8px 14px rgba(16,33,71,.06);
+        }
+
+        .drop-zone.history-row {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+            color: #64748b;
+            border-style: solid;
+            text-decoration: line-through;
+        }
+
+        .drop-zone-pro.filled {
+            border: 2px solid rgba(16,33,71,.20);
+            background: #fff;
+            color: var(--text);
+            box-shadow: 0 8px 14px rgba(16,33,71,.06);
+        }
+
+        .drop-zone-pro.active-target {
+            border-color: var(--pro-color);
+            color: var(--pro-color);
+            box-shadow: 0 0 0 5px rgba(139,92,246,.12);
+        }
+
+        .blink-soft {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 5px rgba(37,99,235,.10) !important;
+        }
+
+        .blink-pro {
+            border-color: var(--pro-color) !important;
+            box-shadow: 0 0 0 5px rgba(139,92,246,.12) !important;
+        }
+
+        .residue-row {
+            display: grid;
+            grid-template-columns: repeat(var(--division-cols, 1), var(--box-size));
+            column-gap: var(--box-gap);
+            min-height: calc(var(--box-height) + 10px);
+            align-items: center;
+        }
+
+        #work-area-learn,
+        #work-area-pro {
+            display: grid;
+            gap: 4px;
+            width: max-content;
+        }
+
+        .residue-row .drop-zone,
+        .residue-row .drop-zone-pro {
+            grid-row: 1;
+        }
+
+        .residue-arrow {
+            grid-row: 1;
+            align-self: center;
+            justify-self: start;
+            font-size: 2.5rem;
+            color: var(--pro-color);
+            font-weight: 1000;
+            margin-left: 10px;
+            animation: blink-pro-anim 1.5s infinite;
+        }
+
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 9px;
+            border: 1px solid var(--stroke);
+            background: rgba(15,23,42,.04);
+            border-radius: 26px;
+            padding: 12px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.65);
+            width: auto;
+            max-width: none;
+        }
+
+        .num-key {
+            width: auto;
+            min-width: 0;
+            height: 48px;
+            aspect-ratio: auto;
+            border: 1px solid var(--stroke);
+            border-radius: 17px;
+            display: grid;
+            place-items: center;
+            background: #fff;
+            color: var(--text);
+            font-weight: 1000;
+            font-size: 1.15rem;
+            box-shadow: 0 7px 0 rgba(16,33,71,.09);
+        }
+
+        .num-key:last-child { grid-column: 2; }
+
+        .message-card,
+        .message-box {
+            margin: 14px 0 0;
+            border-radius: 22px;
+            padding: 15px 18px;
+            background: linear-gradient(135deg, #102147, #1e3a8a);
+            color: #fff;
+            box-shadow: 0 16px 30px rgba(16,33,71,.16);
+            line-height: 1.45;
+            font-weight: 800;
+            text-align: left;
+            max-width: none;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .side-actions {
+            display: grid;
+            gap: 12px;
+            align-content: start;
+        }
+
+        .side-action,
+        .action-btn-side {
+            border: 0;
+            border-radius: 22px;
+            min-height: 72px;
+            width: 100%;
+            color: #fff;
+            background: linear-gradient(135deg, var(--learn), #22c55e);
+            font-weight: 1000;
+            box-shadow: 0 12px 0 rgba(22,101,52,.16);
+            padding: 12px;
+            text-align: center;
+        }
+
+        .side-action:disabled,
+        .action-btn-side:disabled {
+            background: #cbd5e1 !important;
+            color: #64748b !important;
+            box-shadow: none !important;
+        }
+
+        .side-arrow,
+        .side-btn {
+            border: 0;
+            border-radius: 22px;
+            width: 72px;
+            height: 84px;
+            color: #fff;
+            background: linear-gradient(135deg, #334155, #0f172a);
+            font-weight: 1000;
+            font-size: 1.4rem;
+            box-shadow: 0 12px 22px rgba(16,33,71,.14);
+        }
+
+        .side-btn:disabled {
+            background: #cbd5e1 !important;
+            color: #64748b !important;
+            box-shadow: none !important;
+        }
+
+        .pro-stage {
+            display: grid;
+            grid-template-columns: 76px minmax(0, 1fr) 76px;
+            gap: 12px;
+            align-items: center;
+        }
+
+	        .pro-pad-wrap {
+	            margin-top: 12px;
+	            display: grid;
+	            justify-content: stretch;
+	            width: 100%;
+	        }
+
+	        .pro-pad-wrap .numpad {
+	            width: min(100%, 360px);
+	            justify-self: center;
+	        }
+
+        .scratch-label {
+            margin: 16px 0 8px;
+            color: var(--muted);
+            font-weight: 950;
+            font-size: .85rem;
+        }
+
+        .score-hero {
+            text-align: center;
+            padding-top: 12px;
+        }
+
+        .score-hero h2,
+        .score-hero h4 {
+            margin: 0;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            letter-spacing: 0;
+        }
+
+        .score-grid,
+        .score-summary {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0,1fr));
+            gap: 12px;
+            margin-top: 20px;
+            margin-bottom: 0;
+        }
+
+        .score-tile,
+        .score-card {
+            border: 1px solid var(--stroke);
+            background: rgba(255,255,255,.78);
+            border-radius: 24px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 12px 24px rgba(16,33,71,.07);
+        }
+
+        .score-card h3,
+        .score-tile span {
+            display: block;
+            color: var(--muted);
+            font-size: .78rem;
+            font-weight: 950;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .score-card p,
+        .score-tile strong {
+            display: block;
+            margin-top: 6px;
+            font-size: 1.55rem;
+            letter-spacing: 0;
+        }
+
+        .details-container {
+            max-height: 420px;
+            overflow-y: auto;
+            border: 1px solid var(--stroke);
+            border-radius: 22px;
+            background: rgba(255,255,255,.66);
+            padding: 14px;
+        }
+
+        .log-item,
+        .error-item {
+            border-left: 5px solid var(--danger);
+            background: rgba(255,255,255,.78);
+            border-radius: 18px;
+            padding: 13px 14px;
+            box-shadow: 0 10px 20px rgba(16,33,71,.06);
+        }
+
+        .log-perfect {
+            color: var(--success);
+            font-weight: 1000;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .history-table,
+        .score-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            margin-top: 0;
+            min-width: 640px;
+        }
+
+        .history-table th,
+        .score-table th {
+            color: var(--muted);
+            background: transparent;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            font-size: .72rem;
+            text-align: left;
+            padding: 0 12px 4px;
+        }
+
+        .history-table td,
+        .score-table td {
+            background: rgba(255,255,255,.82);
+            padding: 13px 12px;
+            border-top: 1px solid var(--stroke);
+            border-bottom: 1px solid var(--stroke);
+            color: var(--text);
+            text-align: left;
+        }
+
+        .history-table td:first-child,
+        .score-table td:first-child {
+            border-left: 1px solid var(--stroke);
+            border-radius: 16px 0 0 16px;
+        }
+
+        .history-table td:last-child,
+        .score-table td:last-child {
+            border-right: 1px solid var(--stroke);
+            border-radius: 0 16px 16px 0;
+        }
+
+        .modal-content {
+            border-radius: 26px;
+            border: 1px solid var(--stroke);
+        }
+
+        .drag-ghost {
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
+        }
+
+        @media (max-width: 860px) {
+            :root {
+                --box-size: 38px;
+                --box-height: 50px;
+                --box-gap: 5px;
+            }
+
+            .app-shell {
+                width: min(100% - 16px, 1120px);
+            }
+
+            .app-frame {
+                min-height: calc(100svh - 16px);
+                border-radius: 24px;
+            }
+
+            .status-bar {
+                min-height: auto;
+                flex-wrap: wrap;
+                padding: 12px;
+            }
+
+            .screen-body {
+                padding: 8px 14px 24px;
+            }
+
+            .mode-grid,
+            .config-layout,
+            .game-stage,
+            .score-grid,
+            .score-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .pro-stage {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .pro-stage > .math-stack {
+                grid-column: 1 / -1;
+                grid-row: 1;
+            }
+
+            .pro-stage #btn-side-prev,
+            .pro-stage #btn-side-next {
+                width: 100%;
+                height: 58px;
+                grid-row: 2;
+            }
+
+            .side-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .numpad {
+                grid-template-columns: repeat(5, 1fr);
+                width: 100%;
+                max-width: 360px;
+                justify-self: center;
+            }
+
+            .num-key:last-child {
+                grid-column: auto;
+            }
+
+            .division-area {
+                font-size: 1.45rem;
+            }
+
+            .math-card {
+                min-height: auto;
+            }
+        }
+
+        @media (max-width: 430px) {
+            :root {
+                --box-size: 31px;
+                --box-height: 42px;
+                --box-gap: 3px;
+            }
+
+            .screen-title,
+            .menu-title,
+            .result-title {
+                font-size: clamp(2rem, 12vw, 3rem);
+            }
+
+            .status-chip,
+            .back-chip,
+            .timer-chip {
+                font-size: .8rem;
+                min-height: 34px;
+                padding: 7px 9px;
+            }
+
+            .math-card {
+                padding: 10px;
+                border-radius: 22px;
+            }
+
+            .main-row {
+                gap: 5px;
+            }
+
+            .message-card,
+            .message-box {
+                padding: 12px;
+            }
+        }
+
+        @media (max-height: 560px) and (orientation: landscape) {
+            :root {
+                --box-size: 34px;
+                --box-height: 42px;
+                --box-gap: 4px;
+            }
+
+            .app-shell {
+                width: min(100% - 14px, 1120px);
+                padding: 7px 0 14px;
+            }
+
+            .app-frame {
+                min-height: calc(100svh - 14px);
+            }
+
+            .status-bar {
+                padding: 8px 10px;
+            }
+
+            .screen-body {
+                padding: 6px 10px 12px;
+            }
+
+            .game-stage {
+                grid-template-columns: minmax(0, 1fr) minmax(210px, 32vw);
+                gap: 10px;
+            }
+
+            .numpad {
+                grid-template-columns: repeat(5, minmax(34px, 1fr));
+                padding: 8px;
+                gap: 6px;
+            }
+
+            .num-key {
+                height: 38px;
+            }
+
+            .side-action,
+            .action-btn-side {
+                min-height: 46px;
+            }
+        }
+
+        /* --- Footer and guide modal styles --- */
+        .app-footer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            padding: 22px 0 10px;
+            color: var(--muted);
+        }
+        .app-footer a,
+        .app-footer button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+            padding: 8px 14px;
+            border: 1px solid var(--stroke);
+            border-radius: 999px;
+            background: rgba(255,255,255,.76);
+            font-size: .88rem;
+            font-weight: 900;
+            text-decoration: none;
+            color: var(--primary);
+            cursor: pointer;
+        }
+        .modal-card {
+            width: min(100%, 980px);
+            max-height: min(860px, calc(100vh - 36px));
+            overflow-y: auto;
+            border: 1px solid var(--stroke);
+            border-radius: 28px;
+            background: rgba(255,255,255,.96);
+            box-shadow: 0 28px 90px rgba(37,99,235,.18);
+            padding: clamp(20px, 4vw, 34px);
+        }
+        .modal-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .modal-head h2 {
+            margin: 14px 0 10px;
+            font-size: clamp(1.8rem, 5vw, 3.2rem);
+            line-height: 1;
+            letter-spacing: 0;
+        }
+        .modal-head p {
+            max-width: 760px;
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+        .modal-dismiss {
+            flex: 0 0 auto;
+            min-height: 38px;
+            padding: 0 14px;
+            border-radius: 999px;
+            color: var(--text);
+            background: #e2e8f0;
+            font-weight: 1000;
+            cursor: pointer;
+            border: none;
+            font: inherit;
+        }
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+            margin-top: 20px;
+        }
+        .guide-section {
+            display: grid;
+            gap: 12px;
+            align-content: start;
+        }
+        .guide-section h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+        .guide-wide {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .guide-wide > h3 { grid-column: 1 / -1; }
+        .guide-card {
+            padding: 16px;
+            border: 1px solid var(--stroke);
+            border-radius: 18px;
+            background: #f8fafc;
+            line-height: 1.5;
+        }
+        .guide-card > .guide-badge {
+            display: inline-grid;
+            place-items: center;
+            min-width: 36px;
+            height: 30px;
+            margin-bottom: 10px;
+            padding: 0 8px;
+            border-radius: 999px;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
+            font-size: .78rem;
+            font-weight: 1000;
+        }
+        .guide-card strong {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text);
+            font-size: .96rem;
+        }
+        .guide-card p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: .9rem;
+        }
+        .about-card { width: min(100%, 780px); }
+        .about-copy {
+            display: grid;
+            gap: 14px;
+            margin-top: 20px;
+        }
+        .about-copy p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+        @media (max-width: 680px) {
+            .guide-grid { grid-template-columns: 1fr; }
+            .guide-wide { grid-template-columns: 1fr; }
+        }
+        /* --- Menu home layout --- */
+        .menu-home-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(290px, .9fr);
+            gap: 20px;
+            align-items: start;
+        }
+        .menu-hero { padding: 8px 0 0; }
+        .menu-hero .mini-stats { margin-top: 20px; }
+        .menu-hero .hero-actions { margin-top: 18px; flex-wrap: wrap; }
+        .dp-rank-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            gap: 8px;
+            align-items: center;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: rgba(248,250,252,.88);
+            cursor: pointer;
+            font-size: .88rem;
+        }
+        .dp-rank-item:hover { background: rgba(14,165,233,.07); }
+        .dp-rank-mode {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: .74rem;
+            font-weight: 1000;
+            background: rgba(14,165,233,.12);
+            color: #075985;
+        }
+        .dp-rank-mode.pro { background: rgba(139,92,246,.12); color: #5b21b6; }
+        .dp-quick-feedback {
+            min-height: 28px;
+            text-align: center;
+            font-weight: 900;
+            font-size: 1rem;
+        }
+        .dp-quick-problem {
+            text-align: center;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 1000;
+            color: var(--brand-strong);
+            margin: 8px 0;
+            letter-spacing: -.02em;
+        }
+        .dp-quick-dock {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+        .dp-quick-dock input {
+            min-height: 46px;
+            text-align: center;
+            font-size: 1.15rem;
+        }
+        @media (max-width: 860px) {
+            .menu-home-grid { grid-template-columns: 1fr; }
+        }
+
+        /* V1.3.7 MatPro-aligned first-use language screen */
+        #screen-lang.language-frame {
+            width: min(660px, 100%);
+            min-height: auto;
+            margin: 22px auto 0;
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,.90), rgba(255,255,255,.82)),
+                radial-gradient(circle at 18% 0%, rgba(37,99,235,.10), transparent 32%),
+                radial-gradient(circle at 95% 5%, rgba(14,165,233,.09), transparent 34%);
+            box-shadow: var(--shadow);
+        }
+        #screen-lang.language-frame .centered-screen {
+            min-height: auto;
+            padding: clamp(24px, 5vw, 44px);
+        }
+        #screen-lang.language-frame .screen-title {
+            font-size: clamp(3rem, 8vw, 68px);
+            color: var(--text);
+        }
+        #screen-lang.language-frame .screen-subtitle {
+            color: var(--muted);
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .division-language-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            width: min(100%, 420px);
+            margin-top: 26px;
+        }
+        .division-language-actions .btn-main,
+        .division-language-actions .btn-secondary {
+            justify-content: center;
+            min-height: 52px;
+            border-radius: 18px;
+        }
+        @media (max-width: 680px) {
+            .division-language-actions { grid-template-columns: 1fr; }
+        }
+
+</style>
+
+</head>
+<body>
+<main class="app-shell">
+    <nav class="topbar" id="dp-topbar" aria-label="Principal">
+        <div class="brand-lockup" aria-label="DivisionesPro">
+            <div class="logo">D÷</div>
+            <div class="brand-title">
+                <strong>DivisionesPro</strong>
+                <span id="txt-nav-subtitle">DivisionesPro · practica la división larga.</span>
+            </div>
+        </div>
+        <div class="top-actions">
+            <button class="top-link-btn" id="dp-txt-tutor-btn" type="button" onclick="document.getElementById('modal-dp-tutor').classList.remove('hidden')">Guía del tutor</button>
+            <button class="lang-switch-inline js-lang-toggle" onclick="toggleInGameLang()" type="button" data-active-lang="es" aria-label="Cambiar idioma">
+                <span class="lang-en">EN</span>
+                <span class="lang-es">ES</span>
+            </button>
+        </div>
+    </nav>
+
+    <section id="screen-lang" class="screen app-frame language-frame">
+        <div class="screen-body centered-screen">
+            <span class="eyebrow" id="txt-lang-eyebrow">Antes de dividir</span>
+            <h1 class="screen-title" id="txt-lang-title">DivisionesPro</h1>
+            <p class="screen-subtitle" id="txt-lang-subtitle">Selecciona tu idioma para comenzar la sesión.</p>
+            <div class="division-language-actions">
+                <button class="btn-main" onclick="setLanguage('es')" type="button">
+                    <span id="txt-lang-es">Español</span>
+                </button>
+                <button class="btn-secondary" onclick="setLanguage('en')" type="button">
+                    <span id="txt-lang-en">English</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="screen-menu" class="screen app-frame hidden">
+        <div class="screen-body">
+            <div class="menu-home-grid">
+                <!-- Hero section -->
+                <div class="menu-hero">
+                    <span class="eyebrow" id="txt-home-eyebrow">Matemática guiada</span>
+                    <h1 class="menu-title" id="menu-title-text"><span class="gradient-text">Dividir</span> sin perderse.</h1>
+                    <p class="screen-subtitle" id="txt-home-copy">Practica división larga con guía paso a paso o mide tu rendimiento sin asistencia.</p>
+                    <div class="mini-stats">
+                        <div class="mini-stat"><strong id="txt-stat-learn-value">Modo guiado</strong><span id="txt-stat-learn-label">selecciona, divide, resta y baja</span></div>
+                        <div class="mini-stat"><strong id="txt-stat-pro-value">Modo reto</strong><span id="txt-stat-pro-label">sin asistencia con nota y grade</span></div>
+                        <div class="mini-stat"><strong id="txt-stat-mobile-value">Touch</strong><span id="txt-stat-mobile-label">arrastre real en móvil</span></div>
+                    </div>
+                    <div class="method-note">
+                        <strong id="txt-method-title">Mismo motor, interfaz moderna</strong>
+                        <span id="txt-method-copy">Las casillas indican la secuencia. El jugador arrastra números hacia el resultado, restos o bajada según corresponda.</span>
+                    </div>
+                    <div class="hero-actions">
+                        <button class="mode-card learn" onclick="goToConfig('learn')" type="button" style="flex:1; min-width:140px;">
+                            <div>
+                                <h5 id="btn-play">Aprende a dividir</h5>
+                                <p id="txt-sequence-2-copy">Paso a paso, con mensajes y corrección inmediata.</p>
+                            </div>
+                            <strong id="txt-mode-learn-cta">Comenzar →</strong>
+                        </button>
+                        <button class="mode-card pro" onclick="goToConfig('pro')" type="button" style="flex:1; min-width:140px;">
+                            <div>
+                                <h5 id="btn-play-pro">DivisionPro</h5>
+                                <p id="txt-game-pro-copy">Sin asistencia, con nota chilena y grade USA.</p>
+                            </div>
+                            <strong id="txt-mode-pro-cta">Entrenar →</strong>
+                        </button>
+                    </div>
+                </div>
+                <!-- Side panels -->
+                <div class="home-side">
+                    <!-- Active practice -->
+                    <div class="panel">
+                        <div class="card-header">
+                            <div>
+                                <h2 id="dp-txt-quick-title">División rápida</h2>
+                                <p id="dp-txt-quick-subtitle">División aleatoria cada vez que cargas la página.</p>
+                            </div>
+                            <span id="dp-txt-quick-chip" class="pill">Aleatoria</span>
+                        </div>
+                        <div class="ranking-list">
+                            <div id="dp-quick-label" class="section-label">División del momento</div>
+                            <div id="dp-quick-question" class="dp-quick-problem">? ÷ ?</div>
+                            <div class="dp-quick-dock">
+                                <input id="dp-quick-input" type="number" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="?" onkeydown="if(event.key==='Enter')dpQuickCheck()" />
+                                <button id="dp-txt-quick-check" class="btn-main" type="button" onclick="dpQuickCheck()">OK</button>
+                            </div>
+                            <div id="dp-quick-feedback" class="dp-quick-feedback" aria-live="polite"></div>
+                            <button id="dp-txt-quick-next" class="btn btn-secondary" style="width:100%; margin-top:6px;" type="button" onclick="dpQuickGen()">Otra división</button>
+                        </div>
+                    </div>
+                    <!-- Recent sessions -->
+                    <div class="panel">
+                        <div class="card-header">
+                            <div>
+                                <h2 id="dp-txt-ranking-title">Últimas partidas</h2>
+                                <p id="dp-txt-ranking-hint">Toca una fila para ver detalles.</p>
+                            </div>
+                            <span id="dp-txt-ranking-pill" class="pill">Historial</span>
+                        </div>
+                        <div id="dp-ranking-body" class="ranking-list" style="gap:8px;"></div>
+                        <p id="dp-ranking-empty" class="ranking-list" style="color:var(--muted); font-size:.88rem;"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="screen-config" class="screen app-frame hidden">
+        <div class="status-bar">
+            <button class="back-chip" onclick="showScreen('screen-menu')" type="button" id="txt-config-back">← Menú</button>
+            <div class="status-group">
+                <button class="status-chip as-button" onclick="showGlobalHistory()" type="button" id="btn-history-config-text">Historial</button>
+                <button class="lang-switch-inline js-lang-toggle" onclick="toggleInGameLang()" type="button" data-active-lang="es" aria-label="Cambiar idioma">
+                    <span class="lang-en">EN</span>
+                    <span class="lang-es">ES</span>
+                </button>
+            </div>
+        </div>
+        <div class="screen-body">
+            <h2 class="screen-title" id="config-title"></h2>
+            <p class="screen-subtitle" id="txt-config-copy">Elige dificultad y cantidad de preguntas antes de empezar.</p>
+            <div class="config-layout">
+                <article class="info-panel">
+                    <div class="instructions-card" id="inst-card-container">
+                        <h3 id="inst-title"></h3>
+                        <p id="inst-text"></p>
+                    </div>
+                </article>
+                <article class="settings-panel">
+                    <div class="config-grid">
+                        <div class="config-row">
+                            <label class="config-label" id="lbl-difficulty"></label>
+                            <div class="difficulty-selector">
+                                <button class="diff-btn selected" id="diff-easy" onclick="setDifficulty('easy')" type="button">Fácil</button>
+                                <button class="diff-btn" id="diff-normal" onclick="setDifficulty('normal')" type="button">Normal</button>
+                                <button class="diff-btn" id="diff-hard" onclick="setDifficulty('hard')" type="button">Difícil</button>
+                            </div>
+                            <p id="diff-desc"></p>
+                        </div>
+                        <div class="config-row">
+                            <label class="config-label" id="lbl-qcount"></label>
+                            <div class="slider-container">
+                                <input type="range" id="q-slider" min="1" max="50" value="10" oninput="syncInputs('slider')">
+                                <input type="number" id="q-input" min="1" max="50" value="10" oninput="syncInputs('input')">
+                            </div>
+                        </div>
+                        <button class="big-cta learn" id="btn-start-action" onclick="startGame()" type="button">
+                            <span id="btn-start"></span>
+                            <span class="cta-icon">→</span>
+                        </button>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section id="screen-game-learn" class="screen app-frame hidden">
+        <div class="status-bar">
+            <button class="back-chip" onclick="confirmExit()" type="button"><span id="btn-exit-learn"></span></button>
+            <div class="center-chip">
+                <span class="timer-chip timer-hidden">⏱ <span id="game-timer-learn">00:00</span></span>
+                <span class="timer-chip">📝 <span id="q-progress-learn">1 / 10</span></span>
+            </div>
+            <button class="lang-switch-inline js-lang-toggle" onclick="toggleInGameLang()" type="button" data-active-lang="es" aria-label="Cambiar idioma">
+                <span class="lang-en">EN</span>
+                <span class="lang-es">ES</span>
+            </button>
+        </div>
+        <div class="screen-body">
+            <div class="game-stage">
+                <div>
+                    <div class="math-card">
+                        <div class="game-container-learn">
+                            <div class="division-area">
+                                <div class="main-row">
+                                    <div id="dividend-display-learn" class="digit-group"></div>
+                                    <span class="math-sign">:</span>
+                                    <div id="divisor-display-learn" class="math-sign divisor-box"></div>
+                                    <span class="math-sign">=</span>
+                                    <div id="quotient-display-learn" class="digit-group quo-group"></div>
+                                </div>
+                                <div id="work-area-learn"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="message-box-learn" class="message-card"></div>
+                </div>
+                <div class="side-actions">
+                    <div class="numpad" id="numpad-learn"></div>
+                    <button id="btn-learn-next" class="side-action action-btn-side" disabled></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="screen-game-pro" class="screen app-frame pro-accent hidden">
+        <div class="status-bar">
+            <button class="back-chip" onclick="confirmExit()" type="button"><span id="btn-exit-pro"></span></button>
+            <div class="center-chip">
+                <span class="timer-chip">⏱ <span id="game-timer-pro">00:00</span></span>
+                <span class="timer-chip">📝 <span id="q-progress-pro">1 / 10</span></span>
+            </div>
+            <button class="lang-switch-inline js-lang-toggle" onclick="toggleInGameLang()" type="button" data-active-lang="es" aria-label="Cambiar idioma">
+                <span class="lang-en">EN</span>
+                <span class="lang-es">ES</span>
+            </button>
+        </div>
+        <div class="screen-body">
+            <div class="pro-stage">
+                <button class="side-arrow side-btn" id="btn-side-prev" onclick="proNav(-1)">←</button>
+                <div class="math-stack">
+                    <div class="math-card">
+                        <div class="game-container-pro">
+                            <div class="division-area">
+                                <div class="main-row">
+                                    <div id="dividend-display-pro" class="digit-group"></div>
+                                    <span class="math-sign">:</span>
+                                    <div id="divisor-display-pro" class="math-sign divisor-box"></div>
+                                    <span class="math-sign">=</span>
+                                    <div id="quotient-display-pro" class="digit-group quo-group"></div>
+                                </div>
+                                <div class="scratch-label" id="txt-pro-scratch-label">Borrador / restos</div>
+                                <div id="work-area-pro"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="message-box-pro" class="message-card"></div>
+                    <div class="pro-pad-wrap">
+                        <div class="numpad" id="numpad-pro"></div>
+                    </div>
+                </div>
+                <button class="side-arrow side-btn" id="btn-side-next" onclick="proNav(1)">→</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="screen-score" class="screen app-frame score-bg hidden">
+        <div class="status-bar">
+            <button class="back-chip" onclick="goToMenu()" type="button"><span id="btn-home-menu"></span></button>
+            <button class="lang-switch-inline js-lang-toggle" onclick="toggleInGameLang()" type="button" data-active-lang="es" aria-label="Cambiar idioma">
+                <span class="lang-en">EN</span>
+                <span class="lang-es">ES</span>
+            </button>
+        </div>
+        <div class="screen-body">
+            <div class="score-hero">
+                <span class="eyebrow">DivisionPro</span>
+                <h2 id="score-title"></h2>
+                <p class="screen-subtitle" id="txt-score-copy" style="margin-left:auto;margin-right:auto;">Revisa tus resultados y guarda el historial local.</p>
+            </div>
+            <div class="score-grid score-summary" id="main-score-summary">
+                <div class="score-card">
+                    <h3 id="lbl-total-time"></h3>
+                    <p id="score-total-time">00:00</p>
+                </div>
+                <div class="score-card" id="card-total-errors">
+                    <h3 id="lbl-total-errors"></h3>
+                    <p id="score-total-errors" style="color: var(--error);">0</p>
+                </div>
+                <div class="score-card pro-score-card hidden">
+                    <h3 id="lbl-nota-cl">Nota (CL)</h3>
+                    <p id="score-nota-cl" style="color: var(--primary);">7.0</p>
+                </div>
+                <div class="score-card pro-score-card hidden">
+                    <h3 id="lbl-grade-us">Grade (USA)</h3>
+                    <p id="score-grade-us" style="color: var(--primary);">A</p>
+                </div>
+            </div>
+            <h3 id="lbl-details-title"></h3>
+            <div class="details-container error-log-list" id="score-detailed-log"></div>
+            <div class="result-actions">
+                <button class="big-cta learn" onclick="goToConfig(appState.currentMode)" type="button"><span id="btn-home-config"></span><span class="cta-icon">↻</span></button>
+                <button class="big-cta light" onclick="showGlobalHistory()" type="button"><span id="txt-score-history-btn">Ver historial</span><span class="cta-icon">🏆</span></button>
+            </div>
+        </div>
+    </section>
+
+    <section id="screen-history" class="screen app-frame hidden">
+        <div class="status-bar">
+            <button class="back-chip" onclick="goToConfig(appState.currentMode)" type="button" id="txt-history-back">← Config</button>
+            <div class="status-group">
+                <button class="status-chip as-button" onclick="confirmResetHistory()" type="button"><span id="btn-reset"></span></button>
+                <button class="lang-switch-inline js-lang-toggle" onclick="toggleInGameLang()" type="button" data-active-lang="es" aria-label="Cambiar idioma">
+                    <span class="lang-en">EN</span>
+                    <span class="lang-es">ES</span>
+                </button>
+            </div>
+        </div>
+        <div class="screen-body">
+            <h2 class="screen-title" id="history-title"></h2>
+            <p class="screen-subtitle" id="history-hint"></p>
+            <div class="details-container" style="margin-top:16px; padding: 0 10px; overflow-x:auto;">
+                <table class="history-table score-table">
+                    <thead>
+                        <tr>
+                            <th id="th-h-date"></th>
+                            <th id="th-h-name"></th>
+                            <th id="th-h-mode"></th>
+                            <th id="th-h-time"></th>
+                            <th id="th-h-err"></th>
+                            <th id="th-h-score"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body"></tbody>
+                </table>
+                <p id="history-empty"></p>
+            </div>
+        </div>
+    </section>
+
+<footer class="app-footer" aria-label="Enlaces del proyecto">
+    <a id="dp-txt-footer-github" href="https://github.com/ivveshermosilla/DivisionPro" target="_blank" rel="noopener">Repositorio GitHub</a>
+    <a id="dp-txt-footer-matpro" href="https://ivveshermosilla.github.io/matpro-triple-method/" target="_blank" rel="noopener">Jugar MatPro</a>
+    <button id="dp-txt-footer-about" type="button" onclick="document.getElementById('modal-dp-about').classList.remove('hidden')">Acerca de este proyecto</button>
+</footer>
+
+<div id="modal-dp-tutor" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('modal-dp-tutor')">
+    <div class="modal-card">
+        <div class="modal-head">
+            <div>
+                <span id="dp-txt-tutor-eyebrow" class="eyebrow">Información para el tutor</span>
+                <h2 id="dp-txt-tutor-title">Guía para el tutor</h2>
+                <p id="dp-txt-tutor-copy">DivisionPro enseña división larga con un flujo visual de arrastrar y soltar, para que el estudiante internalice los pasos sin memorizar un procedimiento abstracto.</p>
+            </div>
+            <button class="modal-dismiss" type="button" onclick="closeModal('modal-dp-tutor')" id="dp-txt-tutor-close" aria-label="Cerrar">Cerrar</button>
+        </div>
+        <div class="guide-grid">
+            <div class="guide-section">
+                <h3 id="dp-txt-tutor-modes-title">Modos de práctica</h3>
+                <div class="guide-card">
+                    <span class="guide-badge">1</span>
+                    <strong id="dp-txt-tutor-mode1-title">Aprende a dividir</strong>
+                    <p id="dp-txt-tutor-mode1-copy">Guía paso a paso: seleccionar, dividir, restar y bajar. El sistema indica qué hacer en cada momento y corrige de inmediato.</p>
+                </div>
+                <div class="guide-card">
+                    <span class="guide-badge">2</span>
+                    <strong id="dp-txt-tutor-mode2-title">DivisionPro (reto)</strong>
+                    <p id="dp-txt-tutor-mode2-copy">Sin asistencia. El jugador resuelve la división completa a su ritmo, con nota final al estilo chileno y americano.</p>
+                </div>
+            </div>
+            <div class="guide-section guide-wide">
+                <h3 id="dp-txt-tutor-steps-title">Cómo se juega</h3>
+                <div class="guide-card">
+                    <span class="guide-badge">A</span>
+                    <strong id="dp-txt-tutor-step1-title">Seleccionar</strong>
+                    <p id="dp-txt-tutor-step1-copy">Tocar los dígitos del dividendo para construir el número de trabajo. El juego indica cuántos tocar.</p>
+                </div>
+                <div class="guide-card">
+                    <span class="guide-badge">B</span>
+                    <strong id="dp-txt-tutor-step2-title">Arrastrar</strong>
+                    <p id="dp-txt-tutor-step2-copy">El jugador arrastra el cociente y el resto a las casillas correspondientes. Tocar es solo para seleccionar, no reemplaza el arrastre.</p>
+                </div>
+                <div class="guide-card">
+                    <span class="guide-badge">C</span>
+                    <strong id="dp-txt-tutor-step3-title">Bajar</strong>
+                    <p id="dp-txt-tutor-step3-copy">Cuando corresponde, arrastrar el siguiente dígito del dividendo a la casilla amarilla y continuar el proceso.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-dp-about" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('modal-dp-about')">
+    <div class="modal-card about-card">
+        <div class="modal-head">
+            <div>
+                <span id="dp-txt-about-eyebrow" class="eyebrow">Acerca de este proyecto</span>
+                <h2 id="dp-txt-about-title">DivisionPro nació para que dividir tenga sentido.</h2>
+            </div>
+            <button class="modal-dismiss" type="button" onclick="closeModal('modal-dp-about')" id="dp-txt-about-close" aria-label="Cerrar">Cerrar</button>
+        </div>
+        <div class="about-copy">
+            <p id="dp-txt-about-copy1">DivisionPro es la continuación natural de MatPro. Una vez que el jugador domina las tablas, está listo para practicar la división larga con el mismo enfoque visual y de movimiento.</p>
+            <p id="dp-txt-about-copy2">El proyecto nació del deseo de un padre de ayudar a su hijo Momo a superar la frustración con matemáticas, combinando apoyo familiar y desarrollo iterativo.</p>
+            <strong id="dp-txt-about-dedication">Developed with ❤️ for my son and students everywhere.</strong>
+        </div>
+    </div>
+</div>
+
+<div id="modal-exit" class="modal-overlay hidden">
+    <div class="modal-content">
+        <h3 class="modal-title" id="modal-exit-title"></h3>
+        <p class="modal-text" id="modal-exit-text"></p>
+        <div class="result-actions">
+            <button class="btn-danger btn-secondary" onclick="exitToMenu()" id="btn-confirm-exit"></button>
+            <button class="btn-main" onclick="closeModal('modal-exit')" id="btn-cancel-exit"></button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-name" class="modal-overlay hidden">
+    <div class="modal-content">
+        <h3 class="modal-title" id="modal-name-title"></h3>
+        <input type="text" id="player-name-input" placeholder="Nombre">
+        <div class="result-actions">
+            <button class="btn-main" onclick="saveSessionWithName()" id="btn-save-name"></button>
+            <button class="btn-secondary" onclick="skipSaving()" id="btn-skip-name"></button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-details" class="modal-overlay hidden" onclick="if(event.target === this) closeModal('modal-details')">
+    <div class="modal-content" style="text-align: left; max-width: 700px;">
+        <h3 class="modal-title" id="modal-details-title"></h3>
+        <div class="details-container error-log-list" id="modal-details-content"></div>
+        <div style="text-align: center; margin-top:20px;">
+            <button class="btn-main" onclick="closeModal('modal-details')" id="btn-close-details"></button>
+        </div>
+    </div>
+</div>
+
+</main>
+
+<script>
+// --- SOPORTE TÁCTIL ---
+    window.addEventListener('touchmove', function() {}, {passive: false});
+
+    // --- ALINEACIÓN DE RESTOS POR COLUMNAS ---
+    function getResidueStartColumn(alignIndex, cellCount) {
+        return Math.max(0, alignIndex - cellCount + 1);
+    }
+    function prepareWorkGrid(workArea, columnCount) {
+        workArea.style.setProperty('--division-cols', Math.max(1, columnCount));
+    }
+    function createResidueRow(columnCount) {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'residue-row';
+        rowDiv.style.setProperty('--division-cols', Math.max(1, columnCount));
+        return rowDiv;
+    }
+    function placeResidueCell(cell, columnIndex) {
+        cell.style.gridColumn = `${Math.max(0, columnIndex) + 1}`;
+    }
+    window.addEventListener('resize', () => {
+        if (!document.getElementById('screen-game-learn').classList.contains('hidden')) renderLearnGame();
+        if (!document.getElementById('screen-game-pro').classList.contains('hidden')) renderProGame();
+    });
+
+</script>
+<script>
+// --- ESTADO GLOBAL ---
+    let appState = {
+        lang: 'es', currentMode: 'learn', config: { difficulty: 'easy', qCount: 10 },
+        game: { 
+            currentQ: 0, questions: [], stats: [], timerFn: null, 
+            secondsElapsed: 0, currentErrors: 0, currentLogs: [], 
+            lastName: "", currentlyViewingHistory: null, isPaused: false,
+            scoreData: null 
+        },
+        proGame: { answers: [], selections: { div: [], res: [] } }
+    };
+
+</script>
+<script>
+const TEXTS = {
+        es: {
+            navSubtitle: "DivisionesPro · practica la división larga.",
+            back: "Atrás",
+            langEyebrow: "Antes de dividir",
+            langTitle: "DivisionesPro",
+            langSubtitle: "Selecciona tu idioma para comenzar la sesión.",
+            langEs: "Español",
+            langEn: "English",
+            configBack: "← Menú",
+            historyBack: "← Config",
+            modeLearnCta: "Comenzar →",
+            modeProCta: "Entrenar →",
+            scoreHistoryBtn: "Ver historial",
+            proScratchLabel: "Borrador / restos",
+            homeEyebrow: "Matemática guiada",
+            homeTitle: "<span class=\"gradient-text\">Dividir</span> sin perderse.",
+            homeCopy: "Practica división larga con guía o mide tu rendimiento sin ayuda.",
+            statLearnValue: "Modo guiado",
+            statLearnLabel: "selecciona, divide, resta y baja",
+            statProValue: "Modo reto",
+            statProLabel: "sin asistencia con nota y grade",
+            statMobileValue: "Touch",
+            statMobileLabel: "arrastre real en móvil",
+            methodTitle: "Mismo motor, interfaz moderna",
+            methodCopy: "Las casillas indican la secuencia. El jugador arrastra números hacia el resultado, restos o bajada según corresponda.",
+            sequenceTitle: "Cómo se practica",
+            sequence1Title: "Selecciona",
+            sequence1Copy: "Toca los dígitos del dividendo para construir el primer número de trabajo.",
+            sequence2Title: "Arrastra",
+            sequence2Copy: "Paso a paso, con mensajes y corrección inmediata.",
+            sequence3Title: "Baja",
+            sequence3Copy: "Cuando corresponde, arrastra el siguiente dígito del dividendo a la casilla amarilla.",
+	            homeHistoryTitle: "Tabla de resultados",
+            homeHistoryCopy: "Revisa partidas guardadas por modo y vuelve a ver errores.",
+            homeHistoryBtn: "Ver historial",
+            configCopy: "Elige dificultad y cantidad de preguntas antes de empezar.",
+            configPill: "Ajustes",
+            previewLabel: "Vista previa",
+            previewTitle: "Arrastra para resolver",
+            previewSubtitle: "Las casillas guían la secuencia, no reemplazan el arrastre.",
+            gameLearnTitle: "Aprende a dividir",
+            gameLearnCopy: "Arrastra cada número a la casilla activa.",
+            gameProTitle: "DivisionPro",
+            gameProCopy: "Sin asistencia, con nota chilena y grade USA.",
+            scoreCopy: "Revisa tus resultados y guarda el historial local.",
+	            menuTitle: "DivisionesPro", playLearn: "🎓 Aprende a Dividir", playPro: "🚀 DivisionPro",
+            configLearn: "🎓 Aprende a Dividir", configPro: "🚀 DivisionPro", diff: "📊 Nivel de Dificultad", easy: "Fácil", normal: "Normal", hard: "Difícil",
+            diffDescEasy: "Tablas del 1-12. Divisiones exactas (sin resto). Ideal para empezar.", diffDescNormal: "Números hasta 500. Puede haber resto.", diffDescHard: "Reto completo. Números hasta 9999.",
+            qCount: "🔢 Cantidad de Preguntas", start: "▶️ ¡Comenzar!",
+            exit: "Salir", exitConfirm: "🚪 ¿Salir al Menú?", exitWarn: "Se perderá el progreso actual.", yes: "Sí, Salir", cancel: "Continuar Jugando",
+            instTitle: "📖 Cómo jugar", 
+            instLearn: "1. <b>Selecciona:</b> Toca los números del dividendo.<br>2. <b>Divide:</b> Arrastra el resultado al cuadro verde.<br>3. <b>Resta:</b> Arrastra lo que sobra al cuadro azul.<br>4. <b>Baja:</b> Arrastra el siguiente número.<br><i>💡 Consejo: Si eres principiante, empieza en modo Fácil.</i>",
+            instPro: "Resuelve las divisiones sin asistencia.<br>1. Arrastra los números al resultado de <b>izquierda a derecha</b>.<br>2. <b>Opcional:</b> Toca los números del dividendo o restos para resaltarlos (amarillo). El resalte se limpia al poner un número en el resultado.<br>3. Arrastra a las casillas grises para usarlas de borrador (doble clic para borrar un número).<br>4. <b>¡Importante!</b> El resto final es semiobligatorio y contará como error si lo omites. Usa los botones laterales para navegar.",
+            gameSelect: "👇 Toca los números del dividendo para empezar",
+            gameSelectMore: (val, div) => `👀 Como el ${div} no cabe en el ${val}, selecciona también el siguiente número. (Esto solo se hace al principio)`,
+            gameQuotient: (div, val) => `🤔 ¿Cuántas veces cabe el ${div} en ${val}?`,
+            gameResidue: (val, q, div) => `✨ ¡Perfecto! Como ${div} x ${q} es ${div*q}, ¿cuánto nos va sobrando para llegar a ${val}?`,
+            gameBringdown: "⬇️ Arrastra el siguiente número del dividendo a la casilla amarilla",
+            gameFinish: (q, r) => `🌟 ¡Muy bien! Resultado: ${q} (Resto: ${r})`,
+            msgProFree: "✏️ Llena el resultado. Usa los espacios grises como borrador si lo necesitas.<br><span style='color: #f1c40f; font-weight: bold;'>¡No olvides indicar el resto al final de la división!</span>",
+            nextQ: "Siguiente Pregunta", 
+            errorCorrection: "💡 ¡Vuelve a intentarlo! Corrige el número rojo",
+            scoreTitle: "🎉 ¡Partida Terminada!", time: "⏱️ Tiempo Total", errors: "🎯 Errores Totales", 
+            btnHomeConfigLearn: "🔄 Volver a Aprende a Dividir", btnHomeConfigPro: "🔄 Volver a DivisionPro", btnHomeMenu: "🏠 Selección de Juego",
+            historyBtn: "🏆 Tabla de Resultados", historyTitle: "🏆 Tabla de Resultados", hDate: "Fecha", hName: "Nombre", hMode: "Dificultad", hTime: "Tiempo", hErr: "Err", hEmpty: "Aún no hay partidas jugadas en este modo.", hHint: "Haz clic en una fila para ver detalles",
+            nameTitle: "✨ ¡Muy bien! Escribe tu nombre para guardar:", save: "💾 Guardar en Historial", skip: "⏭️ Saltar y ver errores", namePlaceholder: "Tu Nombre",
+            detailsTitle: "🛠️ Errores a mejorar", close: "Cerrar",
+            resetBtn: "🗑️ Borrar Historial", resetConfirm: "⚠️ ¿Seguro que quieres borrar todo el historial de este modo?",
+            logHeader: (qNum, tot, divd, divr, q, r) => `Pregunta ${qNum}/${tot}: ${divd} ÷ ${divr} = Resultado correcto es ${q} con resto ${r}`,
+            logErrCount: (c) => `Número de errores: ${c}`,
+            logPerfectSession: "✨ ¡Increíble! Respondiste todo perfectamente sin errores. 🎉",
+            errQuotient: (wv, d, input, exp) => `Error: al dividir ${wv} ÷ ${d} respondiste ${input} en lugar de ${exp}`,
+            errResidue: (wv, sub, rem, input, exp) => `Error en el Resto: hacen falta ${rem} para que ${sub} llegue a ${wv}, respondiste ${input} en lugar de ${exp}`,
+            proLogHeader: (qNum, tot, divd, divr, corrQ, corrRem) => `Pregunta ${qNum}/${tot}: ${divd} ÷ ${divr} = El resultado correcto es ${corrQ} con resto ${corrRem}`,
+            proErrQuotient: (input, exp) => `En el resultado respondiste ${input} en lugar de ${exp}`,
+            proErrOmitted: (exp, rem) => `Pregunta omitida, la respuesta correcta era ${exp} con resto ${rem}`,
+            proErrRemOmitted: (exp) => `El resto final fue omitido, debía ser ${exp}`,
+            proErrResidue: (input, exp) => `En el resto final respondiste ${input} en lugar de ${exp}`,
+            finish: "Finalizar",
+            scoreNotaCL: "Nota (Chile)", scoreGradeUS: "Grade (USA)", hScore: "Calificación",
+            tutorBtn: "Guía del tutor",
+            footerGithub: "Repositorio GitHub", footerMatpro: "Jugar MatPro", footerAbout: "Acerca de este proyecto",
+            tutorEyebrow: "Información para el tutor", tutorTitle: "Guía para el tutor",
+            tutorCopy: "DivisionPro enseña división larga con un flujo visual de arrastrar y soltar, para que el estudiante internalice los pasos sin memorizar un procedimiento abstracto.",
+            tutorClose: "Cerrar", tutorModesTitle: "Modos de práctica",
+            tutorMode1Title: "Aprende a dividir", tutorMode1Copy: "Guía paso a paso: seleccionar, dividir, restar y bajar. El sistema indica qué hacer en cada momento y corrige de inmediato.",
+            tutorMode2Title: "DivisionPro (reto)", tutorMode2Copy: "Sin asistencia. El jugador resuelve la división completa a su ritmo, con nota final al estilo chileno y americano.",
+            tutorStepsTitle: "Cómo se juega",
+            tutorStep1Title: "Seleccionar", tutorStep1Copy: "Tocar los dígitos del dividendo para construir el número de trabajo. El juego indica cuántos tocar.",
+            tutorStep2Title: "Arrastrar", tutorStep2Copy: "El jugador arrastra el cociente y el resto a las casillas correspondientes. Tocar es solo para seleccionar, no reemplaza el arrastre.",
+            tutorStep3Title: "Bajar", tutorStep3Copy: "Cuando corresponde, arrastrar el siguiente dígito del dividendo a la casilla amarilla y continuar el proceso.",
+            quickTitle: "División rápida",
+            quickSubtitle: "División aleatoria cada vez que cargas la página.",
+            quickChip: "Aleatoria",
+            quickLabel: "División del momento",
+            quickCheck: "OK",
+            quickNext: "Otra división",
+            quickCorrect: "✓ Correcto",
+            quickWrong: "✗ Incorrecto, era:",
+            rankingTitle: "Últimas partidas",
+            rankingHint: "Toca una fila para ver detalles.",
+            rankingPill: "Historial local",
+            rankingClear: "Borrar historial",
+            rankingEmpty: "Aún no hay partidas guardadas.",
+            aboutEyebrow: "Acerca de este proyecto", aboutTitle: "DivisionPro nació para que dividir tenga sentido.",
+            aboutCopy1: "DivisionPro es la continuación natural de MatPro. Una vez que el jugador domina las tablas, está listo para practicar la división larga con el mismo enfoque visual y de movimiento.",
+            aboutCopy2: "El proyecto nació del deseo de un padre de ayudar a su hijo Momo a superar la frustración con matemáticas, combinando apoyo familiar y desarrollo iterativo.",
+            aboutDedication: "Desarrollado con ❤️ para mi hijo y estudiantes en todo el mundo.", aboutClose: "Cerrar"
+        },
+        en: {
+            navSubtitle: "DivisionPro · practice long division.",
+            back: "Back",
+            langEyebrow: "Before dividing",
+            langTitle: "DivisionPro",
+            langSubtitle: "Select your language to start the session.",
+            langEs: "Español",
+            langEn: "English",
+            configBack: "← Menu",
+            historyBack: "← Config",
+            modeLearnCta: "Start →",
+            modeProCta: "Train →",
+            scoreHistoryBtn: "View history",
+            proScratchLabel: "Scratch / remainders",
+            homeEyebrow: "Guided math",
+            homeTitle: "<span class=\"gradient-text\">Division</span> without getting lost.",
+            homeCopy: "Practice long division with guidance or measure your performance without help.",
+            statLearnValue: "Guided mode",
+            statLearnLabel: "select, divide, subtract, bring down",
+            statProValue: "Challenge mode",
+            statProLabel: "unassisted with score and grade",
+            statMobileValue: "Touch",
+            statMobileLabel: "real mobile dragging",
+            methodTitle: "Same engine, modern interface",
+            methodCopy: "The boxes show the sequence. The player drags numbers to the quotient, remainders, or bring-down target.",
+            sequenceTitle: "How practice works",
+            sequence1Title: "Select",
+            sequence1Copy: "Tap dividend digits to build the first working number.",
+            sequence2Title: "Drag",
+            sequence2Copy: "Step by step, with messages and immediate correction.",
+            sequence3Title: "Bring down",
+            sequence3Copy: "When needed, drag the next dividend digit into the yellow box.",
+            homeHistoryTitle: "Scoreboard",
+            homeHistoryCopy: "Review saved sessions by mode and revisit mistakes.",
+            homeHistoryBtn: "View history",
+            configCopy: "Choose difficulty and number of questions before starting.",
+            configPill: "Settings",
+            previewLabel: "Preview",
+            previewTitle: "Drag to solve",
+            previewSubtitle: "Boxes guide the sequence; they do not replace dragging.",
+            gameLearnTitle: "Learn to divide",
+            gameLearnCopy: "Drag each number into the active box.",
+            gameProTitle: "DivisionPro",
+            gameProCopy: "No assistance, with Chilean score and USA grade.",
+            scoreCopy: "Review your results and save the local history.",
+            menuTitle: "DivisionPro", playLearn: "🎓 Learn to Divide", playPro: "🚀 DivisionPro",
+            configLearn: "🎓 Learn to Divide", configPro: "🚀 DivisionPro Mode", diff: "📊 Difficulty Level", easy: "Easy", normal: "Normal", hard: "Hard",
+            diffDescEasy: "Times tables 1-12. Exact divisions (no remainder). Great for starting.", diffDescNormal: "Numbers up to 500. Can have remainders.", diffDescHard: "Full challenge. Numbers up to 9999.",
+            qCount: "🔢 Number of Questions", start: "▶️ Start!",
+            exit: "Exit", exitConfirm: "🚪 Exit to Menu?", exitWarn: "Current progress will be lost.", yes: "Yes, Exit", cancel: "Keep Playing",
+            instTitle: "📖 How to Play", 
+            instLearn: "1. <b>Select:</b> Tap the dividend numbers.<br>2. <b>Divide:</b> Drag the answer to the green box.<br>3. <b>Subtract:</b> Drag the remainder to the blue box.<br>4. <b>Bring Down:</b> Drag the next number down.<br><i>💡 Tip: Start on Easy mode!</i>",
+            instPro: "Solve divisions unassisted.<br>1. Drag numbers to the quotient from <b>left to right</b>.<br>2. <b>Optional:</b> Tap dividend or remainder numbers to highlight them (yellow). Highlighting clears when you place a number in the quotient.<br>3. Drag to gray boxes to use as a scratchpad (double-click to clear a number).<br>4. <b>Important!</b> The final remainder is semi-mandatory and counts as an error if omitted. Use side buttons to navigate.",
+            gameSelect: "👇 Tap the dividend numbers to start",
+            gameSelectMore: (val, div) => `👀 Since ${div} doesn't fit into ${val}, select the next number too. (Only at the beginning)`,
+            gameQuotient: (div, val) => `🤔 How many times does ${div} fit into ${val}?`,
+            gameResidue: (val, q, div) => `✨ Perfect! Since ${div} x ${q} is ${div*q}, how much is missing to reach ${val}?`,
+            gameBringdown: "⬇️ Drag the next number from the dividend to the yellow box",
+            gameFinish: (q, r) => `🌟 Great job! Result: ${q} (Remainder: ${r})`,
+            msgProFree: "✏️ Fill the quotient. Use the gray boxes as a scratchpad if needed.<br><span style='color: #f1c40f; font-weight: bold;'>Don't forget to indicate the remainder at the end of the division!</span>",
+            nextQ: "Next Question", 
+            errorCorrection: "💡 Try again! Correct the red number",
+            scoreTitle: "🎉 Session Finished!", time: "⏱️ Total Time", errors: "🎯 Total Errors", 
+            btnHomeConfigLearn: "🔄 Back to Learn to Divide", btnHomeConfigPro: "🔄 Back to DivisionPro", btnHomeMenu: "🏠 Game Selection",
+            historyBtn: "🏆 Scoreboard", historyTitle: "🏆 Scoreboard", hDate: "Date", hName: "Name", hMode: "Difficulty", hTime: "Time", hErr: "Err", hEmpty: "No games played in this mode yet.", hHint: "Click on a row to see details",
+            nameTitle: "✨ Great job! Enter your name to save:", save: "💾 Save to Scoreboard", skip: "⏭️ Skip and view errors", namePlaceholder: "Your Name",
+            detailsTitle: "🛠️ Errors to Review", close: "Close",
+            resetBtn: "🗑️ Reset History", resetConfirm: "⚠️ Are you sure you want to delete all history for this mode?",
+            logHeader: (qNum, tot, divd, divr, q, r) => `Question ${qNum}/${tot}: ${divd} ÷ ${divr} = Correct result is ${q} with remainder ${r}`,
+            logErrCount: (c) => `Number of errors: ${c}`,
+            logPerfectSession: "✨ Amazing! You answered everything perfectly with no errors. 🎉",
+            errQuotient: (wv, d, input, exp) => `Error: when dividing ${wv} ÷ ${d}, you answered ${input} instead of ${exp}`,
+            errResidue: (wv, sub, rem, input, exp) => `Remainder Error: ${rem} is needed for ${sub} to reach ${wv}, you answered ${input} instead of ${exp}`,
+            proLogHeader: (qNum, tot, divd, divr, corrQ, corrRem) => `Question ${qNum}/${tot}: ${divd} ÷ ${divr} = Correct result is ${corrQ} with remainder ${corrRem}`,
+            proErrQuotient: (input, exp) => `In the quotient, you answered ${input} instead of ${exp}`,
+            proErrOmitted: (exp, rem) => `Question omitted, the correct answer was ${exp} with remainder ${rem}`,
+            proErrRemOmitted: (exp) => `The final remainder was omitted, it should be ${exp}`,
+            proErrResidue: (input, exp) => `For the final remainder, you answered ${input} instead of ${exp}`,
+            finish: "Finish",
+            scoreNotaCL: "Score (Chile)", scoreGradeUS: "Grade (USA)", hScore: "Grade",
+            tutorBtn: "Tutor guide",
+            footerGithub: "GitHub repository", footerMatpro: "Play MatPro", footerAbout: "About this project",
+            tutorEyebrow: "Tutor information", tutorTitle: "Tutor guide",
+            tutorCopy: "DivisionPro teaches long division through a visual drag-and-drop flow, so students internalize each step instead of memorizing an abstract procedure.",
+            tutorClose: "Close", tutorModesTitle: "Practice modes",
+            tutorMode1Title: "Learn to divide", tutorMode1Copy: "Step-by-step guidance: select, divide, subtract, and bring down. The system shows what to do and corrects mistakes immediately.",
+            tutorMode2Title: "DivisionPro (challenge)", tutorMode2Copy: "No assistance. The player solves the full division at their own pace, with a final score in Chilean and US grading styles.",
+            tutorStepsTitle: "How to play",
+            tutorStep1Title: "Select", tutorStep1Copy: "Tap the dividend digits to build the working number. The game guides how many digits to select.",
+            tutorStep2Title: "Drag", tutorStep2Copy: "The player drags the quotient and remainder to the corresponding boxes. Tapping is for selecting only — it does not replace dragging.",
+            tutorStep3Title: "Bring down", tutorStep3Copy: "When needed, drag the next dividend digit to the yellow box and continue the process.",
+            quickTitle: "Quick division",
+            quickSubtitle: "A random division every time you load the page.",
+            quickChip: "Random",
+            quickLabel: "Division of the moment",
+            quickCheck: "OK",
+            quickNext: "Another division",
+            quickCorrect: "✓ Correct",
+            quickWrong: "✗ Incorrect, it was:",
+            rankingTitle: "Last sessions",
+            rankingHint: "Tap a row to see details.",
+            rankingPill: "Local history",
+            rankingClear: "Clear history",
+            rankingEmpty: "No sessions saved yet.",
+            aboutEyebrow: "About this project", aboutTitle: "DivisionPro was built to make division make sense.",
+            aboutCopy1: "DivisionPro is the natural next step after MatPro. Once the player has mastered the multiplication tables, they are ready to practice long division with the same visual and movement-based approach.",
+            aboutCopy2: "The project grew from a father's wish to help his son Momo overcome frustration with mathematics, combining family support and iterative development.",
+            aboutDedication: "Developed with ❤️ for my son and students everywhere.", aboutClose: "Close"
+        }
+    };
+
+    function t() { return TEXTS[appState.lang]; }
+
+	    function refreshLanguageToggle() {
+	        const btn = document.getElementById('global-lang-btn');
+	        const label = appState.lang === 'es' ? 'Idioma activo: español. Cambiar a inglés.' : 'Active language: English. Switch to Spanish.';
+	        if (btn) {
+	            btn.dataset.activeLang = appState.lang;
+	            btn.setAttribute('aria-label', label);
+	        }
+	        document.querySelectorAll('.js-lang-toggle').forEach(toggle => {
+	            toggle.dataset.activeLang = appState.lang;
+	            toggle.setAttribute('aria-label', label);
+	        });
+	        document.documentElement.lang = appState.lang;
+	    }
+
+</script>
+<script>
+// --- NAVIGATION & REACTIVITY ---
+    function showScreen(id) {
+        clearTouchDragArtifacts();
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+        const topbar = document.getElementById('dp-topbar');
+        if (topbar) topbar.classList.toggle('hidden', id !== 'screen-menu' && id !== 'screen-lang');
+        if (id === 'screen-game-learn' || id === 'screen-game-pro') {
+            window.dispatchEvent(new Event('resize'));
+        }
+    }
+
+    function toggleInGameLang() {
+        appState.lang = appState.lang === 'es' ? 'en' : 'es';
+        localStorage.setItem('ivves_preferred_lang', appState.lang);
+        updateUITexts();
+        
+        if (!document.getElementById('screen-game-learn').classList.contains('hidden')) renderLearnGame();
+        if (!document.getElementById('screen-game-pro').classList.contains('hidden')) renderProGame();
+        
+        if (!document.getElementById('screen-score').classList.contains('hidden')) {
+            renderDetailedLog(appState.game.stats, 'score-detailed-log', appState.currentMode);
+            if (appState.game.lastName && document.getElementById('modal-name').classList.contains('hidden')) {
+                document.getElementById('score-title').innerText = t().scoreTitle + " " + appState.game.lastName;
+            }
+        }
+        if (!document.getElementById('screen-history').classList.contains('hidden')) showGlobalHistory();
+        if (!document.getElementById('modal-details').classList.contains('hidden') && appState.game.currentlyViewingHistory) {
+            showSessionDetails(appState.game.currentlyViewingHistory);
+        }
+    }
+
+    function setLanguage(l) { appState.lang = l; localStorage.setItem('ivves_preferred_lang', l); updateUITexts(); showScreen('screen-menu'); }
+    function goToMenu() { stopTimers(); showScreen('screen-menu'); }
+    function goToConfig(mode) { appState.currentMode = mode; updateUITexts(); showScreen('screen-config'); }
+    
+    function closeModal(id) { 
+        document.getElementById(id).classList.add('hidden'); 
+        if (id === 'modal-details') appState.game.currentlyViewingHistory = null;
+        if (id === 'modal-exit') appState.game.isPaused = false; 
+    }
+    
+    function confirmExit() { 
+        appState.game.isPaused = true; 
+        document.getElementById('modal-exit').classList.remove('hidden'); 
+    }
+    function exitToMenu() { closeModal('modal-exit'); goToConfig(appState.currentMode); }
+
+    function getStorageKey() { return 'divisiones_history_' + appState.currentMode; }
+
+    function confirmResetHistory() {
+        if(confirm(t().resetConfirm)) {
+            localStorage.removeItem(getStorageKey());
+            showGlobalHistory();
+        }
+    }
+
+    function updateUITexts() {
+        const txt = t();
+        const m = appState.currentMode;
+        
+        const ids = {
+	            'txt-nav-subtitle': txt.navSubtitle,
+	            'txt-config-back': txt.configBack,
+	            'txt-history-back': txt.historyBack,
+	            'txt-lang-eyebrow': txt.langEyebrow,
+	            'txt-lang-title': txt.langTitle,
+	            'txt-lang-subtitle': txt.langSubtitle,
+            'txt-lang-es': txt.langEs,
+            'txt-lang-en': txt.langEn,
+            'txt-home-eyebrow': txt.homeEyebrow,
+            'txt-home-copy': txt.homeCopy,
+            'txt-stat-learn-value': txt.statLearnValue,
+            'txt-stat-learn-label': txt.statLearnLabel,
+            'txt-stat-pro-value': txt.statProValue,
+            'txt-stat-pro-label': txt.statProLabel,
+            'txt-stat-mobile-value': txt.statMobileValue,
+            'txt-stat-mobile-label': txt.statMobileLabel,
+            'txt-method-title': txt.methodTitle,
+            'txt-method-copy': txt.methodCopy,
+            'txt-sequence-title': txt.sequenceTitle,
+            'txt-sequence-1-title': txt.sequence1Title,
+            'txt-sequence-1-copy': txt.sequence1Copy,
+            'txt-sequence-2-title': txt.sequence2Title,
+            'txt-sequence-2-copy': txt.sequence2Copy,
+            'txt-sequence-3-title': txt.sequence3Title,
+            'txt-sequence-3-copy': txt.sequence3Copy,
+            'txt-home-history-title': txt.homeHistoryTitle,
+	            'txt-home-history-copy': txt.homeHistoryCopy,
+	            'txt-home-history-btn': txt.homeHistoryBtn,
+	            'txt-mode-learn-cta': txt.modeLearnCta,
+	            'txt-mode-pro-cta': txt.modeProCta,
+	            'txt-config-copy': txt.configCopy,
+	            'txt-config-pill': txt.configPill,
+	            'btn-history-config-text': txt.historyBtn,
+	            'txt-preview-label': txt.previewLabel,
+	            'txt-preview-title': txt.previewTitle,
+	            'txt-preview-subtitle': txt.previewSubtitle,
+            'txt-game-learn-title': txt.gameLearnTitle,
+            'txt-game-learn-copy': txt.gameLearnCopy,
+	            'txt-game-pro-title': txt.gameProTitle,
+	            'txt-game-pro-copy': txt.gameProCopy,
+	            'txt-pro-scratch-label': txt.proScratchLabel,
+	            'txt-score-copy': txt.scoreCopy,
+	            'txt-score-history-btn': txt.scoreHistoryBtn,
+            'menu-title-text': txt.menuTitle, 'btn-play': txt.playLearn, 'btn-play-pro': txt.playPro,
+            'config-title': m === 'learn' ? txt.configLearn : txt.configPro, 
+            'inst-title': txt.instTitle, 'inst-text': m === 'learn' ? txt.instLearn : txt.instPro,
+            'btn-history-float-text': txt.historyBtn, 'lbl-difficulty': txt.diff, 'diff-easy': txt.easy,
+            'diff-normal': txt.normal, 'diff-hard': txt.hard, 'lbl-qcount': txt.qCount,
+            'btn-start': txt.start, 'btn-exit-learn': txt.exit, 'btn-exit-pro': txt.exit, 
+            'modal-exit-title': txt.exitConfirm, 'modal-exit-text': txt.exitWarn, 
+            'btn-confirm-exit': txt.yes, 'btn-cancel-exit': txt.cancel,
+            'score-title': txt.scoreTitle, 'lbl-total-time': txt.time, 'lbl-total-errors': txt.errors,
+            'btn-home-config': m === 'learn' ? txt.btnHomeConfigLearn : txt.btnHomeConfigPro,
+            'btn-home-menu': txt.btnHomeMenu,
+            'history-title': txt.historyTitle, 'th-h-date': txt.hDate,
+            'th-h-name': txt.hName, 'th-h-mode': txt.hMode, 'th-h-time': txt.hTime, 'th-h-err': txt.hErr,
+            'history-empty': txt.hEmpty, 'history-hint': txt.hHint, 'modal-name-title': txt.nameTitle,
+            'btn-save-name': txt.save, 'btn-skip-name': txt.skip, 'lbl-details-title': txt.detailsTitle,
+            'modal-details-title': txt.detailsTitle, 'btn-close-details': txt.close, 'btn-reset': txt.resetBtn,
+            'lbl-nota-cl': txt.scoreNotaCL, 'lbl-grade-us': txt.scoreGradeUS, 'th-h-score': txt.hScore,
+            'dp-txt-tutor-btn': txt.tutorBtn,
+            'dp-txt-footer-github': txt.footerGithub, 'dp-txt-footer-matpro': txt.footerMatpro, 'dp-txt-footer-about': txt.footerAbout,
+            'dp-txt-tutor-eyebrow': txt.tutorEyebrow, 'dp-txt-tutor-title': txt.tutorTitle, 'dp-txt-tutor-copy': txt.tutorCopy,
+            'dp-txt-tutor-close': txt.tutorClose, 'dp-txt-tutor-modes-title': txt.tutorModesTitle,
+            'dp-txt-tutor-mode1-title': txt.tutorMode1Title, 'dp-txt-tutor-mode1-copy': txt.tutorMode1Copy,
+            'dp-txt-tutor-mode2-title': txt.tutorMode2Title, 'dp-txt-tutor-mode2-copy': txt.tutorMode2Copy,
+            'dp-txt-tutor-steps-title': txt.tutorStepsTitle,
+            'dp-txt-tutor-step1-title': txt.tutorStep1Title, 'dp-txt-tutor-step1-copy': txt.tutorStep1Copy,
+            'dp-txt-tutor-step2-title': txt.tutorStep2Title, 'dp-txt-tutor-step2-copy': txt.tutorStep2Copy,
+            'dp-txt-tutor-step3-title': txt.tutorStep3Title, 'dp-txt-tutor-step3-copy': txt.tutorStep3Copy,
+            'dp-txt-about-eyebrow': txt.aboutEyebrow, 'dp-txt-about-title': txt.aboutTitle,
+            'dp-txt-about-copy1': txt.aboutCopy1, 'dp-txt-about-copy2': txt.aboutCopy2,
+            'dp-txt-about-dedication': txt.aboutDedication, 'dp-txt-about-close': txt.aboutClose,
+            'dp-txt-quick-title': txt.quickTitle,
+            'dp-txt-quick-subtitle': txt.quickSubtitle,
+            'dp-txt-quick-chip': txt.quickChip,
+            'dp-quick-label': txt.quickLabel,
+            'dp-txt-quick-check': txt.quickCheck,
+            'dp-txt-quick-next': txt.quickNext,
+            'dp-txt-ranking-title': txt.rankingTitle,
+            'dp-txt-ranking-hint': txt.rankingHint,
+            'dp-txt-ranking-pill': txt.rankingPill,
+            'dp-ranking-empty': txt.rankingEmpty
+        };
+        
+        for (const [id, val] of Object.entries(ids)) {
+            const el = document.getElementById(id);
+            if(el) {
+                if(id === 'inst-text' || id === 'txt-home-title') el.innerHTML = val;
+                else if (id === 'score-title') {
+                    el.innerText = (appState.game.lastName && document.getElementById('modal-name').classList.contains('hidden')) ? val + " " + appState.game.lastName : val;
+                }
+                else el.innerText = val;
+            }
+        }
+        const _mpLink = document.getElementById('dp-txt-footer-matpro');
+        if (_mpLink) _mpLink.href = 'https://ivveshermosilla.github.io/matpro-triple-method/?lang=' + appState.lang;
+        
+	        const card = document.getElementById('inst-card-container');
+	        const startBtn = document.getElementById('btn-start-action');
+	        const configScreen = document.getElementById('screen-config');
+	        if(m === 'pro') {
+	            card.classList.add('pro-card');
+	            startBtn.classList.add('btn-pro');
+	            startBtn.classList.add('pro');
+	            startBtn.classList.remove('learn');
+	            configScreen.classList.add('pro-accent');
+	            startBtn.style.background = '';
+	        } else {
+	            card.classList.remove('pro-card');
+	            startBtn.classList.remove('btn-pro');
+	            startBtn.classList.remove('pro');
+	            startBtn.classList.add('learn');
+	            configScreen.classList.remove('pro-accent');
+	            startBtn.style.background = '';
+	        }
+
+        document.getElementById('player-name-input').placeholder = txt.namePlaceholder;
+        const homeTitle = document.getElementById('txt-home-title');
+        if (homeTitle) homeTitle.innerHTML = txt.homeTitle;
+        refreshLanguageToggle();
+        updateDiffDesc();
+        dpRenderHomeRanking();
+    }
+
+</script>
+<script>
+function syncInputs(source) {
+	        const s = document.getElementById('q-slider'), i = document.getElementById('q-input');
+	        if (source === 'slider') i.value = s.value;
+	        const nextValue = Math.max(1, Math.min(50, parseInt(i.value, 10) || 1));
+	        i.value = nextValue;
+	        s.value = nextValue;
+	        appState.config.qCount = nextValue;
+	    }
+    function setDifficulty(d) {
+        appState.config.difficulty = d;
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
+        document.getElementById('diff-' + d).classList.add('selected');
+        updateDiffDesc();
+    }
+    function updateDiffDesc() {
+        const d = appState.config.difficulty, p = document.getElementById('diff-desc');
+        p.innerText = d === 'easy' ? t().diffDescEasy : d === 'normal' ? t().diffDescNormal : t().diffDescHard;
+    }
+
+</script>
+<script>
+// --- GAME ENGINE ---
+    let learnLogic = { divDigits: [], step: 'SELECT', selectedIndices: [], usedIndices: [], rows: [], quotientFound: [], currentWorkingVal: 0, expectedRemainderString: "", tempResidues: null };
+
+    function startGame() {
+        appState.game.questions = []; appState.game.stats = []; appState.proGame.answers = []; appState.game.currentQ = 0; appState.game.lastName = ""; 
+        appState.game.isPaused = false; appState.game.scoreData = null;
+        
+        for(let i=0; i<appState.config.qCount; i++) {
+            let q = generateQuestionLogic();
+            appState.game.questions.push(q);
+            if(appState.currentMode === 'pro') {
+                let qLen = Math.floor(q.dividend / q.divisor).toString().length;
+                let scaff = calcProScaffolding(q.dividend, q.divisor);
+                appState.proGame.answers.push({
+                    quotients: new Array(qLen).fill(null),
+                    residues: scaff.map(r => new Array(r.numBoxes).fill(null))
+                });
+                q.scaffolding = scaff;
+            }
+        }
+        
+        startTimer();
+        generateNumpads();
+
+        if(appState.currentMode === 'learn') {
+            showScreen('screen-game-learn');
+            loadLearnQuestion(0);
+        } else {
+            showScreen('screen-game-pro');
+            loadProQuestion(0);
+        }
+    }
+
+    function generateQuestionLogic() {
+        const m = appState.config.difficulty; let div, divisor;
+        if (m === 'easy') { divisor = Math.floor(Math.random() * 11) + 2; div = divisor * (Math.floor(Math.random() * 12) + 1); } 
+        else if (m === 'normal') { div = Math.floor(Math.random() * 490) + 10; divisor = Math.floor(Math.random() * 11) + 2; } 
+        else { div = Math.floor(Math.random() * 9900) + 100; divisor = Math.floor(Math.random() * 11) + 2; }
+        if(div < divisor) div = divisor * Math.floor(Math.random()*5 + 1);
+        return { dividend: div, divisor: divisor };
+    }
+
+    function calcProScaffolding(dividend, divisor) {
+        let divStr = dividend.toString(), divLength = divStr.length, rows = [], currentVal = 0, started = false;
+        for(let i=0; i<divLength; i++) {
+            currentVal = currentVal * 10 + parseInt(divStr[i]);
+            if(currentVal >= divisor || started) {
+                started = true;
+                let qDigit = Math.floor(currentVal / divisor);
+                let sub = qDigit * divisor;
+                let rem = currentVal - sub;
+                let nextDigit = (i + 1 < divLength) ? divStr[i+1] : null;
+                let numBoxes = rem.toString().length + (nextDigit !== null ? 1 : 0);
+                rows.push({ remStr: rem.toString(), bringDown: nextDigit, alignIndex: i + (nextDigit !== null ? 1 : 0), numBoxes: numBoxes });
+                currentVal = rem;
+            }
+        }
+        return rows;
+    }
+
+	    function generateNumpads() {
+	        ['numpad-learn', 'numpad-pro'].forEach(pId => {
+	            const pad = document.getElementById(pId);
+	            if(pad.innerHTML === '') {
+	                [1,2,3,4,5,6,7,8,9,0].forEach(n => {
+	                    const btn = document.createElement('div'); btn.className = 'num-key'; btn.innerText = n; btn.draggable = true;
+	                    btn.dataset.dragType = 'number';
+	                    btn.dataset.dragText = n;
+	                    btn.dataset.dragVal = n;
+	                    btn.ondragstart = (e) => { e.dataTransfer.setData("text", n); e.dataTransfer.setData("type", "number"); };
+	                    pad.appendChild(btn);
+	                });
+	            }
+	        });
+	    }
+
+</script>
+<script>
+// --- TOUCH DRAG WITHOUT REPLACING THE DRAG MODEL ---
+	    let touchDragState = null;
+        const dragArtifactSelector = [
+            '.drag-ghost',
+            '.mobile-drag-image',
+            '.dnd-poly-drag-image',
+            '.dnd-poly-drag-image-snapback',
+            '.dnd-poly-drag-operation-icon',
+            '[class*="dnd-poly-drag-image"]',
+            '[class*="dnd-poly-drag-operation"]'
+        ].join(',');
+
+        function clearTouchDragArtifacts() {
+            const state = touchDragState;
+            touchDragState = null;
+            if (state && state.source) state.source.classList.remove('touch-dragging');
+            document.querySelectorAll('.touch-dragging').forEach(el => el.classList.remove('touch-dragging'));
+            document.querySelectorAll(dragArtifactSelector).forEach(el => el.remove());
+            document.body.classList.remove('dnd-poly-dragging');
+        }
+
+	    function buildDropEvent(payload) {
+	        return {
+	            preventDefault() {},
+	            dataTransfer: {
+	                getData(key) {
+	                    if (key === 'type') return payload.type || '';
+	                    if (key === 'text') return payload.text || '';
+	                    if (key === 'val') return payload.val || '';
+	                    if (key === 'idx') return payload.idx || '';
+	                    return '';
+	                }
+	            }
+	        };
+	    }
+
+	    function getTouchPayload(source) {
+	        const type = source.dataset.dragType;
+	        if (!type) return null;
+	        return {
+	            type,
+	            text: source.dataset.dragText || source.innerText || '',
+	            val: source.dataset.dragVal || source.innerText || '',
+	            idx: source.dataset.dragIdx || ''
+	        };
+	    }
+
+	    function moveDragGhost(state, x, y) {
+	        state.ghost.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+	    }
+
+	    function activateTouchDrag(state, event) {
+	        state.active = true;
+	        state.source.classList.add('touch-dragging');
+	        state.ghost = document.createElement('div');
+	        state.ghost.className = 'drag-ghost';
+	        state.ghost.textContent = state.payload.text || state.payload.val;
+	        document.body.appendChild(state.ghost);
+	        moveDragGhost(state, event.clientX, event.clientY);
+	    }
+
+	    function finishTouchDrag(event) {
+	        const state = touchDragState;
+	        if (!state) return;
+	        touchDragState = null;
+
+	        if (state.active) {
+	            event.preventDefault();
+	            const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('.drop-zone, .drop-zone-pro');
+	            if (target && typeof target.ondrop === 'function') {
+	                target.ondrop(buildDropEvent(state.payload));
+	            }
+	        }
+
+	        state.source.classList.remove('touch-dragging');
+	        if (state.ghost) state.ghost.remove();
+            requestAnimationFrame(clearTouchDragArtifacts);
+	    }
+
+        function getTrackedTouch(event, state) {
+            const changed = Array.from(event.changedTouches || []);
+            const active = Array.from(event.touches || []);
+            return changed.find(touch => touch.identifier === state.pointerId)
+                || active.find(touch => touch.identifier === state.pointerId)
+                || changed[0]
+                || active[0]
+                || null;
+        }
+
+	    function initTouchDragSupport() {
+	        document.addEventListener('pointerdown', event => {
+	            if (event.pointerType === 'mouse') return;
+	            const source = event.target.closest('[data-drag-type]');
+	            if (!source) return;
+	            const payload = getTouchPayload(source);
+	            if (!payload) return;
+	            touchDragState = {
+	                source,
+	                payload,
+	                pointerId: event.pointerId,
+	                startX: event.clientX,
+	                startY: event.clientY,
+	                active: false,
+	                ghost: null
+	            };
+	        }, { passive: true });
+
+	        document.addEventListener('pointermove', event => {
+	            const state = touchDragState;
+	            if (!state || state.pointerId !== event.pointerId) return;
+	            const distance = Math.hypot(event.clientX - state.startX, event.clientY - state.startY);
+	            if (!state.active && distance > 8) activateTouchDrag(state, event);
+	            if (state.active) {
+	                event.preventDefault();
+	                moveDragGhost(state, event.clientX, event.clientY);
+	            }
+	        }, { passive: false });
+
+	        document.addEventListener('pointerup', finishTouchDrag, { passive: false });
+	        document.addEventListener('pointercancel', finishTouchDrag, { passive: false });
+            document.addEventListener('dragend', clearTouchDragArtifacts);
+            document.addEventListener('drop', () => requestAnimationFrame(clearTouchDragArtifacts));
+            window.addEventListener('blur', clearTouchDragArtifacts);
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) clearTouchDragArtifacts();
+            });
+
+            if (!window.PointerEvent) {
+                document.addEventListener('touchstart', event => {
+                    const source = event.target.closest('[data-drag-type]');
+                    if (!source) return;
+                    const payload = getTouchPayload(source);
+                    const touch = event.changedTouches && event.changedTouches[0];
+                    if (!payload || !touch) return;
+                    touchDragState = {
+                        source,
+                        payload,
+                        pointerId: touch.identifier,
+                        startX: touch.clientX,
+                        startY: touch.clientY,
+                        active: false,
+                        ghost: null
+                    };
+                }, { passive: true });
+
+                document.addEventListener('touchmove', event => {
+                    const state = touchDragState;
+                    if (!state) return;
+                    const touch = getTrackedTouch(event, state);
+                    if (!touch) return;
+                    const distance = Math.hypot(touch.clientX - state.startX, touch.clientY - state.startY);
+                    if (!state.active && distance > 8) activateTouchDrag(state, touch);
+                    if (state.active) {
+                        event.preventDefault();
+                        moveDragGhost(state, touch.clientX, touch.clientY);
+                    }
+                }, { passive: false });
+
+                const finishTouchEvent = event => {
+                    const state = touchDragState;
+                    if (!state) return;
+                    const touch = getTrackedTouch(event, state);
+                    finishTouchDrag({
+                        clientX: touch ? touch.clientX : state.startX,
+                        clientY: touch ? touch.clientY : state.startY,
+                        preventDefault() {
+                            if (event.cancelable) event.preventDefault();
+                        }
+                    });
+                };
+
+                document.addEventListener('touchend', finishTouchEvent, { passive: false });
+                document.addEventListener('touchcancel', finishTouchEvent, { passive: false });
+            }
+	    }
+
+	    initTouchDragSupport();
+
+</script>
+<script>
+// --- LEARN MODE ---
+    function loadLearnQuestion(idx) {
+        if (idx >= appState.game.questions.length) { showSessionSummary(); return; }
+        clearTouchDragArtifacts();
+        appState.game.currentQ = idx; appState.game.questionStartTime = Date.now(); appState.game.currentErrors = 0; appState.game.currentLogs = []; 
+        document.getElementById('q-progress-learn').innerText = `${idx + 1} / ${appState.config.qCount}`;
+        const q = appState.game.questions[idx]; const g = learnLogic;
+        g.dividend = q.dividend; g.divisor = q.divisor; g.divDigits = q.dividend.toString().split('').map(Number);
+        g.quotientLength = Math.floor(q.dividend / q.divisor).toString().length;
+        g.selectedIndices = []; g.usedIndices = []; g.quotientFound = []; g.rows = []; g.tempResidues = null; g.currentWorkingVal = 0; g.expectedRemainderString = ""; g.step = 'SELECT';
+        renderLearnGame();
+    }
+
+    function renderLearnGame() {
+        const divDisp = document.getElementById('dividend-display-learn'), quoDisp = document.getElementById('quotient-display-learn'), workArea = document.getElementById('work-area-learn'), msg = document.getElementById('message-box-learn'), g = learnLogic;
+        const columnCount = Math.max(1, g.divDigits.length);
+        prepareWorkGrid(workArea, columnCount);
+        
+        divDisp.innerHTML = '';
+        const selectableIdx = getNextSelectableLearnIndex();
+        g.divDigits.forEach((d, i) => {
+            const span = document.createElement('div'); span.className = 'digit';
+            if (g.usedIndices.includes(i)) span.classList.add('used'); else if (g.selectedIndices.includes(i)) span.classList.add('selected');
+            if (g.step === 'SELECT' && !g.usedIndices.includes(i)) {
+                if (i === selectableIdx) span.classList.add('blink-soft');
+            }
+            const nextIdx = Math.max(...(g.selectedIndices.length ? g.selectedIndices : [-1])) + 1;
+	            if (g.step === 'BRINGDOWN' && i === nextIdx) {
+	                span.classList.add('blink-soft'); span.style.cursor = 'grab'; span.draggable = true;
+	                span.dataset.dragType = 'bringdown';
+	                span.dataset.dragVal = d;
+	                span.dataset.dragIdx = i;
+	                span.ondragstart = (e) => { e.dataTransfer.setData("type", "bringdown"); e.dataTransfer.setData("val", d); e.dataTransfer.setData("idx", i); };
+	            }
+            span.innerText = d; span.onclick = () => { if(g.step === 'SELECT') handleLearnClick(i); };
+            divDisp.appendChild(span);
+        });
+        document.getElementById('divisor-display-learn').innerText = g.divisor;
+
+        quoDisp.innerHTML = '';
+        for(let i=0; i < g.quotientLength; i++) {
+            const box = document.createElement('div'); box.className = 'drop-zone'; const qObj = g.quotientFound[i];
+            if(qObj) {
+                box.innerText = qObj.val;
+                if(qObj.status === 'correct') box.classList.add('correct');
+                else {
+                    box.classList.add('incorrect'); 
+                    box.ondragover = e => e.preventDefault(); 
+                    box.ondragenter = e => e.preventDefault();
+                    box.ondrop = e => handleLearnDrop(e, 'QUOTIENT', i);
+                    box.onclick = function() { g.quotientFound.splice(i, 1); renderLearnGame(); };
+                }
+            } else {
+                const noErr = !g.quotientFound.some(q => q.status === 'incorrect') && !(g.tempResidues && g.tempResidues.some(r => r && r.status === 'incorrect'));
+                if(g.step === 'QUOTIENT' && i === g.quotientFound.length && noErr) {
+                    box.classList.add('blink-soft'); 
+                    box.ondragover = e => e.preventDefault(); 
+                    box.ondragenter = e => e.preventDefault();
+                    box.ondrop = e => handleLearnDrop(e, 'QUOTIENT', i);
+                }
+            }
+            quoDisp.appendChild(box);
+        }
+
+        workArea.innerHTML = '';
+        g.rows.forEach((row, idx) => {
+            const rowDiv = createResidueRow(columnCount);
+            const rChars = row.residueStr.split('');
+            const startColumn = getResidueStartColumn(row.alignIndex, rChars.length);
+            const isW = (idx === g.rows.length - 1) && (g.step === 'QUOTIENT');
+            rChars.forEach((char, cIdx) => { const rBox = document.createElement('div'); rBox.className = `drop-zone ${isW ? 'working-row' : 'history-row'}`; rBox.innerText = char; placeResidueCell(rBox, startColumn + cIdx); rowDiv.appendChild(rBox); });
+            if(row.brought !== null && row.brought !== undefined) { const bBox = document.createElement('div'); bBox.className = `drop-zone ${isW ? 'working-row' : 'history-row'}`; bBox.innerText = row.brought; placeResidueCell(bBox, startColumn + rChars.length); rowDiv.appendChild(bBox); }
+            workArea.appendChild(rowDiv);
+        });
+
+        if (g.step === 'RESIDUE' || g.step === 'BRINGDOWN' || g.step === 'FINISH') {
+            const actRow = createResidueRow(columnCount);
+            const align = g.selectedIndices.length > 0 ? g.selectedIndices[g.selectedIndices.length - 1] : 0;
+            const resLen = g.tempResidues ? g.tempResidues.length : 1;
+            const startColumn = getResidueStartColumn(align, resLen);
+
+            if (g.tempResidues) {
+                g.tempResidues.forEach((resItem, rIdx) => {
+                    const rBox = document.createElement('div'); rBox.className = 'drop-zone';
+                    placeResidueCell(rBox, startColumn + rIdx);
+                    if (resItem) {
+                        rBox.innerText = resItem.val;
+                        if (resItem.status === 'correct') { rBox.classList.add(g.step === 'FINISH' ? 'active-residue-input' : 'working-row'); } 
+                        else {
+                            rBox.classList.add('incorrect'); 
+                            rBox.ondragover = e => e.preventDefault(); 
+                            rBox.ondragenter = e => e.preventDefault();
+                            rBox.ondrop = e => handleLearnDrop(e, 'RESIDUE', rIdx);
+                            rBox.onclick = function() { g.tempResidues[rIdx] = null; renderLearnGame(); };
+                        }
+                    } else if (g.step === 'RESIDUE') {
+                        const noErr = !g.tempResidues.some(r => r && r.status === 'incorrect');
+                        if(rIdx === g.tempResidues.indexOf(null) && noErr) { 
+                            rBox.classList.add('active-residue-input', 'blink-soft'); 
+                            rBox.ondragover = e => e.preventDefault(); 
+                            rBox.ondragenter = e => e.preventDefault();
+                            rBox.ondrop = e => handleLearnDrop(e, 'RESIDUE', rIdx); 
+                        } 
+                        else if (!noErr && resItem === null) { rBox.classList.add('active-residue-input'); }
+                    }
+                    actRow.appendChild(rBox);
+                });
+            }
+            if (g.step === 'BRINGDOWN') {
+                const bBox = document.createElement('div'); bBox.className = 'drop-zone working-row blink-soft'; bBox.style.border = '3px dashed #d35400';
+                placeResidueCell(bBox, startColumn + resLen);
+                bBox.ondragover = e => e.preventDefault(); 
+                bBox.ondragenter = e => e.preventDefault();
+                bBox.ondrop = e => handleLearnDrop(e, 'BRINGDOWN'); 
+                actRow.appendChild(bBox);
+            }
+            workArea.appendChild(actRow);
+        }
+
+        const nextBtn = document.getElementById('btn-learn-next');
+        const isLast = appState.game.currentQ === appState.config.qCount - 1;
+        
+        nextBtn.innerText = isLast ? t().finish : t().nextQ;
+
+        if (g.step === 'FINISH') {
+            msg.innerText = t().gameFinish(g.quotientFound.map(o => o.val).join(''), g.expectedRemainderString);
+            
+            nextBtn.disabled = false;
+            
+            if (isLast) {
+                nextBtn.classList.add('finish-mode');
+                nextBtn.onclick = () => { saveStatsLearn(); showSessionSummary(); };
+            } else {
+                nextBtn.classList.remove('finish-mode');
+                nextBtn.onclick = saveLearnAndNext;
+            }
+        } else {
+            nextBtn.disabled = true;
+            nextBtn.onclick = null;
+            if(isLast) nextBtn.classList.add('finish-mode'); else nextBtn.classList.remove('finish-mode');
+            
+            msg.style.background = "var(--primary)";
+            if (g.quotientFound.some(q => q.status === 'incorrect') || (g.tempResidues && g.tempResidues.some(r => r && r.status === 'incorrect'))) {
+                msg.innerText = t().errorCorrection; msg.style.background = "var(--error)";
+            } else {
+                if(g.step === 'SELECT') {
+                    const currentVal = parseInt(g.selectedIndices.map(idx => g.divDigits[idx]).join(''));
+                    if (g.selectedIndices.length > 0 && currentVal < g.divisor) {
+                        msg.innerText = t().gameSelectMore(currentVal, g.divisor);
+                    } else {
+                        msg.innerText = t().gameSelect;
+                    }
+                }
+                else if(g.step === 'QUOTIENT') msg.innerText = t().gameQuotient(g.divisor, g.currentWorkingVal);
+                else if(g.step === 'RESIDUE') msg.innerText = t().gameResidue(g.currentWorkingVal, g.quotientFound[g.quotientFound.length-1].val, g.divisor);
+                else if(g.step === 'BRINGDOWN') msg.innerText = t().gameBringdown;
+            }
+        }
+    }
+
+    function getNextSelectableLearnIndex() {
+        const g = learnLogic;
+        if (g.step !== 'SELECT') return -1;
+        if (g.selectedIndices.length > 0) {
+            const nextIdx = g.selectedIndices[g.selectedIndices.length - 1] + 1;
+            return nextIdx < g.divDigits.length && !g.usedIndices.includes(nextIdx) ? nextIdx : -1;
+        }
+        return g.divDigits.findIndex((_, i) => !g.usedIndices.includes(i));
+    }
+
+    function handleLearnClick(idx) {
+        const g = learnLogic;
+        if (g.step !== 'SELECT') return;
+        if (g.selectedIndices.includes(idx)) {
+            if (idx === g.selectedIndices[g.selectedIndices.length - 1]) g.selectedIndices.pop();
+            else return;
+        } else {
+            const nextIdx = getNextSelectableLearnIndex();
+            if (idx !== nextIdx) return;
+            g.selectedIndices.push(idx);
+        }
+        const val = parseInt(g.selectedIndices.map(i => g.divDigits[i]).join('') || 0);
+        if (g.selectedIndices.length > 0 && val >= g.divisor) { g.currentWorkingVal = val; g.step = 'QUOTIENT'; }
+        renderLearnGame();
+    }
+
+    function getDropValue(e, key) {
+        if (!e.dataTransfer || typeof e.dataTransfer.getData !== 'function') return "";
+        const value = e.dataTransfer.getData(key);
+        return value === null || value === undefined ? "" : String(value);
+    }
+
+    function getDropInteger(e, ...keys) {
+        for (const key of keys) {
+            const raw = getDropValue(e, key).trim();
+            if (raw === "") continue;
+            const parsed = Number.parseInt(raw, 10);
+            if (Number.isFinite(parsed)) return parsed;
+        }
+        return null;
+    }
+
+    function handleLearnDrop(e, actionType, boxIdx) {
+        e.preventDefault();
+        const type = getDropValue(e, "type");
+        const g = learnLogic;
+        if (actionType === 'QUOTIENT') {
+            if (g.step !== 'QUOTIENT' || type !== 'number') return;
+            const val = getDropInteger(e, "text", "val");
+            if (val === null || boxIdx < 0 || boxIdx >= g.quotientLength) return;
+            const corr = Math.floor(g.currentWorkingVal / g.divisor), isC = (val === corr);
+            if(!isC) { 
+                const isDup = appState.game.currentLogs.some(l => l.type === 'QUOTIENT' && l.workingVal === g.currentWorkingVal && l.input === val);
+                if(!isDup) {
+                    appState.game.currentErrors++; 
+                    appState.game.currentLogs.push({ type: 'QUOTIENT', input: val, expected: corr, workingVal: g.currentWorkingVal, div: g.divisor }); 
+                }
+            }
+            if (g.quotientFound[boxIdx]) g.quotientFound[boxIdx] = { val: val, status: isC ? 'correct' : 'incorrect' }; else g.quotientFound.push({ val: val, status: isC ? 'correct' : 'incorrect' });
+            if (isC) { g.step = 'RESIDUE'; g.expectedRemainderString = (g.currentWorkingVal - (corr * g.divisor)).toString(); g.tempResidues = new Array(g.expectedRemainderString.length).fill(null); }
+        }
+        else if (actionType === 'RESIDUE') {
+            if (g.step !== 'RESIDUE' || type !== 'number' || !Array.isArray(g.tempResidues)) return;
+            const val = getDropInteger(e, "text", "val");
+            if (val === null || boxIdx < 0 || boxIdx >= g.tempResidues.length) return;
+            const exp = parseInt(g.expectedRemainderString[boxIdx]), isC = (val === exp);
+            if (!Number.isFinite(exp)) return;
+            if(!isC) { 
+                const sub = g.quotientFound[g.quotientFound.length-1].val * g.divisor; 
+                const isDup = appState.game.currentLogs.some(l => l.type === 'RESIDUE' && l.workingVal === g.currentWorkingVal && l.input === val && l.boxIdx === boxIdx);
+                if(!isDup) {
+                    appState.game.currentErrors++; 
+                    appState.game.currentLogs.push({ type: 'RESIDUE', input: val, expected: exp, workingVal: g.currentWorkingVal, div: g.divisor, sub: sub, fullRem: g.currentWorkingVal - sub, boxIdx: boxIdx }); 
+                }
+            }
+            g.tempResidues[boxIdx] = { val: val, status: isC ? 'correct' : 'incorrect' };
+            if (g.tempResidues.every(r => r && r.status === 'correct')) {
+                if (g.rows.length === 0) g.selectedIndices.forEach(i => { if(!g.usedIndices.includes(i)) g.usedIndices.push(i); });
+                g.step = (g.usedIndices.length < g.divDigits.length) ? 'BRINGDOWN' : 'FINISH';
+            }
+        }
+        else if (actionType === 'BRINGDOWN') {
+            if (g.step !== 'BRINGDOWN' || type !== 'bringdown') return;
+            const oIdx = getDropInteger(e, "idx"), oVal = getDropInteger(e, "val", "text");
+            const expectedIdx = Math.max(...(g.selectedIndices.length ? g.selectedIndices : [-1])) + 1;
+            if (oIdx === null || oVal === null || oIdx !== expectedIdx) return;
+            g.rows.push({ residueStr: g.expectedRemainderString, brought: oVal, alignIndex: g.selectedIndices[g.selectedIndices.length - 1] });
+            g.usedIndices.push(oIdx); g.currentWorkingVal = parseInt(g.expectedRemainderString + oVal.toString()); g.selectedIndices.push(oIdx); g.tempResidues = null; g.step = 'QUOTIENT';
+        }
+        renderLearnGame();
+    }
+
+    function saveStatsLearn() {
+        const q = appState.game.questions[appState.game.currentQ];
+        appState.game.stats.push({ qNum: appState.game.currentQ + 1, dividend: q.dividend, divisor: q.divisor, correctQuotient: Math.floor(q.dividend / q.divisor), correctRemainder: q.dividend % q.divisor, time: Math.floor((Date.now() - appState.game.questionStartTime) / 1000), errors: appState.game.currentErrors, logs: [...appState.game.currentLogs] });
+    }
+
+    function saveLearnAndNext() {
+        saveStatsLearn();
+        loadLearnQuestion(appState.game.currentQ + 1);
+    }
+
+</script>
+<script>
+// --- PRO MODE ---
+    function loadProQuestion(idx) {
+        clearTouchDragArtifacts();
+        appState.game.currentQ = idx;
+        appState.proGame.selections = { div: [], res: [] }; 
+        document.getElementById('q-progress-pro').innerText = `${idx + 1} / ${appState.config.qCount}`;
+        
+        const btnPrev = document.getElementById('btn-side-prev');
+        const btnNext = document.getElementById('btn-side-next');
+        
+        btnPrev.disabled = (idx === 0);
+        
+        if(idx === appState.config.qCount - 1) {
+            btnNext.innerText = "🏁"; 
+            btnNext.classList.add('finish-btn');
+            btnNext.onclick = finishProGame;
+        } else {
+            btnNext.innerText = "➡"; 
+            btnNext.classList.remove('finish-btn');
+            btnNext.onclick = () => proNav(1);
+        }
+        renderProGame();
+    }
+
+    function proNav(dir) { let n = appState.game.currentQ + dir; if(n >= 0 && n < appState.config.qCount) loadProQuestion(n); }
+
+    function finishProGame() {
+        appState.game.stats = []; let tErr = 0;
+        let maxPoints = appState.config.qCount * 10;
+        let earnedPoints = 0;
+
+        appState.game.questions.forEach((q, i) => {
+            let uStr = appState.proGame.answers[i].quotients.join(''); 
+            let uNum = parseInt(uStr); if(isNaN(uNum)) uStr = "";
+            let cQ = Math.floor(q.dividend / q.divisor); 
+            let qHasError = uStr !== cQ.toString();
+
+            let lastRowIdx = q.scaffolding.length - 1;
+            let uRemStr = appState.proGame.answers[i].residues[lastRowIdx].join('');
+            let uRemNum = parseInt(uRemStr); if(isNaN(uRemNum)) uRemStr = "";
+            let cRem = q.dividend % q.divisor;
+            let remHasError = uRemStr !== cRem.toString();
+
+            let localLogs = [];
+            let errCount = 0;
+
+            if (qHasError) {
+                errCount++;
+                localLogs.push({ type: 'PRO_QUOTIENT', input: uStr, expected: cQ });
+            }
+            if (remHasError) {
+                errCount++;
+                localLogs.push({ type: 'PRO_RESIDUE', input: uRemStr, expected: cRem });
+            }
+
+            if (!qHasError) {
+                earnedPoints += 7; 
+                if (!remHasError) {
+                    earnedPoints += 3; 
+                }
+            }
+
+            tErr += errCount;
+            appState.game.stats.push({ 
+                qNum: i + 1, dividend: q.dividend, divisor: q.divisor, 
+                correctQuotient: cQ, correctRemainder: cRem, 
+                time: 0, errors: errCount, logs: localLogs 
+            });
+        });
+        
+        appState.game.currentErrors = tErr;
+
+        let percent = (earnedPoints / maxPoints) * 100;
+        
+        let notaCL = 1.0;
+        if (percent < 60) {
+            notaCL = 3 * (percent / 60) + 1;
+        } else {
+            notaCL = 3 * ((percent - 60) / 40) + 4;
+        }
+        notaCL = Math.round(notaCL * 10) / 10; 
+
+        let gradeUS = 'F';
+        if (percent >= 90) gradeUS = 'A';
+        else if (percent >= 80) gradeUS = 'B';
+        else if (percent >= 70) gradeUS = 'C';
+        else if (percent >= 60) gradeUS = 'D';
+
+        appState.game.scoreData = { percent: percent, notaCL: notaCL.toFixed(1), gradeUS: gradeUS };
+
+        showSessionSummary();
+    }
+
+    function renderProGame() {
+        const idx = appState.game.currentQ, q = appState.game.questions[idx], ans = appState.proGame.answers[idx], divDisp = document.getElementById('dividend-display-pro'), quoDisp = document.getElementById('quotient-display-pro'), workArea = document.getElementById('work-area-pro'), msg = document.getElementById('message-box-pro');
+        const columnCount = Math.max(1, q.dividend.toString().length);
+        prepareWorkGrid(workArea, columnCount);
+        const isQuotientFull = ans.quotients.indexOf(null) === -1;
+
+        divDisp.innerHTML = '';
+	        q.dividend.toString().split('').forEach((d, i) => {
+	            const span = document.createElement('div'); span.className = 'digit'; span.style.cursor = 'grab'; span.draggable = true;
+	            span.dataset.dragType = 'bringdown';
+	            span.dataset.dragVal = d;
+	            span.ondragstart = (e) => { e.dataTransfer.setData("type", "bringdown"); e.dataTransfer.setData("val", d); };
+            span.onclick = () => {
+                const sel = appState.proGame.selections.div;
+                const iIdx = sel.indexOf(i);
+                if(iIdx > -1) sel.splice(iIdx, 1); else sel.push(i);
+                renderProGame();
+            };
+            if(appState.proGame.selections.div.includes(i)) span.classList.add('selected');
+            span.innerText = d; divDisp.appendChild(span);
+        });
+        document.getElementById('divisor-display-pro').innerText = q.divisor;
+
+        quoDisp.innerHTML = '';
+        let actQIdx = ans.quotients.indexOf(null); if(actQIdx === -1) actQIdx = ans.quotients.length;
+        for(let i=0; i < ans.quotients.length; i++) {
+            const box = document.createElement('div'); box.className = 'drop-zone drop-zone-pro';
+            if(ans.quotients[i] !== null) { box.innerText = ans.quotients[i]; box.classList.add('filled'); } 
+            else if (i === actQIdx) { box.classList.add('active-target', 'blink-pro'); }
+            if(i <= actQIdx) { 
+                box.ondragover = e => e.preventDefault(); 
+                box.ondragenter = e => e.preventDefault();
+                box.ondrop = e => handleProDrop(e, 'Q', i); 
+                box.onclick = () => { ans.quotients[i] = null; renderProGame(); }; 
+            }
+            quoDisp.appendChild(box);
+        }
+
+        workArea.innerHTML = '';
+        q.scaffolding.forEach((row, rIdx) => {
+            const rowDiv = createResidueRow(columnCount);
+            const startColumn = getResidueStartColumn(row.alignIndex, row.numBoxes);
+            
+            let finalRemNeedsFill = (isQuotientFull && rIdx === q.scaffolding.length - 1 && ans.residues[rIdx].includes(null));
+
+            for(let cIdx = 0; cIdx < row.numBoxes; cIdx++) {
+                const rBox = document.createElement('div'); rBox.className = 'drop-zone drop-zone-pro';
+                placeResidueCell(rBox, startColumn + cIdx);
+                
+                if(ans.residues[rIdx][cIdx] !== null) { rBox.innerText = ans.residues[rIdx][cIdx]; rBox.classList.add('filled'); }
+                
+                if (finalRemNeedsFill && ans.residues[rIdx][cIdx] === null) {
+                    rBox.classList.add('blink-pro');
+                }
+
+                rBox.ondragover = e => e.preventDefault(); 
+                rBox.ondragenter = e => e.preventDefault();
+                rBox.ondrop = e => handleProDrop(e, 'R', rIdx, cIdx); 
+                rBox.ondblclick = () => { ans.residues[rIdx][cIdx] = null; renderProGame(); };
+                rBox.onclick = () => {
+                    const sel = appState.proGame.selections.res;
+                    const fIdx = sel.findIndex(s => s.r === rIdx && s.c === cIdx);
+                    if(fIdx > -1) sel.splice(fIdx, 1); else sel.push({r: rIdx, c: cIdx});
+                    renderProGame();
+                };
+
+                if(appState.proGame.selections.res.some(s => s.r === rIdx && s.c === cIdx)) {
+                    rBox.classList.add('working-row');
+                }
+
+                rowDiv.appendChild(rBox);
+            }
+            
+            if (finalRemNeedsFill) {
+                const arrow = document.createElement('div');
+                arrow.className = 'residue-arrow';
+                arrow.innerHTML = '&#8592;';
+                placeResidueCell(arrow, startColumn + row.numBoxes);
+                rowDiv.appendChild(arrow);
+            }
+
+            workArea.appendChild(rowDiv);
+        });
+
+        msg.style.background = "var(--primary)"; msg.innerHTML = t().msgProFree;
+    }
+
+    function handleProDrop(e, type, rIdx, cIdx) {
+        e.preventDefault();
+        const dT = getDropValue(e, "type");
+        let val;
+        if(dT === "number" || dT === "bringdown") val = getDropInteger(e, "text", "val");
+        else return;
+        if (val === null) return;
+        const ans = appState.proGame.answers[appState.game.currentQ];
+        if(type === 'Q') {
+            if (rIdx < 0 || rIdx >= ans.quotients.length) return;
+            ans.quotients[rIdx] = val;
+            appState.proGame.selections = { div: [], res: [] }; 
+        }
+        if(type === 'R') {
+            if (!ans.residues[rIdx] || cIdx < 0 || cIdx >= ans.residues[rIdx].length) return;
+            ans.residues[rIdx][cIdx] = val;
+        }
+        renderProGame();
+    }
+
+</script>
+<script>
+// --- TIMERS & FINISH ---
+    function startTimer() { 
+        if(appState.game.timerFn) clearInterval(appState.game.timerFn);
+        appState.game.secondsElapsed = 0;
+        appState.game.timerFn = setInterval(() => {
+            if(!appState.game.isPaused) {
+                appState.game.secondsElapsed++;
+                const mins = Math.floor(appState.game.secondsElapsed / 60).toString().padStart(2, '0');
+                const secs = (appState.game.secondsElapsed % 60).toString().padStart(2, '0');
+                
+                const tLearn = document.getElementById('game-timer-learn');
+                const tPro = document.getElementById('game-timer-pro');
+                if(tLearn) tLearn.innerText = `${mins}:${secs}`;
+                if(tPro) tPro.innerText = `${mins}:${secs}`;
+            }
+        }, 1000);
+    }
+    
+    function stopTimers() { if(appState.game.timerFn) clearInterval(appState.game.timerFn); }
+
+    function showSessionSummary() {
+        stopTimers(); showScreen('screen-score');
+        const dur = appState.game.secondsElapsed;
+        const errs = appState.currentMode === 'learn' ? appState.game.stats.reduce((a, c) => a + c.errors, 0) : appState.game.currentErrors;
+        
+        const mins = Math.floor(dur / 60).toString().padStart(2, '0');
+        const secs = (dur % 60).toString().padStart(2, '0');
+
+        document.getElementById('score-title').innerText = t().scoreTitle;
+        document.getElementById('score-total-time').innerText = `${mins}:${secs}`;
+        document.getElementById('score-total-errors').innerText = errs;
+
+        if(appState.currentMode === 'pro' && appState.game.scoreData) {
+            document.querySelectorAll('.pro-score-card').forEach(el => el.classList.remove('hidden'));
+            let sd = appState.game.scoreData;
+            let nCL = document.getElementById('score-nota-cl');
+            let gUS = document.getElementById('score-grade-us');
+            nCL.innerText = sd.notaCL;
+            gUS.innerText = sd.gradeUS;
+            
+            nCL.style.color = parseFloat(sd.notaCL) >= 4.0 ? 'var(--success)' : 'var(--error)';
+            gUS.style.color = (sd.gradeUS === 'F' || sd.gradeUS === 'D') ? 'var(--error)' : 'var(--success)';
+        } else {
+            document.querySelectorAll('.pro-score-card').forEach(el => el.classList.add('hidden'));
+        }
+
+        renderDetailedLog(appState.game.stats, 'score-detailed-log', appState.currentMode);
+        document.getElementById('player-name-input').value = appState.game.lastName || ""; 
+        document.getElementById('modal-name').classList.remove('hidden');
+    }
+
+    function skipSaving() { closeModal('modal-name'); }
+    function saveSessionWithName() { const name = document.getElementById('player-name-input').value || "Anon"; appState.game.lastName = name; closeModal('modal-name'); saveGlobalStats(name); document.getElementById('score-title').innerText = t().scoreTitle + " " + name; }
+
+    function renderDetailedLog(statsArray, containerId, mode) {
+        const c = document.getElementById(containerId); c.innerHTML = ""; let hasErr = false;
+        statsArray.forEach(s => {
+            if(s.errors === 0) return; hasErr = true;
+            const div = document.createElement('div'); div.className = 'log-item';
+            const h = document.createElement('div'); h.className = 'log-q';
+            if(mode === 'learn') {
+                h.innerText = t().logHeader(s.qNum, appState.config.qCount, s.dividend, s.divisor, s.correctQuotient, s.correctRemainder); div.appendChild(h);
+                const eStr = document.createElement('div'); eStr.className = 'log-err-count'; eStr.innerText = t().logErrCount(s.errors); div.appendChild(eStr);
+                const ul = document.createElement('ul'); ul.className = 'log-ul';
+                if (s.logs) s.logs.forEach(e => { const li = document.createElement('li'); if(e.type === 'QUOTIENT') li.innerText = t().errQuotient(e.workingVal, e.div, e.input, e.expected); else if(e.type === 'RESIDUE') li.innerText = t().errResidue(e.workingVal, e.sub, e.fullRem, e.input, e.expected); ul.appendChild(li); }); div.appendChild(ul);
+            } else {
+                h.innerText = t().proLogHeader(s.qNum, appState.config.qCount, s.dividend, s.divisor, s.correctQuotient, s.correctRemainder); div.appendChild(h);
+                const ul = document.createElement('ul'); ul.className = 'log-ul';
+                if (s.logs && s.logs.length > 0) { 
+                    s.logs.forEach(log => {
+                        const li = document.createElement('li'); 
+                        if (log.type === 'PRO_QUOTIENT') {
+                            if (log.input === "") li.innerText = t().proErrOmitted(log.expected, s.correctRemainder);
+                            else li.innerText = t().proErrQuotient(log.input, log.expected); 
+                        } else if (log.type === 'PRO_RESIDUE') {
+                            if (log.input === "") li.innerText = t().proErrRemOmitted(log.expected);
+                            else li.innerText = t().proErrResidue(log.input, log.expected);
+                        }
+                        ul.appendChild(li);
+                    });
+                } 
+                div.appendChild(ul);
+            } c.appendChild(div);
+        });
+        if(!hasErr) c.innerHTML = `<div class="log-perfect">${t().logPerfectSession}</div>`;
+    }
+
+    function saveGlobalStats(name) {
+        let history = JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
+        const totalDuration = appState.game.secondsElapsed;
+        let totalErrors = appState.currentMode === 'learn' ? appState.game.stats.reduce((acc, curr) => acc + curr.errors, 0) : appState.game.currentErrors;
+        const now = new Date(); const dateString = `${now.getDate()}/${now.getMonth()+1} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+        
+        let record = { date: dateString, ts: Date.now(), name: name, mode: appState.config.difficulty, time: totalDuration, errors: totalErrors, totalQs: appState.config.qCount, stats: appState.game.stats };
+        if(appState.currentMode === 'pro' && appState.game.scoreData) {
+            record.scoreData = appState.game.scoreData;
+        }
+
+        history.push(record);
+        localStorage.setItem(getStorageKey(), JSON.stringify(history));
+        dpRenderHomeRanking();
+    }
+
+    function showGlobalHistory() {
+        showScreen('screen-history');
+        const modeName = appState.currentMode === 'learn' ? t().configLearn : t().configPro;
+        document.getElementById('history-title').innerText = `${t().historyTitle} · ${modeName}`;
+        const history = JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
+        const tbody = document.getElementById('history-body'), emptyMsg = document.getElementById('history-empty');
+        tbody.innerHTML = '';
+        
+        const scoreTh = document.getElementById('th-h-score');
+        if(appState.currentMode === 'pro') scoreTh.style.display = 'table-cell';
+        else scoreTh.style.display = 'none';
+
+        if (history.length === 0) { emptyMsg.style.display = 'block'; } 
+        else {
+            emptyMsg.style.display = 'none';
+            history.slice().reverse().forEach(game => {
+                const tr = document.createElement('tr'); tr.onclick = () => showSessionDetails(game);
+                const mins = Math.floor(game.time / 60).toString().padStart(2, '0'), secs = (game.time % 60).toString().padStart(2, '0');
+                
+                let rowHTML = `<td>${game.date}</td><td>${game.name || '-'}</td><td>${game.mode === 'easy' ? t().easy : game.mode === 'normal' ? t().normal : t().hard}</td><td>${mins}:${secs}</td><td style="${game.errors>0?'color:var(--error); font-weight:bold;':''}">${game.errors}</td>`;
+                
+                if(appState.currentMode === 'pro') {
+                    let scoreHtml = '-';
+                    if (game.scoreData) {
+                        let clColor = parseFloat(game.scoreData.notaCL) >= 4.0 ? 'var(--success)' : 'var(--error)';
+                        scoreHtml = `<span style="font-weight:bold; color:${clColor}">${game.scoreData.notaCL}</span> | ${game.scoreData.gradeUS}`;
+                    }
+                    rowHTML += `<td>${scoreHtml}</td>`;
+                }
+                
+                tr.innerHTML = rowHTML;
+                tbody.appendChild(tr);
+            });
+        }
+    }
+
+    function showSessionDetails(gameData) {
+        appState.game.currentlyViewingHistory = gameData;
+        if(!gameData.stats) { document.getElementById('modal-details-content').innerHTML = "<p style='padding:20px;text-align:center;'>Esta partida no contiene detalles guardados.</p>"; } 
+        else { const oQCount = appState.config.qCount; if(gameData.totalQs) appState.config.qCount = gameData.totalQs; renderDetailedLog(gameData.stats, 'modal-details-content', gameData._mk || appState.currentMode); appState.config.qCount = oQCount; }
+        document.getElementById('modal-details').classList.remove('hidden');
+    }
+
+    function handleGlobalBack() {
+        const h = !document.getElementById('screen-history').classList.contains('hidden');
+        const c = !document.getElementById('screen-config').classList.contains('hidden');
+        if(h || c) goToMenu(); else showScreen('screen-lang');
+    }
+
+</script>
+<script>
+// --- ACTIVE PRACTICE (QUICK DIVISION) ---
+    var _dpQ = { dividend: 0, divisor: 0, quotient: 0 };
+    function dpQuickGen() {
+        var divisor = Math.floor(Math.random() * 9) + 1;
+        var quotient = Math.floor(Math.random() * 12) + 1;
+        _dpQ = { dividend: divisor * quotient, divisor: divisor, quotient: quotient };
+        var el = document.getElementById('dp-quick-question');
+        if (el) el.textContent = _dpQ.dividend + ' ÷ ' + _dpQ.divisor;
+        var inp = document.getElementById('dp-quick-input');
+        if (inp) { inp.value = ''; inp.focus(); }
+        var fb = document.getElementById('dp-quick-feedback');
+        if (fb) { fb.textContent = ''; fb.style.color = ''; }
+    }
+    function dpQuickCheck() {
+        var val = parseInt(document.getElementById('dp-quick-input').value, 10);
+        var fb = document.getElementById('dp-quick-feedback');
+        if (!fb) return;
+        if (isNaN(val)) { fb.textContent = ''; return; }
+        if (val === _dpQ.quotient) {
+            fb.textContent = t().quickCorrect;
+            fb.style.color = 'var(--success)';
+        } else {
+            fb.textContent = t().quickWrong + ' ' + _dpQ.quotient;
+            fb.style.color = 'var(--danger)';
+        }
+    }
+    // --- HOME RANKING ---
+    function dpRenderHomeRanking() {
+        var learnH = JSON.parse(localStorage.getItem('divisiones_history_learn') || '[]');
+        var proH = JSON.parse(localStorage.getItem('divisiones_history_pro') || '[]');
+        var combined = learnH.map(function(g) { return Object.assign({}, g, { _mk: 'learn' }); })
+            .concat(proH.map(function(g) { return Object.assign({}, g, { _mk: 'pro' }); }))
+            .sort(function(a, b) { return (b.ts || 0) - (a.ts || 0); })
+            .slice(0, 10);
+        var body = document.getElementById('dp-ranking-body');
+        var empty = document.getElementById('dp-ranking-empty');
+        if (!body) return;
+        if (combined.length === 0) {
+            body.innerHTML = '';
+            if (empty) empty.style.display = 'block';
+            return;
+        }
+        if (empty) empty.style.display = 'none';
+        body.innerHTML = combined.map(function(g) {
+            var mins = Math.floor(g.time/60).toString().padStart(2,'0');
+            var secs = (g.time%60).toString().padStart(2,'0');
+            var modeClass = g._mk === 'pro' ? 'dp-rank-mode pro' : 'dp-rank-mode';
+            var modeLabel = g._mk === 'learn' ? (t().statLearnValue||'Guiado') : (t().statProValue||'Reto');
+            var err = g.errors > 0 ? '<span style="color:var(--danger);font-weight:bold;">' + g.errors + ' err</span>' : '<span style="color:var(--success);">0 err</span>';
+            var safeG = JSON.stringify(g).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+            return '<div class="dp-rank-item" onclick=\'showSessionDetails(' + safeG + ')\'>' +
+                '<span class="' + modeClass + '">' + modeLabel + '</span>' +
+                '<span style="font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (g.name||'—') + '</span>' +
+                err +
+                '<span style="color:var(--muted);">' + mins + ':' + secs + '</span>' +
+                '</div>';
+        }).join('');
+    }
+
+</script>
+<script>
+var _initLang = new URLSearchParams(window.location.search).get('lang');
+    if (_initLang === 'es' || _initLang === 'en') {
+        appState.lang = _initLang;
+        localStorage.setItem('ivves_preferred_lang', _initLang);
+    } else {
+        var _savedLang = localStorage.getItem('ivves_preferred_lang');
+        if (_savedLang === 'es' || _savedLang === 'en') { appState.lang = _savedLang; _initLang = _savedLang; }
+    }
+    dpQuickGen();
+    dpRenderHomeRanking();
+    updateUITexts();
+    if (_initLang) showScreen('screen-menu');
+
+</script>
+</body>
+</html>

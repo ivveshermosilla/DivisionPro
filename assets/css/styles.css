@@ -361,6 +361,21 @@
             color: transparent;
         }
 
+        .sunset-text {
+            background:
+                linear-gradient(110deg, #f97316 0%, #fb7185 28%, #a855f7 58%, #2563eb 82%, #0f172a 100%);
+            background-size: 220% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: sunset-shimmer 7s ease-in-out infinite alternate;
+        }
+
+        @keyframes sunset-shimmer {
+            from { background-position: 0% 50%; }
+            to { background-position: 100% 50%; }
+        }
+
         .mini-stats {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));

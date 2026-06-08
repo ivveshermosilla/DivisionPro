@@ -1,5 +1,18 @@
 Changelog:
 
+[1.3.9] - Localized Brand and Sunset Hero Polish
+Added
+
+Archived Previous Official Version: Preserved the V1.3.8 modular release as `Versions/DivisionPRO V1.3.8.html`.
+
+Changed
+
+Topbar brand localization: The bold product name in the topbar now switches between `DivisionesPro` and `DivisionPro` with the ES/EN toggle.
+
+Home hero wording: Replaced the generic "Matemática guiada" / "Guided math" eyebrow with the more specific "División guiada" / "Guided division".
+
+Hero title treatment: The home hero title now uses `DivisionesPro` / `DivisionPro` with a sunset/dusk gradient animation inspired by MatPro's gradient title style.
+
 [1.3.8] - Modular HTML/CSS/JS Structure
 Added
 
