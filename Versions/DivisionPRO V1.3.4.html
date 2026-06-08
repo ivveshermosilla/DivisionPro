@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DivisionesPro V1.3.5</title>
+    <title>DivisionesPro V1.3.4</title>
     <style>
         :root {
             --bg: #f6f8fc;
@@ -2655,68 +2655,6 @@
             .guide-grid { grid-template-columns: 1fr; }
             .guide-wide { grid-template-columns: 1fr; }
         }
-        /* --- Menu home layout --- */
-        .menu-home-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1.1fr) minmax(290px, .9fr);
-            gap: 20px;
-            align-items: start;
-        }
-        .menu-hero { padding: 8px 0 0; }
-        .menu-hero .mini-stats { margin-top: 20px; }
-        .menu-hero .hero-actions { margin-top: 18px; flex-wrap: wrap; }
-        .dp-rank-item {
-            display: grid;
-            grid-template-columns: auto 1fr auto auto;
-            gap: 8px;
-            align-items: center;
-            padding: 10px 14px;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            background: rgba(248,250,252,.88);
-            cursor: pointer;
-            font-size: .88rem;
-        }
-        .dp-rank-item:hover { background: rgba(14,165,233,.07); }
-        .dp-rank-mode {
-            display: inline-flex;
-            align-items: center;
-            padding: 3px 8px;
-            border-radius: 999px;
-            font-size: .74rem;
-            font-weight: 1000;
-            background: rgba(14,165,233,.12);
-            color: #075985;
-        }
-        .dp-rank-mode.pro { background: rgba(139,92,246,.12); color: #5b21b6; }
-        .dp-quick-feedback {
-            min-height: 28px;
-            text-align: center;
-            font-weight: 900;
-            font-size: 1rem;
-        }
-        .dp-quick-problem {
-            text-align: center;
-            font-size: clamp(2rem, 5vw, 3rem);
-            font-weight: 1000;
-            color: var(--brand-strong);
-            margin: 8px 0;
-            letter-spacing: -.02em;
-        }
-        .dp-quick-dock {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 10px;
-            align-items: center;
-        }
-        .dp-quick-dock input {
-            min-height: 46px;
-            text-align: center;
-            font-size: 1.15rem;
-        }
-        @media (max-width: 860px) {
-            .menu-home-grid { grid-template-columns: 1fr; }
-        }
     </style>
 
 </head>
@@ -2744,10 +2682,13 @@
     </nav>
 
     <section id="screen-lang" class="screen app-frame dark">
+        <div class="status-bar">
+            <span></span>
+            <span class="status-chip">DivisionesPro</span>
+        </div>
         <div class="screen-body centered-screen">
-            <span class="eyebrow" id="txt-lang-eyebrow">Antes de dividir</span>
-            <h1 class="screen-title" id="txt-lang-title">DivisionesPro</h1>
-            <p class="screen-subtitle" id="txt-lang-subtitle">Selecciona tu idioma para comenzar la sesión.</p>
+            <h1 class="screen-title" id="txt-lang-title">Selecciona idioma</h1>
+            <p class="screen-subtitle" id="txt-lang-subtitle">Elige cómo quieres practicar. Puedes cambiarlo después desde la app.</p>
             <div class="cta-stack">
                 <button class="big-cta" onclick="setLanguage('es')" type="button">
                     <span id="txt-lang-es">Español</span>
@@ -2769,77 +2710,29 @@
                 <span class="lang-es">ES</span>
             </button>
         </div>
-        <div class="screen-body">
-            <div class="menu-home-grid">
-                <!-- Hero section -->
-                <div class="menu-hero">
-                    <span class="eyebrow" id="txt-home-eyebrow">Matemática guiada</span>
-                    <h1 class="menu-title" id="menu-title-text"><span class="gradient-text">Dividir</span> sin perderse.</h1>
-                    <p class="screen-subtitle" id="txt-home-copy">Practica división larga con guía paso a paso o mide tu rendimiento sin asistencia.</p>
-                    <div class="mini-stats">
-                        <div class="mini-stat"><strong id="txt-stat-learn-value">Modo guiado</strong><span id="txt-stat-learn-label">selecciona, divide, resta y baja</span></div>
-                        <div class="mini-stat"><strong id="txt-stat-pro-value">Modo reto</strong><span id="txt-stat-pro-label">sin asistencia con nota y grade</span></div>
-                        <div class="mini-stat"><strong id="txt-stat-mobile-value">Touch</strong><span id="txt-stat-mobile-label">arrastre real en móvil</span></div>
+        <div class="screen-body centered-screen" style="align-content:start; text-align:left; justify-items:stretch;">
+            <div style="text-align:center; margin: 10px auto 0;">
+                <span class="eyebrow" id="txt-home-eyebrow">Matemática guiada</span>
+                <h1 class="screen-title" id="menu-title-text">DivisionesPro</h1>
+                <p class="screen-subtitle" id="txt-home-copy">Practica división larga con guía o mide tu rendimiento sin ayuda.</p>
+            </div>
+            <div class="mode-grid">
+                <button class="mode-card learn" onclick="goToConfig('learn')" type="button">
+                    <div>
+                        <small id="txt-stat-learn-value">Modo guiado</small>
+                        <h5 id="btn-play">Aprende a dividir</h5>
+                        <p id="txt-sequence-2-copy">Paso a paso, con mensajes y corrección inmediata.</p>
                     </div>
-                    <div class="method-note">
-                        <strong id="txt-method-title">Mismo motor, interfaz moderna</strong>
-                        <span id="txt-method-copy">Las casillas indican la secuencia. El jugador arrastra números hacia el resultado, restos o bajada según corresponda.</span>
+                    <strong id="txt-mode-learn-cta">Comenzar →</strong>
+                </button>
+                <button class="mode-card pro" onclick="goToConfig('pro')" type="button">
+                    <div>
+                        <small id="txt-stat-pro-value">Modo reto</small>
+                        <h5 id="btn-play-pro">DivisionPro</h5>
+                        <p id="txt-game-pro-copy">Sin asistencia, con nota chilena y grade USA.</p>
                     </div>
-                    <div class="hero-actions">
-                        <button class="mode-card learn" onclick="goToConfig('learn')" type="button" style="flex:1; min-width:140px;">
-                            <div>
-                                <h5 id="btn-play">Aprende a dividir</h5>
-                                <p id="txt-sequence-2-copy">Paso a paso, con mensajes y corrección inmediata.</p>
-                            </div>
-                            <strong id="txt-mode-learn-cta">Comenzar →</strong>
-                        </button>
-                        <button class="mode-card pro" onclick="goToConfig('pro')" type="button" style="flex:1; min-width:140px;">
-                            <div>
-                                <h5 id="btn-play-pro">DivisionPro</h5>
-                                <p id="txt-game-pro-copy">Sin asistencia, con nota chilena y grade USA.</p>
-                            </div>
-                            <strong id="txt-mode-pro-cta">Entrenar →</strong>
-                        </button>
-                    </div>
-                </div>
-                <!-- Side panels -->
-                <div class="home-side">
-                    <!-- Active practice -->
-                    <div class="panel">
-                        <div class="card-header">
-                            <div>
-                                <h2 id="dp-txt-quick-title">División rápida</h2>
-                                <p id="dp-txt-quick-subtitle">División aleatoria cada vez que cargas la página.</p>
-                            </div>
-                            <span id="dp-txt-quick-chip" class="pill">Aleatoria</span>
-                        </div>
-                        <div class="ranking-list">
-                            <div id="dp-quick-label" class="section-label">División del momento</div>
-                            <div id="dp-quick-question" class="dp-quick-problem">? ÷ ?</div>
-                            <div class="dp-quick-dock">
-                                <input id="dp-quick-input" type="number" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="?" onkeydown="if(event.key==='Enter')dpQuickCheck()" />
-                                <button id="dp-txt-quick-check" class="btn-main" type="button" onclick="dpQuickCheck()">OK</button>
-                            </div>
-                            <div id="dp-quick-feedback" class="dp-quick-feedback" aria-live="polite"></div>
-                            <button id="dp-txt-quick-next" class="btn btn-secondary" style="width:100%; margin-top:6px;" type="button" onclick="dpQuickGen()">Otra división</button>
-                        </div>
-                    </div>
-                    <!-- Recent sessions -->
-                    <div class="panel">
-                        <div class="card-header">
-                            <div>
-                                <h2 id="dp-txt-ranking-title">Últimas partidas</h2>
-                                <p id="dp-txt-ranking-hint">Toca una fila para ver detalles.</p>
-                            </div>
-                            <span id="dp-txt-ranking-pill" class="pill">Historial</span>
-                        </div>
-                        <div id="dp-ranking-body" class="ranking-list" style="gap:8px;"></div>
-                        <p id="dp-ranking-empty" class="ranking-list" style="color:var(--muted); font-size:.88rem;"></p>
-                        <div class="ranking-list">
-                            <button id="dp-txt-ranking-clear" class="btn btn-secondary" style="width:100%;" type="button" onclick="dpClearHomeRanking()">Borrar historial</button>
-                        </div>
-                    </div>
-                </div>
+                    <strong id="txt-mode-pro-cta">Entrenar →</strong>
+                </button>
             </div>
         </div>
     </section>
@@ -3192,8 +3085,8 @@
             navSubtitle: "DivisionPro · practica división larga.",
             back: "Atrás",
             langEyebrow: "Antes de dividir",
-            langTitle: "DivisionesPro",
-            langSubtitle: "Selecciona tu idioma para comenzar la sesión.",
+            langTitle: "Selecciona idioma",
+            langSubtitle: "Elige cómo quieres practicar. Puedes cambiarlo después desde la app.",
             langEs: "Español",
             langEn: "English",
             configBack: "← Menú",
@@ -3279,30 +3172,17 @@
             tutorStep1Title: "Seleccionar", tutorStep1Copy: "Tocar los dígitos del dividendo para construir el número de trabajo. El juego indica cuántos tocar.",
             tutorStep2Title: "Arrastrar", tutorStep2Copy: "El jugador arrastra el cociente y el resto a las casillas correspondientes. Tocar es solo para seleccionar, no reemplaza el arrastre.",
             tutorStep3Title: "Bajar", tutorStep3Copy: "Cuando corresponde, arrastrar el siguiente dígito del dividendo a la casilla amarilla y continuar el proceso.",
-            quickTitle: "División rápida",
-            quickSubtitle: "División aleatoria cada vez que cargas la página.",
-            quickChip: "Aleatoria",
-            quickLabel: "División del momento",
-            quickCheck: "OK",
-            quickNext: "Otra división",
-            quickCorrect: "✓ Correcto",
-            quickWrong: "✗ Incorrecto, era:",
-            rankingTitle: "Últimas partidas",
-            rankingHint: "Toca una fila para ver detalles.",
-            rankingPill: "Historial local",
-            rankingClear: "Borrar historial",
-            rankingEmpty: "Aún no hay partidas guardadas.",
             aboutEyebrow: "Acerca de este proyecto", aboutTitle: "DivisionPro nació para que dividir tenga sentido.",
             aboutCopy1: "DivisionPro es la continuación natural de MatPro. Una vez que el jugador domina las tablas, está listo para practicar la división larga con el mismo enfoque visual y de movimiento.",
             aboutCopy2: "El proyecto nació del deseo de un padre de ayudar a su hijo Momo a superar la frustración con matemáticas, combinando apoyo familiar y desarrollo iterativo.",
-            aboutDedication: "Desarrollado con ❤️ para mi hijo y estudiantes en todo el mundo.", aboutClose: "Cerrar"
+            aboutDedication: "Developed with ❤️ for my son and students everywhere.", aboutClose: "Cerrar"
         },
         en: {
             navSubtitle: "DivisionPro · practice long division.",
             back: "Back",
             langEyebrow: "Before dividing",
-            langTitle: "DivisionPro",
-            langSubtitle: "Select your language to start the session.",
+            langTitle: "Choose language",
+            langSubtitle: "Choose how you want to practice. You can change it later from the app.",
             langEs: "Español",
             langEn: "English",
             configBack: "← Menu",
@@ -3388,19 +3268,6 @@
             tutorStep1Title: "Select", tutorStep1Copy: "Tap the dividend digits to build the working number. The game guides how many digits to select.",
             tutorStep2Title: "Drag", tutorStep2Copy: "The player drags the quotient and remainder to the corresponding boxes. Tapping is for selecting only — it does not replace dragging.",
             tutorStep3Title: "Bring down", tutorStep3Copy: "When needed, drag the next dividend digit to the yellow box and continue the process.",
-            quickTitle: "Quick division",
-            quickSubtitle: "A random division every time you load the page.",
-            quickChip: "Random",
-            quickLabel: "Division of the moment",
-            quickCheck: "OK",
-            quickNext: "Another division",
-            quickCorrect: "✓ Correct",
-            quickWrong: "✗ Incorrect, it was:",
-            rankingTitle: "Last sessions",
-            rankingHint: "Tap a row to see details.",
-            rankingPill: "Local history",
-            rankingClear: "Clear history",
-            rankingEmpty: "No sessions saved yet.",
             aboutEyebrow: "About this project", aboutTitle: "DivisionPro was built to make division make sense.",
             aboutCopy1: "DivisionPro is the natural next step after MatPro. Once the player has mastered the multiplication tables, they are ready to practice long division with the same visual and movement-based approach.",
             aboutCopy2: "The project grew from a father's wish to help his son Momo overcome frustration with mathematics, combining family support and iterative development.",
@@ -3577,18 +3444,7 @@
             'dp-txt-tutor-step3-title': txt.tutorStep3Title, 'dp-txt-tutor-step3-copy': txt.tutorStep3Copy,
             'dp-txt-about-eyebrow': txt.aboutEyebrow, 'dp-txt-about-title': txt.aboutTitle,
             'dp-txt-about-copy1': txt.aboutCopy1, 'dp-txt-about-copy2': txt.aboutCopy2,
-            'dp-txt-about-dedication': txt.aboutDedication, 'dp-txt-about-close': txt.aboutClose,
-            'dp-txt-quick-title': txt.quickTitle,
-            'dp-txt-quick-subtitle': txt.quickSubtitle,
-            'dp-txt-quick-chip': txt.quickChip,
-            'dp-quick-label': txt.quickLabel,
-            'dp-txt-quick-check': txt.quickCheck,
-            'dp-txt-quick-next': txt.quickNext,
-            'dp-txt-ranking-title': txt.rankingTitle,
-            'dp-txt-ranking-hint': txt.rankingHint,
-            'dp-txt-ranking-pill': txt.rankingPill,
-            'dp-txt-ranking-clear': txt.rankingClear,
-            'dp-ranking-empty': txt.rankingEmpty
+            'dp-txt-about-dedication': txt.aboutDedication, 'dp-txt-about-close': txt.aboutClose
         };
         
         for (const [id, val] of Object.entries(ids)) {
@@ -3626,7 +3482,6 @@
         if (homeTitle) homeTitle.innerHTML = txt.homeTitle;
         refreshLanguageToggle();
         updateDiffDesc();
-        dpRenderHomeRanking();
     }
 
 	    function syncInputs(source) {
@@ -4464,7 +4319,6 @@
 
         history.push(record);
         localStorage.setItem(getStorageKey(), JSON.stringify(history));
-        dpRenderHomeRanking();
     }
 
     function showGlobalHistory() {
@@ -4516,71 +4370,6 @@
         if(h || c) goToMenu(); else showScreen('screen-lang');
     }
 
-    // --- ACTIVE PRACTICE (QUICK DIVISION) ---
-    var _dpQ = { dividend: 0, divisor: 0, quotient: 0 };
-    function dpQuickGen() {
-        var divisor = Math.floor(Math.random() * 9) + 1;
-        var quotient = Math.floor(Math.random() * 12) + 1;
-        _dpQ = { dividend: divisor * quotient, divisor: divisor, quotient: quotient };
-        var el = document.getElementById('dp-quick-question');
-        if (el) el.textContent = _dpQ.dividend + ' ÷ ' + _dpQ.divisor;
-        var inp = document.getElementById('dp-quick-input');
-        if (inp) { inp.value = ''; inp.focus(); }
-        var fb = document.getElementById('dp-quick-feedback');
-        if (fb) { fb.textContent = ''; fb.style.color = ''; }
-    }
-    function dpQuickCheck() {
-        var val = parseInt(document.getElementById('dp-quick-input').value, 10);
-        var fb = document.getElementById('dp-quick-feedback');
-        if (!fb) return;
-        if (isNaN(val)) { fb.textContent = ''; return; }
-        if (val === _dpQ.quotient) {
-            fb.textContent = t().quickCorrect;
-            fb.style.color = 'var(--success)';
-        } else {
-            fb.textContent = t().quickWrong + ' ' + _dpQ.quotient;
-            fb.style.color = 'var(--danger)';
-        }
-    }
-    // --- HOME RANKING ---
-    function dpRenderHomeRanking() {
-        var learnH = JSON.parse(localStorage.getItem('divisiones_history_learn') || '[]');
-        var proH = JSON.parse(localStorage.getItem('divisiones_history_pro') || '[]');
-        var combined = learnH.slice().reverse().slice(0, 5).map(function(g) { return Object.assign({}, g, { _mk: 'learn' }); })
-            .concat(proH.slice().reverse().slice(0, 5).map(function(g) { return Object.assign({}, g, { _mk: 'pro' }); }));
-        var body = document.getElementById('dp-ranking-body');
-        var empty = document.getElementById('dp-ranking-empty');
-        if (!body) return;
-        if (combined.length === 0) {
-            body.innerHTML = '';
-            if (empty) empty.style.display = 'block';
-            return;
-        }
-        if (empty) empty.style.display = 'none';
-        body.innerHTML = combined.map(function(g) {
-            var mins = Math.floor(g.time/60).toString().padStart(2,'0');
-            var secs = (g.time%60).toString().padStart(2,'0');
-            var modeClass = g._mk === 'pro' ? 'dp-rank-mode pro' : 'dp-rank-mode';
-            var modeLabel = g._mk === 'learn' ? (t().statLearnValue||'Guiado') : (t().statProValue||'Reto');
-            var err = g.errors > 0 ? '<span style="color:var(--danger);font-weight:bold;">' + g.errors + ' err</span>' : '<span style="color:var(--success);">0 err</span>';
-            var safeG = JSON.stringify(g).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
-            return '<div class="dp-rank-item" onclick=\'showSessionDetails(' + safeG + ')\'>' +
-                '<span class="' + modeClass + '">' + modeLabel + '</span>' +
-                '<span style="font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (g.name||'—') + '</span>' +
-                err +
-                '<span style="color:var(--muted);">' + mins + ':' + secs + '</span>' +
-                '</div>';
-        }).join('');
-    }
-    function dpClearHomeRanking() {
-        if (confirm(t().resetConfirm)) {
-            localStorage.removeItem('divisiones_history_learn');
-            localStorage.removeItem('divisiones_history_pro');
-            dpRenderHomeRanking();
-        }
-    }
-    dpQuickGen();
-    dpRenderHomeRanking();
     updateUITexts();
 </script>
 </body>

@@ -1,5 +1,16 @@
 Changelog:
 
+[1.3.5] - Menu Overhaul and Home Screen Panels
+Added
+
+Main menu redesign: Two-column layout (hero left, panels right) matching MatPro's visual quality — eyebrow, gradient headline, subtitle, mini-stats, method note, and side-by-side mode buttons.
+Language screen: Eyebrow text, app name as h1, and improved subtitle, matching MatPro's intro screen structure.
+Active practice panel: Random division problem on the home screen with typed answer, instant feedback, and a "next division" button — equivalent to MatPro's quick multiplication widget.
+Last sessions panel: Shows the last 5 Learn sessions and last 5 Pro sessions from localStorage, with clickable rows that open session details. Clears with a single button.
+Bilingual: All new elements fully translate with the ES/EN toggle. Language toggle also refreshes the session history labels.
+Ranking auto-refresh: History panel labels (Guiado / Reto) update instantly when the language is toggled.
+Session save refresh: Home ranking panel refreshes automatically after each saved game.
+
 [1.3.4] - Cross-App Navigation and Tutor Guide
 Added
 
