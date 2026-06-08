@@ -1542,7 +1542,7 @@
             padding: clamp(12px, 2vw, 22px) 0 40px;
         }
 
-        .legacy-topbar { display: none !important; }
+        #dp-topbar { margin-bottom: 14px; }
         .hidden { display: none !important; }
 
         .screen {
@@ -2722,21 +2722,17 @@
 </head>
 <body>
 <main class="app-shell">
-    <nav class="topbar legacy-topbar" aria-label="Principal">
-        <div class="brand-lockup" aria-label="DivisionPro">
+    <nav class="topbar hidden" id="dp-topbar" aria-label="Principal">
+        <div class="brand-lockup" aria-label="DivisionesPro">
             <div class="logo">D÷</div>
             <div class="brand-title">
-                <strong>DivisionPro</strong>
-                <span id="txt-nav-subtitle">DivisionPro · practica división larga.</span>
+                <strong>DivisionesPro</strong>
+                <span id="txt-nav-subtitle">DivisionesPro · practica la división larga.</span>
             </div>
         </div>
-
         <div class="top-actions">
-            <button class="btn-back hidden" id="global-back-btn" onclick="handleGlobalBack()" type="button">Atrás</button>
-            <button class="btn-history-float hidden" id="global-history-btn" onclick="showGlobalHistory()" type="button">
-                <span id="btn-history-float-text"></span>
-            </button>
-            <button class="lang-toggle-float hidden" id="global-lang-btn" onclick="toggleInGameLang()" type="button" data-active-lang="es" aria-label="Cambiar idioma">
+            <button class="top-link-btn" id="dp-txt-tutor-btn" type="button" onclick="document.getElementById('modal-dp-tutor').classList.remove('hidden')">Guía del tutor</button>
+            <button class="lang-switch-inline js-lang-toggle" onclick="toggleInGameLang()" type="button" data-active-lang="es" aria-label="Cambiar idioma">
                 <span class="lang-en">EN</span>
                 <span class="lang-es">ES</span>
             </button>
@@ -2762,13 +2758,6 @@
     </section>
 
     <section id="screen-menu" class="screen app-frame hidden">
-        <div class="status-bar">
-            <button class="status-chip as-button" id="dp-txt-tutor-btn" type="button" onclick="document.getElementById('modal-dp-tutor').classList.remove('hidden')">Guía del tutor</button>
-            <button class="lang-switch-inline js-lang-toggle" onclick="toggleInGameLang()" type="button" data-active-lang="es" aria-label="Cambiar idioma">
-                <span class="lang-en">EN</span>
-                <span class="lang-es">ES</span>
-            </button>
-        </div>
         <div class="screen-body">
             <div class="menu-home-grid">
                 <!-- Hero section -->
@@ -3189,7 +3178,7 @@
 
     const TEXTS = {
         es: {
-            navSubtitle: "DivisionPro · practica división larga.",
+            navSubtitle: "DivisionesPro · practica la división larga.",
             back: "Atrás",
             langEyebrow: "Antes de dividir",
             langTitle: "DivisionesPro",
@@ -3429,34 +3418,16 @@
         clearTouchDragArtifacts();
         document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
-        
-        const langBtn = document.getElementById('global-lang-btn');
-        const backBtn = document.getElementById('global-back-btn');
-        const histBtn = document.getElementById('global-history-btn');
-        
-        langBtn.classList.remove('hidden');
-        backBtn.classList.remove('hidden');
-        histBtn.classList.add('hidden'); 
-
-	        if (id === 'screen-lang') {
-	            langBtn.classList.add('hidden');
-	            backBtn.classList.add('hidden');
-	        } else if (id === 'screen-menu') {
-	            backBtn.classList.add('hidden');
-	            backBtn.onclick = () => showScreen('screen-lang'); 
-	        } else if (id === 'screen-config') {
-            backBtn.onclick = () => showScreen('screen-menu');
-            histBtn.classList.remove('hidden'); 
-        } else if (id === 'screen-history') {
-            backBtn.onclick = () => goToConfig(appState.currentMode); 
-        } else {
-            backBtn.classList.add('hidden'); 
-            window.dispatchEvent(new Event('resize')); 
+        const topbar = document.getElementById('dp-topbar');
+        if (topbar) topbar.classList.toggle('hidden', id !== 'screen-menu');
+        if (id === 'screen-game-learn' || id === 'screen-game-pro') {
+            window.dispatchEvent(new Event('resize'));
         }
     }
 
     function toggleInGameLang() {
         appState.lang = appState.lang === 'es' ? 'en' : 'es';
+        localStorage.setItem('ivves_preferred_lang', appState.lang);
         updateUITexts();
         
         if (!document.getElementById('screen-game-learn').classList.contains('hidden')) renderLearnGame();
@@ -3474,7 +3445,7 @@
         }
     }
 
-    function setLanguage(l) { appState.lang = l; updateUITexts(); showScreen('screen-menu'); }
+    function setLanguage(l) { appState.lang = l; localStorage.setItem('ivves_preferred_lang', l); updateUITexts(); showScreen('screen-menu'); }
     function goToMenu() { stopTimers(); showScreen('screen-menu'); }
     function goToConfig(mode) { appState.currentMode = mode; updateUITexts(); showScreen('screen-config'); }
     
@@ -3505,7 +3476,6 @@
         
         const ids = {
 	            'txt-nav-subtitle': txt.navSubtitle,
-	            'global-back-btn': txt.back,
 	            'txt-config-back': txt.configBack,
 	            'txt-history-back': txt.historyBack,
 	            'txt-lang-eyebrow': txt.langEyebrow,
@@ -3596,11 +3566,13 @@
             if(el) {
                 if(id === 'inst-text' || id === 'txt-home-title') el.innerHTML = val;
                 else if (id === 'score-title') {
-                    el.innerText = (appState.game.lastName && document.getElementById('modal-name').classList.contains('hidden')) ? val + " " + appState.game.lastName : val; 
+                    el.innerText = (appState.game.lastName && document.getElementById('modal-name').classList.contains('hidden')) ? val + " " + appState.game.lastName : val;
                 }
                 else el.innerText = val;
             }
         }
+        const _mpLink = document.getElementById('dp-txt-footer-matpro');
+        if (_mpLink) _mpLink.href = 'https://ivveshermosilla.github.io/matpro-triple-method/?lang=' + appState.lang;
         
 	        const card = document.getElementById('inst-card-container');
 	        const startBtn = document.getElementById('btn-start-action');
@@ -4579,9 +4551,18 @@
             dpRenderHomeRanking();
         }
     }
+    var _initLang = new URLSearchParams(window.location.search).get('lang');
+    if (_initLang === 'es' || _initLang === 'en') {
+        appState.lang = _initLang;
+        localStorage.setItem('ivves_preferred_lang', _initLang);
+    } else {
+        var _savedLang = localStorage.getItem('ivves_preferred_lang');
+        if (_savedLang === 'es' || _savedLang === 'en') { appState.lang = _savedLang; _initLang = _savedLang; }
+    }
     dpQuickGen();
     dpRenderHomeRanking();
     updateUITexts();
+    if (_initLang) showScreen('screen-menu');
 </script>
 </body>
 </html>
