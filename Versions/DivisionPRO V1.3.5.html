@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DivisionesPro V1.3.6</title>
+    <title>DivisionesPro V1.3.5</title>
     <style>
         :root {
             --bg: #f6f8fc;
@@ -1542,7 +1542,7 @@
             padding: clamp(12px, 2vw, 22px) 0 40px;
         }
 
-        #dp-topbar { margin-bottom: 14px; }
+        .legacy-topbar { display: none !important; }
         .hidden { display: none !important; }
 
         .screen {
@@ -2722,17 +2722,21 @@
 </head>
 <body>
 <main class="app-shell">
-    <nav class="topbar hidden" id="dp-topbar" aria-label="Principal">
-        <div class="brand-lockup" aria-label="DivisionesPro">
+    <nav class="topbar legacy-topbar" aria-label="Principal">
+        <div class="brand-lockup" aria-label="DivisionPro">
             <div class="logo">D÷</div>
             <div class="brand-title">
-                <strong>DivisionesPro</strong>
-                <span id="txt-nav-subtitle">DivisionesPro · practica la división larga.</span>
+                <strong>DivisionPro</strong>
+                <span id="txt-nav-subtitle">DivisionPro · practica división larga.</span>
             </div>
         </div>
+
         <div class="top-actions">
-            <button class="top-link-btn" id="dp-txt-tutor-btn" type="button" onclick="document.getElementById('modal-dp-tutor').classList.remove('hidden')">Guía del tutor</button>
-            <button class="lang-switch-inline js-lang-toggle" onclick="toggleInGameLang()" type="button" data-active-lang="es" aria-label="Cambiar idioma">
+            <button class="btn-back hidden" id="global-back-btn" onclick="handleGlobalBack()" type="button">Atrás</button>
+            <button class="btn-history-float hidden" id="global-history-btn" onclick="showGlobalHistory()" type="button">
+                <span id="btn-history-float-text"></span>
+            </button>
+            <button class="lang-toggle-float hidden" id="global-lang-btn" onclick="toggleInGameLang()" type="button" data-active-lang="es" aria-label="Cambiar idioma">
                 <span class="lang-en">EN</span>
                 <span class="lang-es">ES</span>
             </button>
@@ -2758,6 +2762,13 @@
     </section>
 
     <section id="screen-menu" class="screen app-frame hidden">
+        <div class="status-bar">
+            <button class="status-chip as-button" id="dp-txt-tutor-btn" type="button" onclick="document.getElementById('modal-dp-tutor').classList.remove('hidden')">Guía del tutor</button>
+            <button class="lang-switch-inline js-lang-toggle" onclick="toggleInGameLang()" type="button" data-active-lang="es" aria-label="Cambiar idioma">
+                <span class="lang-en">EN</span>
+                <span class="lang-es">ES</span>
+            </button>
+        </div>
         <div class="screen-body">
             <div class="menu-home-grid">
                 <!-- Hero section -->
@@ -2824,6 +2835,9 @@
                         </div>
                         <div id="dp-ranking-body" class="ranking-list" style="gap:8px;"></div>
                         <p id="dp-ranking-empty" class="ranking-list" style="color:var(--muted); font-size:.88rem;"></p>
+                        <div class="ranking-list">
+                            <button id="dp-txt-ranking-clear" class="btn btn-secondary" style="width:100%;" type="button" onclick="dpClearHomeRanking()">Borrar historial</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3175,7 +3189,7 @@
 
     const TEXTS = {
         es: {
-            navSubtitle: "DivisionesPro · practica la división larga.",
+            navSubtitle: "DivisionPro · practica división larga.",
             back: "Atrás",
             langEyebrow: "Antes de dividir",
             langTitle: "DivisionesPro",
@@ -3415,16 +3429,34 @@
         clearTouchDragArtifacts();
         document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
-        const topbar = document.getElementById('dp-topbar');
-        if (topbar) topbar.classList.toggle('hidden', id !== 'screen-menu');
-        if (id === 'screen-game-learn' || id === 'screen-game-pro') {
-            window.dispatchEvent(new Event('resize'));
+        
+        const langBtn = document.getElementById('global-lang-btn');
+        const backBtn = document.getElementById('global-back-btn');
+        const histBtn = document.getElementById('global-history-btn');
+        
+        langBtn.classList.remove('hidden');
+        backBtn.classList.remove('hidden');
+        histBtn.classList.add('hidden'); 
+
+	        if (id === 'screen-lang') {
+	            langBtn.classList.add('hidden');
+	            backBtn.classList.add('hidden');
+	        } else if (id === 'screen-menu') {
+	            backBtn.classList.add('hidden');
+	            backBtn.onclick = () => showScreen('screen-lang'); 
+	        } else if (id === 'screen-config') {
+            backBtn.onclick = () => showScreen('screen-menu');
+            histBtn.classList.remove('hidden'); 
+        } else if (id === 'screen-history') {
+            backBtn.onclick = () => goToConfig(appState.currentMode); 
+        } else {
+            backBtn.classList.add('hidden'); 
+            window.dispatchEvent(new Event('resize')); 
         }
     }
 
     function toggleInGameLang() {
         appState.lang = appState.lang === 'es' ? 'en' : 'es';
-        localStorage.setItem('ivves_preferred_lang', appState.lang);
         updateUITexts();
         
         if (!document.getElementById('screen-game-learn').classList.contains('hidden')) renderLearnGame();
@@ -3442,7 +3474,7 @@
         }
     }
 
-    function setLanguage(l) { appState.lang = l; localStorage.setItem('ivves_preferred_lang', l); updateUITexts(); showScreen('screen-menu'); }
+    function setLanguage(l) { appState.lang = l; updateUITexts(); showScreen('screen-menu'); }
     function goToMenu() { stopTimers(); showScreen('screen-menu'); }
     function goToConfig(mode) { appState.currentMode = mode; updateUITexts(); showScreen('screen-config'); }
     
@@ -3473,6 +3505,7 @@
         
         const ids = {
 	            'txt-nav-subtitle': txt.navSubtitle,
+	            'global-back-btn': txt.back,
 	            'txt-config-back': txt.configBack,
 	            'txt-history-back': txt.historyBack,
 	            'txt-lang-eyebrow': txt.langEyebrow,
@@ -3554,6 +3587,7 @@
             'dp-txt-ranking-title': txt.rankingTitle,
             'dp-txt-ranking-hint': txt.rankingHint,
             'dp-txt-ranking-pill': txt.rankingPill,
+            'dp-txt-ranking-clear': txt.rankingClear,
             'dp-ranking-empty': txt.rankingEmpty
         };
         
@@ -3562,13 +3596,11 @@
             if(el) {
                 if(id === 'inst-text' || id === 'txt-home-title') el.innerHTML = val;
                 else if (id === 'score-title') {
-                    el.innerText = (appState.game.lastName && document.getElementById('modal-name').classList.contains('hidden')) ? val + " " + appState.game.lastName : val;
+                    el.innerText = (appState.game.lastName && document.getElementById('modal-name').classList.contains('hidden')) ? val + " " + appState.game.lastName : val; 
                 }
                 else el.innerText = val;
             }
         }
-        const _mpLink = document.getElementById('dp-txt-footer-matpro');
-        if (_mpLink) _mpLink.href = 'https://ivveshermosilla.github.io/matpro-triple-method/?lang=' + appState.lang;
         
 	        const card = document.getElementById('inst-card-container');
 	        const startBtn = document.getElementById('btn-start-action');
@@ -4425,7 +4457,7 @@
         let totalErrors = appState.currentMode === 'learn' ? appState.game.stats.reduce((acc, curr) => acc + curr.errors, 0) : appState.game.currentErrors;
         const now = new Date(); const dateString = `${now.getDate()}/${now.getMonth()+1} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
         
-        let record = { date: dateString, ts: Date.now(), name: name, mode: appState.config.difficulty, time: totalDuration, errors: totalErrors, totalQs: appState.config.qCount, stats: appState.game.stats };
+        let record = { date: dateString, name: name, mode: appState.config.difficulty, time: totalDuration, errors: totalErrors, totalQs: appState.config.qCount, stats: appState.game.stats };
         if(appState.currentMode === 'pro' && appState.game.scoreData) {
             record.scoreData = appState.game.scoreData;
         }
@@ -4474,7 +4506,7 @@
     function showSessionDetails(gameData) {
         appState.game.currentlyViewingHistory = gameData;
         if(!gameData.stats) { document.getElementById('modal-details-content').innerHTML = "<p style='padding:20px;text-align:center;'>Esta partida no contiene detalles guardados.</p>"; } 
-        else { const oQCount = appState.config.qCount; if(gameData.totalQs) appState.config.qCount = gameData.totalQs; renderDetailedLog(gameData.stats, 'modal-details-content', gameData._mk || appState.currentMode); appState.config.qCount = oQCount; }
+        else { const oQCount = appState.config.qCount; if(gameData.totalQs) appState.config.qCount = gameData.totalQs; renderDetailedLog(gameData.stats, 'modal-details-content', appState.currentMode); appState.config.qCount = oQCount; }
         document.getElementById('modal-details').classList.remove('hidden');
     }
 
@@ -4514,10 +4546,8 @@
     function dpRenderHomeRanking() {
         var learnH = JSON.parse(localStorage.getItem('divisiones_history_learn') || '[]');
         var proH = JSON.parse(localStorage.getItem('divisiones_history_pro') || '[]');
-        var combined = learnH.map(function(g) { return Object.assign({}, g, { _mk: 'learn' }); })
-            .concat(proH.map(function(g) { return Object.assign({}, g, { _mk: 'pro' }); }))
-            .sort(function(a, b) { return (b.ts || 0) - (a.ts || 0); })
-            .slice(0, 10);
+        var combined = learnH.slice().reverse().slice(0, 5).map(function(g) { return Object.assign({}, g, { _mk: 'learn' }); })
+            .concat(proH.slice().reverse().slice(0, 5).map(function(g) { return Object.assign({}, g, { _mk: 'pro' }); }));
         var body = document.getElementById('dp-ranking-body');
         var empty = document.getElementById('dp-ranking-empty');
         if (!body) return;
@@ -4542,18 +4572,16 @@
                 '</div>';
         }).join('');
     }
-    var _initLang = new URLSearchParams(window.location.search).get('lang');
-    if (_initLang === 'es' || _initLang === 'en') {
-        appState.lang = _initLang;
-        localStorage.setItem('ivves_preferred_lang', _initLang);
-    } else {
-        var _savedLang = localStorage.getItem('ivves_preferred_lang');
-        if (_savedLang === 'es' || _savedLang === 'en') { appState.lang = _savedLang; _initLang = _savedLang; }
+    function dpClearHomeRanking() {
+        if (confirm(t().resetConfirm)) {
+            localStorage.removeItem('divisiones_history_learn');
+            localStorage.removeItem('divisiones_history_pro');
+            dpRenderHomeRanking();
+        }
     }
     dpQuickGen();
     dpRenderHomeRanking();
     updateUITexts();
-    if (_initLang) showScreen('screen-menu');
 </script>
 </body>
 </html>

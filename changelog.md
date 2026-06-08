@@ -1,11 +1,18 @@
 Changelog:
 
-[1.3.6] - Persistent Navbar and Cross-App Language Bridge
+[1.3.6] - Persistent Navbar, Cross-App Language Bridge, and History Corrections
 Added
 
 Persistent top navbar: Logo, app title, subtitle, Guía del tutor button, and EN/ES toggle now live in a persistent navbar above the app card — same layout as MatPro (branding on left, actions on right). The navbar is visible on the home menu screen; hidden on language selection and game screens.
 Language bridge: Selecting a language or toggling saves to localStorage (key: ivves_preferred_lang). On next visit — or when arriving from MatPro — the app auto-detects the saved language and skips the language selection screen.
 URL lang param: Footer link to MatPro appends ?lang=es/en; clicking it in MatPro opens DivisionPro in the same language automatically. Same mechanism works in reverse.
+Timestamp on saved sessions: Each session record now stores ts: Date.now() for reliable chronological sorting.
+
+Fixed
+
+Home recent sessions now show the true latest 10 sessions combined across both modes, sorted by timestamp, instead of "last 5 learn + last 5 pro" independently.
+Session detail opened from the home panel now renders with the session's original mode (learn or pro) instead of the current appState.currentMode, so error logs display the correct format regardless of which mode is active at click time.
+Removed the home-level "Borrar historial" button that silently deleted both mode histories. Destructive history clearing belongs in each mode's own history screen.
 
 [1.3.5] - Menu Overhaul and Home Screen Panels
 Added
