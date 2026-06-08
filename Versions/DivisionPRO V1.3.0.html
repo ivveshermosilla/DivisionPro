@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DivisionesPro V1.3.1</title>
+    <title>DivisionesPro V1.3.0</title>
     <style>
         :root {
             --bg: #f6f8fc;
@@ -1495,7 +1495,7 @@
             }
         }
 
-        /* DivisionesPro V1.3.1 modern app shell */
+        /* DivisionesPro V1.3.0 modern app shell */
         :root {
             --bg-0: #eef5ff;
             --bg-1: #f8fbff;
@@ -2035,11 +2035,6 @@
             border-color: #ef4444;
             color: #991b1b;
             border-style: solid;
-        }
-
-        .drop-zone.incorrect::after {
-            content: none !important;
-            display: none !important;
         }
 
         .drop-zone.active-residue-input {
@@ -3583,30 +3578,9 @@
         renderLearnGame();
     }
 
-    function getDropValue(e, key) {
-        if (!e.dataTransfer || typeof e.dataTransfer.getData !== 'function') return "";
-        const value = e.dataTransfer.getData(key);
-        return value === null || value === undefined ? "" : String(value);
-    }
-
-    function getDropInteger(e, ...keys) {
-        for (const key of keys) {
-            const raw = getDropValue(e, key).trim();
-            if (raw === "") continue;
-            const parsed = Number.parseInt(raw, 10);
-            if (Number.isFinite(parsed)) return parsed;
-        }
-        return null;
-    }
-
     function handleLearnDrop(e, actionType, boxIdx) {
-        e.preventDefault();
-        const type = getDropValue(e, "type");
-        const g = learnLogic;
-        if (actionType === 'QUOTIENT') {
-            if (g.step !== 'QUOTIENT' || type !== 'number') return;
-            const val = getDropInteger(e, "text", "val");
-            if (val === null || boxIdx < 0 || boxIdx >= g.quotientLength) return;
+        e.preventDefault(); const val = parseInt(e.dataTransfer.getData("text")); const type = e.dataTransfer.getData("type"); const g = learnLogic;
+        if (actionType === 'QUOTIENT' && type === 'number') {
             const corr = Math.floor(g.currentWorkingVal / g.divisor), isC = (val === corr);
             if(!isC) { 
                 const isDup = appState.game.currentLogs.some(l => l.type === 'QUOTIENT' && l.workingVal === g.currentWorkingVal && l.input === val);
@@ -3618,12 +3592,8 @@
             if (g.quotientFound[boxIdx]) g.quotientFound[boxIdx] = { val: val, status: isC ? 'correct' : 'incorrect' }; else g.quotientFound.push({ val: val, status: isC ? 'correct' : 'incorrect' });
             if (isC) { g.step = 'RESIDUE'; g.expectedRemainderString = (g.currentWorkingVal - (corr * g.divisor)).toString(); g.tempResidues = new Array(g.expectedRemainderString.length).fill(null); }
         }
-        else if (actionType === 'RESIDUE') {
-            if (g.step !== 'RESIDUE' || type !== 'number' || !Array.isArray(g.tempResidues)) return;
-            const val = getDropInteger(e, "text", "val");
-            if (val === null || boxIdx < 0 || boxIdx >= g.tempResidues.length) return;
+        else if (actionType === 'RESIDUE' && type === 'number') {
             const exp = parseInt(g.expectedRemainderString[boxIdx]), isC = (val === exp);
-            if (!Number.isFinite(exp)) return;
             if(!isC) { 
                 const sub = g.quotientFound[g.quotientFound.length-1].val * g.divisor; 
                 const isDup = appState.game.currentLogs.some(l => l.type === 'RESIDUE' && l.workingVal === g.currentWorkingVal && l.input === val && l.boxIdx === boxIdx);
@@ -3638,11 +3608,8 @@
                 g.step = (g.usedIndices.length < g.divDigits.length) ? 'BRINGDOWN' : 'FINISH';
             }
         }
-        else if (actionType === 'BRINGDOWN') {
-            if (g.step !== 'BRINGDOWN' || type !== 'bringdown') return;
-            const oIdx = getDropInteger(e, "idx"), oVal = getDropInteger(e, "val", "text");
-            const expectedIdx = Math.max(...(g.selectedIndices.length ? g.selectedIndices : [-1])) + 1;
-            if (oIdx === null || oVal === null || oIdx !== expectedIdx) return;
+        else if (actionType === 'BRINGDOWN' && type === 'bringdown') {
+            const oIdx = parseInt(e.dataTransfer.getData("idx")), oVal = parseInt(e.dataTransfer.getData("val"));
             g.rows.push({ residueStr: g.expectedRemainderString, brought: oVal, alignIndex: g.selectedIndices[g.selectedIndices.length - 1] });
             g.usedIndices.push(oIdx); g.currentWorkingVal = parseInt(g.expectedRemainderString + oVal.toString()); g.selectedIndices.push(oIdx); g.tempResidues = null; g.step = 'QUOTIENT';
         }
@@ -3840,22 +3807,14 @@
     }
 
     function handleProDrop(e, type, rIdx, cIdx) {
-        e.preventDefault();
-        const dT = getDropValue(e, "type");
-        let val;
-        if(dT === "number" || dT === "bringdown") val = getDropInteger(e, "text", "val");
-        else return;
-        if (val === null) return;
+        e.preventDefault(); const dT = e.dataTransfer.getData("type"); let val;
+        if(dT === "number" || dT === "bringdown") { val = parseInt(e.dataTransfer.getData("text") || e.dataTransfer.getData("val")); } else return;
         const ans = appState.proGame.answers[appState.game.currentQ];
         if(type === 'Q') {
-            if (rIdx < 0 || rIdx >= ans.quotients.length) return;
             ans.quotients[rIdx] = val;
             appState.proGame.selections = { div: [], res: [] }; 
         }
-        if(type === 'R') {
-            if (!ans.residues[rIdx] || cIdx < 0 || cIdx >= ans.residues[rIdx].length) return;
-            ans.residues[rIdx][cIdx] = val;
-        }
+        if(type === 'R') ans.residues[rIdx][cIdx] = val;
         renderProGame();
     }
 

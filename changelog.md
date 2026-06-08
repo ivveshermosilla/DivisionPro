@@ -252,3 +252,20 @@ Fixed
 Guided Mode Sequence Guard: Fixed a critical bug where clicking a non-active dividend digit could skip the intended first division step. Learn mode now accepts only the active/blinking digit in sequence.
 
 State Reset: Reset the guided-mode working value every time a new question loads to prevent residual state from previous questions.
+
+[1.3.1] - Mobile Drop Guard Fix
+Added
+
+Archived Previous Official Version: Preserved the V1.3.0 release as `Versions/DivisionPRO V1.3.0.html`.
+
+Fixed
+
+Mobile Remainder NaN Guard: Fixed a mobile Learn mode issue where a duplicate or stale drop event could write `NaN` into the remainder box after the correct `0` had already completed the question.
+
+Drop Validation Consistency: Learn and Pro modes now ignore drops that do not contain a valid numeric payload, preventing invalid values from being written into quotient or remainder boxes.
+
+Stale Step Protection: Learn mode now ignores quotient, remainder, and bring-down drops unless the game is currently in the matching active step.
+
+Changed
+
+Incorrect Box Marker: Removed the visual "x" marker from incorrect boxes while keeping tap-to-clear and replacement behavior intact.
