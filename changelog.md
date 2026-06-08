@@ -229,3 +229,26 @@ Fixed
 Localization Polish: Fixed an internal dictionary bug where the "Question omitted" error string was hardcoded in English while playing in Spanish.
 
 Terminology: Standardized the American grading label to "Grade (USA)" for better international clarity.
+
+[1.3.0] - Modern Mobile-First App Interface
+Added
+
+Modern App Shell: Rebuilt the interface with the new DivisionesPro visual system: app-frame screens, status chips, large mode cards, math cards, score cards, and responsive history tables.
+
+Mobile-First Layout: Reworked Learn and Pro gameplay layouts so the math area, keypad, messages, and navigation remain usable on desktop, iPad/tablets, phones, and landscape orientation.
+
+Archived Previous Official Version: Preserved the prior official `index.html` as `Versions/DivisionPRO V1.2.2 before V1.3.0.html`.
+
+Changed
+
+Main Menu Simplification: Removed the unnecessary "back to language" action from the main menu because the ES/EN switch is always available.
+
+Scoreboard Access: Removed the scoreboard from the main menu. Scoreboards are now accessed from each mode configuration or from session results, keeping history scoped to the active mode.
+
+Mode-Specific History: Confirmed separate LocalStorage keys for each mode: `divisiones_history_learn` and `divisiones_history_pro`.
+
+Fixed
+
+Guided Mode Sequence Guard: Fixed a critical bug where clicking a non-active dividend digit could skip the intended first division step. Learn mode now accepts only the active/blinking digit in sequence.
+
+State Reset: Reset the guided-mode working value every time a new question loads to prevent residual state from previous questions.

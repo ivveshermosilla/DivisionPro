@@ -12,8 +12,9 @@ DivisionPro is the direct successor to [**MatPro**](https://github.com/ivvesherm
 ## 🚀 Key Features
 * **🎓 Guided Mode (Learn to Divide)**: A step-by-step assisted system that prevents common errors and teaches the "Select-Divide-Subtract-Bring Down" cycle.
 * **🚀 Pro Mode (DivisionPro)**: Independent practice with advanced aids like visual highlighting and a smart scratchpad.
-* **📊 Dual Grading System (V1.2.2)**: Performance evaluation tailored for both **USA (A-F)** and **Chile (1.0-7.0)** standards.
+* **📊 Dual Grading System**: Performance evaluation tailored for both **USA (A-F)** and **Chile (1.0-7.0)** standards.
 * **🌎 Multilingual Support**: Switch between English and Spanish seamlessly.
+* **📱 Modern Mobile-First Interface (V1.3.0)**: A refreshed app-style layout designed for desktop, tablets, and phones, with real drag interactions preserved.
 
 ## 🛠️ Technical Overview
 * **Logic**: Vanilla JavaScript with custom algorithms for division scaffolding.
