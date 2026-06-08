@@ -1,5 +1,12 @@
 Changelog:
 
+[1.3.6] - Persistent Navbar and Cross-App Language Bridge
+Added
+
+Persistent top navbar: Logo, app title, subtitle, Guía del tutor button, and EN/ES toggle now live in a persistent navbar above the app card — same layout as MatPro (branding on left, actions on right). The navbar is visible on the home menu screen; hidden on language selection and game screens.
+Language bridge: Selecting a language or toggling saves to localStorage (key: ivves_preferred_lang). On next visit — or when arriving from MatPro — the app auto-detects the saved language and skips the language selection screen.
+URL lang param: Footer link to MatPro appends ?lang=es/en; clicking it in MatPro opens DivisionPro in the same language automatically. Same mechanism works in reverse.
+
 [1.3.5] - Menu Overhaul and Home Screen Panels
 Added
 
