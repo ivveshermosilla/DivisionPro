@@ -1,5 +1,18 @@
 Changelog:
 
+[1.3.8] - Modular HTML/CSS/JS Structure
+Added
+
+Archived Previous Official Version: Preserved the V1.3.7 release as `Versions/DivisionPRO V1.3.7.html`.
+
+Technical Spec: Added `docs/TECHNICAL_SPEC.md` with the current file map, script loading order, storage keys, sensitive gameplay areas, and validation checklist.
+
+Changed
+
+Professional file structure: Split the former single-file `index.html` into a focused HTML shell, `assets/css/styles.css`, and JavaScript files grouped by family of functions under `assets/js/`.
+
+Behavior preservation: Kept classic non-module script loading so existing inline HTML handlers, drag-and-drop behavior, language switching, localStorage history, and GitHub Pages compatibility continue to work without a build step.
+
 [1.3.7] - MatPro-Aligned Language Start Screen
 Added
 

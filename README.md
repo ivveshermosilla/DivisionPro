@@ -17,6 +17,7 @@ DivisionPro is the direct successor to [**MatPro**](https://github.com/ivvesherm
 * **📱 Modern Mobile-First Interface (V1.3.0)**: A refreshed app-style layout designed for desktop, tablets, and phones, with real drag interactions preserved.
 
 ## 🛠️ Technical Overview
+* **Structure**: Professional static app split into `index.html`, `assets/css/styles.css`, and grouped JavaScript files under `assets/js/`.
 * **Logic**: Vanilla JavaScript with custom algorithms for division scaffolding.
 * **Persistence**: LocalStorage for keeping track of progress and historical scores.
 * **Design**: Pure HTML5/CSS3 focused on a distraction-free environment for students.
