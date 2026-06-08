@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DivisionesPro V1.3.4</title>
+    <title>DivisionesPro V1.3.3</title>
     <style>
         :root {
             --bg: #f6f8fc;
@@ -2519,142 +2519,6 @@
                 min-height: 46px;
             }
         }
-
-        /* --- Footer and guide modal styles --- */
-        .app-footer {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            padding: 22px 0 10px;
-            color: var(--muted);
-        }
-        .app-footer a,
-        .app-footer button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 38px;
-            padding: 8px 14px;
-            border: 1px solid var(--stroke);
-            border-radius: 999px;
-            background: rgba(255,255,255,.76);
-            font-size: .88rem;
-            font-weight: 900;
-            text-decoration: none;
-            color: var(--primary);
-            cursor: pointer;
-        }
-        .modal-card {
-            width: min(100%, 980px);
-            max-height: min(860px, calc(100vh - 36px));
-            overflow-y: auto;
-            border: 1px solid var(--stroke);
-            border-radius: 28px;
-            background: rgba(255,255,255,.96);
-            box-shadow: 0 28px 90px rgba(37,99,235,.18);
-            padding: clamp(20px, 4vw, 34px);
-        }
-        .modal-head {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 16px;
-        }
-        .modal-head h2 {
-            margin: 14px 0 10px;
-            font-size: clamp(1.8rem, 5vw, 3.2rem);
-            line-height: 1;
-            letter-spacing: 0;
-        }
-        .modal-head p {
-            max-width: 760px;
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.65;
-        }
-        .modal-dismiss {
-            flex: 0 0 auto;
-            min-height: 38px;
-            padding: 0 14px;
-            border-radius: 999px;
-            color: var(--text);
-            background: #e2e8f0;
-            font-weight: 1000;
-            cursor: pointer;
-            border: none;
-            font: inherit;
-        }
-        .guide-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 18px;
-            margin-top: 20px;
-        }
-        .guide-section {
-            display: grid;
-            gap: 12px;
-            align-content: start;
-        }
-        .guide-section h3 {
-            margin: 0;
-            font-size: 1.1rem;
-            color: var(--text);
-        }
-        .guide-wide {
-            grid-column: 1 / -1;
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 12px;
-        }
-        .guide-wide > h3 { grid-column: 1 / -1; }
-        .guide-card {
-            padding: 16px;
-            border: 1px solid var(--stroke);
-            border-radius: 18px;
-            background: #f8fafc;
-            line-height: 1.5;
-        }
-        .guide-card > .guide-badge {
-            display: inline-grid;
-            place-items: center;
-            min-width: 36px;
-            height: 30px;
-            margin-bottom: 10px;
-            padding: 0 8px;
-            border-radius: 999px;
-            color: white;
-            background: linear-gradient(135deg, var(--primary), var(--primary-2));
-            font-size: .78rem;
-            font-weight: 1000;
-        }
-        .guide-card strong {
-            display: block;
-            margin-bottom: 6px;
-            color: var(--text);
-            font-size: .96rem;
-        }
-        .guide-card p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.6;
-            font-size: .9rem;
-        }
-        .about-card { width: min(100%, 780px); }
-        .about-copy {
-            display: grid;
-            gap: 14px;
-            margin-top: 20px;
-        }
-        .about-copy p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.65;
-        }
-        @media (max-width: 680px) {
-            .guide-grid { grid-template-columns: 1fr; }
-            .guide-wide { grid-template-columns: 1fr; }
-        }
     </style>
 
 </head>
@@ -2704,7 +2568,7 @@
 
     <section id="screen-menu" class="screen app-frame hidden">
         <div class="status-bar">
-            <button class="status-chip as-button" id="dp-txt-tutor-btn" type="button" onclick="document.getElementById('modal-dp-tutor').classList.remove('hidden')">Guía del tutor</button>
+            <span></span>
             <button class="lang-switch-inline js-lang-toggle" onclick="toggleInGameLang()" type="button" data-active-lang="es" aria-label="Cambiar idioma">
                 <span class="lang-en">EN</span>
                 <span class="lang-es">ES</span>
@@ -2940,75 +2804,6 @@
         </div>
     </section>
 
-<footer class="app-footer" aria-label="Enlaces del proyecto">
-    <a id="dp-txt-footer-github" href="https://github.com/ivveshermosilla/DivisionPro" target="_blank" rel="noopener">Repositorio GitHub</a>
-    <a id="dp-txt-footer-matpro" href="https://ivveshermosilla.github.io/matpro-triple-method/" target="_blank" rel="noopener">Jugar MatPro</a>
-    <button id="dp-txt-footer-about" type="button" onclick="document.getElementById('modal-dp-about').classList.remove('hidden')">Acerca de este proyecto</button>
-</footer>
-
-<div id="modal-dp-tutor" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('modal-dp-tutor')">
-    <div class="modal-card">
-        <div class="modal-head">
-            <div>
-                <span id="dp-txt-tutor-eyebrow" class="eyebrow">Información para el tutor</span>
-                <h2 id="dp-txt-tutor-title">Guía para el tutor</h2>
-                <p id="dp-txt-tutor-copy">DivisionPro enseña división larga con un flujo visual de arrastrar y soltar, para que el estudiante internalice los pasos sin memorizar un procedimiento abstracto.</p>
-            </div>
-            <button class="modal-dismiss" type="button" onclick="closeModal('modal-dp-tutor')" id="dp-txt-tutor-close" aria-label="Cerrar">Cerrar</button>
-        </div>
-        <div class="guide-grid">
-            <div class="guide-section">
-                <h3 id="dp-txt-tutor-modes-title">Modos de práctica</h3>
-                <div class="guide-card">
-                    <span class="guide-badge">1</span>
-                    <strong id="dp-txt-tutor-mode1-title">Aprende a dividir</strong>
-                    <p id="dp-txt-tutor-mode1-copy">Guía paso a paso: seleccionar, dividir, restar y bajar. El sistema indica qué hacer en cada momento y corrige de inmediato.</p>
-                </div>
-                <div class="guide-card">
-                    <span class="guide-badge">2</span>
-                    <strong id="dp-txt-tutor-mode2-title">DivisionPro (reto)</strong>
-                    <p id="dp-txt-tutor-mode2-copy">Sin asistencia. El jugador resuelve la división completa a su ritmo, con nota final al estilo chileno y americano.</p>
-                </div>
-            </div>
-            <div class="guide-section guide-wide">
-                <h3 id="dp-txt-tutor-steps-title">Cómo se juega</h3>
-                <div class="guide-card">
-                    <span class="guide-badge">A</span>
-                    <strong id="dp-txt-tutor-step1-title">Seleccionar</strong>
-                    <p id="dp-txt-tutor-step1-copy">Tocar los dígitos del dividendo para construir el número de trabajo. El juego indica cuántos tocar.</p>
-                </div>
-                <div class="guide-card">
-                    <span class="guide-badge">B</span>
-                    <strong id="dp-txt-tutor-step2-title">Arrastrar</strong>
-                    <p id="dp-txt-tutor-step2-copy">El jugador arrastra el cociente y el resto a las casillas correspondientes. Tocar es solo para seleccionar, no reemplaza el arrastre.</p>
-                </div>
-                <div class="guide-card">
-                    <span class="guide-badge">C</span>
-                    <strong id="dp-txt-tutor-step3-title">Bajar</strong>
-                    <p id="dp-txt-tutor-step3-copy">Cuando corresponde, arrastrar el siguiente dígito del dividendo a la casilla amarilla y continuar el proceso.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="modal-dp-about" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('modal-dp-about')">
-    <div class="modal-card about-card">
-        <div class="modal-head">
-            <div>
-                <span id="dp-txt-about-eyebrow" class="eyebrow">Acerca de este proyecto</span>
-                <h2 id="dp-txt-about-title">DivisionPro nació para que dividir tenga sentido.</h2>
-            </div>
-            <button class="modal-dismiss" type="button" onclick="closeModal('modal-dp-about')" id="dp-txt-about-close" aria-label="Cerrar">Cerrar</button>
-        </div>
-        <div class="about-copy">
-            <p id="dp-txt-about-copy1">DivisionPro es la continuación natural de MatPro. Una vez que el jugador domina las tablas, está listo para practicar la división larga con el mismo enfoque visual y de movimiento.</p>
-            <p id="dp-txt-about-copy2">El proyecto nació del deseo de un padre de ayudar a su hijo Momo a superar la frustración con matemáticas, combinando apoyo familiar y desarrollo iterativo.</p>
-            <strong id="dp-txt-about-dedication">Developed with ❤️ for my son and students everywhere.</strong>
-        </div>
-    </div>
-</div>
-
 <div id="modal-exit" class="modal-overlay hidden">
     <div class="modal-content">
         <h3 class="modal-title" id="modal-exit-title"></h3>
@@ -3160,22 +2955,7 @@
             proErrRemOmitted: (exp) => `El resto final fue omitido, debía ser ${exp}`,
             proErrResidue: (input, exp) => `En el resto final respondiste ${input} en lugar de ${exp}`,
             finish: "Finalizar",
-            scoreNotaCL: "Nota (Chile)", scoreGradeUS: "Grade (USA)", hScore: "Calificación",
-            tutorBtn: "Guía del tutor",
-            footerGithub: "Repositorio GitHub", footerMatpro: "Jugar MatPro", footerAbout: "Acerca de este proyecto",
-            tutorEyebrow: "Información para el tutor", tutorTitle: "Guía para el tutor",
-            tutorCopy: "DivisionPro enseña división larga con un flujo visual de arrastrar y soltar, para que el estudiante internalice los pasos sin memorizar un procedimiento abstracto.",
-            tutorClose: "Cerrar", tutorModesTitle: "Modos de práctica",
-            tutorMode1Title: "Aprende a dividir", tutorMode1Copy: "Guía paso a paso: seleccionar, dividir, restar y bajar. El sistema indica qué hacer en cada momento y corrige de inmediato.",
-            tutorMode2Title: "DivisionPro (reto)", tutorMode2Copy: "Sin asistencia. El jugador resuelve la división completa a su ritmo, con nota final al estilo chileno y americano.",
-            tutorStepsTitle: "Cómo se juega",
-            tutorStep1Title: "Seleccionar", tutorStep1Copy: "Tocar los dígitos del dividendo para construir el número de trabajo. El juego indica cuántos tocar.",
-            tutorStep2Title: "Arrastrar", tutorStep2Copy: "El jugador arrastra el cociente y el resto a las casillas correspondientes. Tocar es solo para seleccionar, no reemplaza el arrastre.",
-            tutorStep3Title: "Bajar", tutorStep3Copy: "Cuando corresponde, arrastrar el siguiente dígito del dividendo a la casilla amarilla y continuar el proceso.",
-            aboutEyebrow: "Acerca de este proyecto", aboutTitle: "DivisionPro nació para que dividir tenga sentido.",
-            aboutCopy1: "DivisionPro es la continuación natural de MatPro. Una vez que el jugador domina las tablas, está listo para practicar la división larga con el mismo enfoque visual y de movimiento.",
-            aboutCopy2: "El proyecto nació del deseo de un padre de ayudar a su hijo Momo a superar la frustración con matemáticas, combinando apoyo familiar y desarrollo iterativo.",
-            aboutDedication: "Developed with ❤️ for my son and students everywhere.", aboutClose: "Cerrar"
+            scoreNotaCL: "Nota (Chile)", scoreGradeUS: "Grade (USA)", hScore: "Calificación" 
         },
         en: {
             navSubtitle: "DivisionPro · practice long division.",
@@ -3256,22 +3036,7 @@
             proErrRemOmitted: (exp) => `The final remainder was omitted, it should be ${exp}`,
             proErrResidue: (input, exp) => `For the final remainder, you answered ${input} instead of ${exp}`,
             finish: "Finish",
-            scoreNotaCL: "Score (Chile)", scoreGradeUS: "Grade (USA)", hScore: "Grade",
-            tutorBtn: "Tutor guide",
-            footerGithub: "GitHub repository", footerMatpro: "Play MatPro", footerAbout: "About this project",
-            tutorEyebrow: "Tutor information", tutorTitle: "Tutor guide",
-            tutorCopy: "DivisionPro teaches long division through a visual drag-and-drop flow, so students internalize each step instead of memorizing an abstract procedure.",
-            tutorClose: "Close", tutorModesTitle: "Practice modes",
-            tutorMode1Title: "Learn to divide", tutorMode1Copy: "Step-by-step guidance: select, divide, subtract, and bring down. The system shows what to do and corrects mistakes immediately.",
-            tutorMode2Title: "DivisionPro (challenge)", tutorMode2Copy: "No assistance. The player solves the full division at their own pace, with a final score in Chilean and US grading styles.",
-            tutorStepsTitle: "How to play",
-            tutorStep1Title: "Select", tutorStep1Copy: "Tap the dividend digits to build the working number. The game guides how many digits to select.",
-            tutorStep2Title: "Drag", tutorStep2Copy: "The player drags the quotient and remainder to the corresponding boxes. Tapping is for selecting only — it does not replace dragging.",
-            tutorStep3Title: "Bring down", tutorStep3Copy: "When needed, drag the next dividend digit to the yellow box and continue the process.",
-            aboutEyebrow: "About this project", aboutTitle: "DivisionPro was built to make division make sense.",
-            aboutCopy1: "DivisionPro is the natural next step after MatPro. Once the player has mastered the multiplication tables, they are ready to practice long division with the same visual and movement-based approach.",
-            aboutCopy2: "The project grew from a father's wish to help his son Momo overcome frustration with mathematics, combining family support and iterative development.",
-            aboutDedication: "Developed with ❤️ for my son and students everywhere.", aboutClose: "Close"
+            scoreNotaCL: "Score (Chile)", scoreGradeUS: "Grade (USA)", hScore: "Grade" 
         }
     };
 
@@ -3431,20 +3196,7 @@
             'history-empty': txt.hEmpty, 'history-hint': txt.hHint, 'modal-name-title': txt.nameTitle,
             'btn-save-name': txt.save, 'btn-skip-name': txt.skip, 'lbl-details-title': txt.detailsTitle,
             'modal-details-title': txt.detailsTitle, 'btn-close-details': txt.close, 'btn-reset': txt.resetBtn,
-            'lbl-nota-cl': txt.scoreNotaCL, 'lbl-grade-us': txt.scoreGradeUS, 'th-h-score': txt.hScore,
-            'dp-txt-tutor-btn': txt.tutorBtn,
-            'dp-txt-footer-github': txt.footerGithub, 'dp-txt-footer-matpro': txt.footerMatpro, 'dp-txt-footer-about': txt.footerAbout,
-            'dp-txt-tutor-eyebrow': txt.tutorEyebrow, 'dp-txt-tutor-title': txt.tutorTitle, 'dp-txt-tutor-copy': txt.tutorCopy,
-            'dp-txt-tutor-close': txt.tutorClose, 'dp-txt-tutor-modes-title': txt.tutorModesTitle,
-            'dp-txt-tutor-mode1-title': txt.tutorMode1Title, 'dp-txt-tutor-mode1-copy': txt.tutorMode1Copy,
-            'dp-txt-tutor-mode2-title': txt.tutorMode2Title, 'dp-txt-tutor-mode2-copy': txt.tutorMode2Copy,
-            'dp-txt-tutor-steps-title': txt.tutorStepsTitle,
-            'dp-txt-tutor-step1-title': txt.tutorStep1Title, 'dp-txt-tutor-step1-copy': txt.tutorStep1Copy,
-            'dp-txt-tutor-step2-title': txt.tutorStep2Title, 'dp-txt-tutor-step2-copy': txt.tutorStep2Copy,
-            'dp-txt-tutor-step3-title': txt.tutorStep3Title, 'dp-txt-tutor-step3-copy': txt.tutorStep3Copy,
-            'dp-txt-about-eyebrow': txt.aboutEyebrow, 'dp-txt-about-title': txt.aboutTitle,
-            'dp-txt-about-copy1': txt.aboutCopy1, 'dp-txt-about-copy2': txt.aboutCopy2,
-            'dp-txt-about-dedication': txt.aboutDedication, 'dp-txt-about-close': txt.aboutClose
+            'lbl-nota-cl': txt.scoreNotaCL, 'lbl-grade-us': txt.scoreGradeUS, 'th-h-score': txt.hScore
         };
         
         for (const [id, val] of Object.entries(ids)) {

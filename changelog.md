@@ -1,5 +1,14 @@
 Changelog:
 
+[1.3.4] - Cross-App Navigation and Tutor Guide
+Added
+
+Footer: Persistent footer with GitHub repository link, MatPro cross-link, and "Acerca de este proyecto" button — matching MatPro's footer pattern.
+Tutor guide modal: "Guía del tutor" button in the menu screen opens a bilingual modal explaining Learn vs Pro modes and the three gameplay steps (Select, Drag, Bring Down).
+About modal: "Acerca de este proyecto" opens a bilingual about modal with project origin and dedication.
+Bilingual: All new elements fully translate with the ES/EN toggle.
+Cross-navigation: Footer link takes the player directly to MatPro (and MatPro now links back to DivisionPro).
+
 [1.0.0] - Initial Release (Base Prototype)
 Added
 
