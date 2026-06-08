@@ -269,3 +269,16 @@ Stale Step Protection: Learn mode now ignores quotient, remainder, and bring-dow
 Changed
 
 Incorrect Box Marker: Removed the visual "x" marker from incorrect boxes while keeping tap-to-clear and replacement behavior intact.
+
+[1.3.2] - Bring-Down Alignment Fix
+Added
+
+Archived Previous Official Version: Preserved the V1.3.1 release as `Versions/DivisionPRO V1.3.1.html`.
+
+Fixed
+
+Bring-Down Alignment: Replaced margin-based remainder positioning with column-based grid placement so brought-down dividend digits align exactly with their partial remainder boxes across phones, tablets, desktop, and orientation changes.
+
+Touch Drag Cleanup: Added explicit cleanup for mobile drag ghosts and touch-dragging states when changing questions, screens, tabs, or when the browser cancels a pointer gesture.
+
+Mode Consistency: Applied the same remainder grid placement and drag cleanup rules to Learn and Pro modes.

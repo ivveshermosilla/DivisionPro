@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DivisionesPro V1.3.2</title>
+    <title>DivisionesPro V1.3.1</title>
     <style>
         :root {
             --bg: #f6f8fc;
@@ -926,11 +926,11 @@
         .num-key:last-child { grid-column: 2; }
 
         .residue-row {
-            display: grid;
-            grid-template-columns: repeat(var(--division-cols, 1), var(--box-size));
-            column-gap: var(--box-gap);
+            display: flex;
+            gap: var(--box-gap);
             min-height: calc(var(--box-height) + 6px);
             align-items: center;
+            transition: margin .24s ease;
         }
 
         .side-btn,
@@ -1495,7 +1495,7 @@
             }
         }
 
-        /* DivisionesPro V1.3.2 modern app shell */
+        /* DivisionesPro V1.3.1 modern app shell */
         :root {
             --bg-0: #eef5ff;
             --bg-1: #f8fbff;
@@ -2091,34 +2091,10 @@
         }
 
         .residue-row {
-            display: grid;
-            grid-template-columns: repeat(var(--division-cols, 1), var(--box-size));
-            column-gap: var(--box-gap);
+            display: flex;
+            gap: var(--box-gap);
             min-height: calc(var(--box-height) + 10px);
             align-items: center;
-        }
-
-        #work-area-learn,
-        #work-area-pro {
-            display: grid;
-            gap: 4px;
-            width: max-content;
-        }
-
-        .residue-row .drop-zone,
-        .residue-row .drop-zone-pro {
-            grid-row: 1;
-        }
-
-        .residue-arrow {
-            grid-row: 1;
-            align-self: center;
-            justify-self: start;
-            font-size: 2.5rem;
-            color: var(--pro-color);
-            font-weight: 1000;
-            margin-left: 10px;
-            animation: blink-pro-anim 1.5s infinite;
         }
 
         .numpad {
@@ -2848,21 +2824,15 @@
     }
     window.addEventListener('touchmove', function() {}, {passive: false});
 
-    // --- ALINEACIÓN DE RESTOS POR COLUMNAS ---
-    function getResidueStartColumn(alignIndex, cellCount) {
-        return Math.max(0, alignIndex - cellCount + 1);
+    // --- CÁLCULO DE MÁRGENES DINÁMICOS ---
+    function readCssPixels(name, fallback) {
+        const raw = getComputedStyle(document.documentElement).getPropertyValue(name);
+        const value = parseFloat(raw);
+        return Number.isFinite(value) ? value : fallback;
     }
-    function prepareWorkGrid(workArea, columnCount) {
-        workArea.style.setProperty('--division-cols', Math.max(1, columnCount));
-    }
-    function createResidueRow(columnCount) {
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'residue-row';
-        rowDiv.style.setProperty('--division-cols', Math.max(1, columnCount));
-        return rowDiv;
-    }
-    function placeResidueCell(cell, columnIndex) {
-        cell.style.gridColumn = `${Math.max(0, columnIndex) + 1}`;
+    function getBoxOffset() {
+        return readCssPixels('--box-size', window.innerWidth <= 900 ? 42 : 60)
+            + readCssPixels('--box-gap', window.innerWidth <= 900 ? 5 : 10);
     }
     window.addEventListener('resize', () => {
         if (!document.getElementById('screen-game-learn').classList.contains('hidden')) renderLearnGame();
@@ -3064,7 +3034,6 @@
 
     // --- NAVIGATION & REACTIVITY ---
     function showScreen(id) {
-        clearTouchDragArtifacts();
         document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
         
@@ -3340,14 +3309,6 @@
 	    // --- TOUCH DRAG WITHOUT REPLACING THE DRAG MODEL ---
 	    let touchDragState = null;
 
-        function clearTouchDragArtifacts() {
-            const state = touchDragState;
-            touchDragState = null;
-            if (state && state.source) state.source.classList.remove('touch-dragging');
-            document.querySelectorAll('.touch-dragging').forEach(el => el.classList.remove('touch-dragging'));
-            document.querySelectorAll('.drag-ghost').forEach(el => el.remove());
-        }
-
 	    function buildDropEvent(payload) {
 	        return {
 	            preventDefault() {},
@@ -3403,7 +3364,6 @@
 
 	        state.source.classList.remove('touch-dragging');
 	        if (state.ghost) state.ghost.remove();
-            document.querySelectorAll('.drag-ghost').forEach(el => el.remove());
 	    }
 
 	    function initTouchDragSupport() {
@@ -3437,10 +3397,6 @@
 
 	        document.addEventListener('pointerup', finishTouchDrag, { passive: false });
 	        document.addEventListener('pointercancel', finishTouchDrag, { passive: false });
-            window.addEventListener('blur', clearTouchDragArtifacts);
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden) clearTouchDragArtifacts();
-            });
 	    }
 
 	    initTouchDragSupport();
@@ -3448,7 +3404,6 @@
     // --- LEARN MODE ---
     function loadLearnQuestion(idx) {
         if (idx >= appState.game.questions.length) { showSessionSummary(); return; }
-        clearTouchDragArtifacts();
         appState.game.currentQ = idx; appState.game.questionStartTime = Date.now(); appState.game.currentErrors = 0; appState.game.currentLogs = []; 
         document.getElementById('q-progress-learn').innerText = `${idx + 1} / ${appState.config.qCount}`;
         const q = appState.game.questions[idx]; const g = learnLogic;
@@ -3460,8 +3415,7 @@
 
     function renderLearnGame() {
         const divDisp = document.getElementById('dividend-display-learn'), quoDisp = document.getElementById('quotient-display-learn'), workArea = document.getElementById('work-area-learn'), msg = document.getElementById('message-box-learn'), g = learnLogic;
-        const columnCount = Math.max(1, g.divDigits.length);
-        prepareWorkGrid(workArea, columnCount);
+        const offsetCalc = getBoxOffset();
         
         divDisp.innerHTML = '';
         const selectableIdx = getNextSelectableLearnIndex();
@@ -3511,25 +3465,24 @@
 
         workArea.innerHTML = '';
         g.rows.forEach((row, idx) => {
-            const rowDiv = createResidueRow(columnCount);
-            const rChars = row.residueStr.split('');
-            const startColumn = getResidueStartColumn(row.alignIndex, rChars.length);
+            const rowDiv = document.createElement('div'); rowDiv.className = 'residue-row';
+            const rChars = row.residueStr.split(''); const offset = row.alignIndex - rChars.length + 1;
+            rowDiv.style.marginLeft = (offset * offsetCalc) + 'px';
             const isW = (idx === g.rows.length - 1) && (g.step === 'QUOTIENT');
-            rChars.forEach((char, cIdx) => { const rBox = document.createElement('div'); rBox.className = `drop-zone ${isW ? 'working-row' : 'history-row'}`; rBox.innerText = char; placeResidueCell(rBox, startColumn + cIdx); rowDiv.appendChild(rBox); });
-            if(row.brought !== null && row.brought !== undefined) { const bBox = document.createElement('div'); bBox.className = `drop-zone ${isW ? 'working-row' : 'history-row'}`; bBox.innerText = row.brought; placeResidueCell(bBox, startColumn + rChars.length); rowDiv.appendChild(bBox); }
+            rChars.forEach(char => { const rBox = document.createElement('div'); rBox.className = `drop-zone ${isW ? 'working-row' : 'history-row'}`; rBox.innerText = char; rowDiv.appendChild(rBox); });
+            if(row.brought !== null) { const bBox = document.createElement('div'); bBox.className = `drop-zone ${isW ? 'working-row' : 'history-row'}`; bBox.innerText = row.brought; rowDiv.appendChild(bBox); }
             workArea.appendChild(rowDiv);
         });
 
         if (g.step === 'RESIDUE' || g.step === 'BRINGDOWN' || g.step === 'FINISH') {
-            const actRow = createResidueRow(columnCount);
+            const actRow = document.createElement('div'); actRow.className = 'residue-row';
             const align = g.selectedIndices.length > 0 ? g.selectedIndices[g.selectedIndices.length - 1] : 0;
             const resLen = g.tempResidues ? g.tempResidues.length : 1;
-            const startColumn = getResidueStartColumn(align, resLen);
+            actRow.style.marginLeft = ((align - resLen + 1) * offsetCalc) + 'px';
 
             if (g.tempResidues) {
                 g.tempResidues.forEach((resItem, rIdx) => {
                     const rBox = document.createElement('div'); rBox.className = 'drop-zone';
-                    placeResidueCell(rBox, startColumn + rIdx);
                     if (resItem) {
                         rBox.innerText = resItem.val;
                         if (resItem.status === 'correct') { rBox.classList.add(g.step === 'FINISH' ? 'active-residue-input' : 'working-row'); } 
@@ -3555,7 +3508,6 @@
             }
             if (g.step === 'BRINGDOWN') {
                 const bBox = document.createElement('div'); bBox.className = 'drop-zone working-row blink-soft'; bBox.style.border = '3px dashed #d35400';
-                placeResidueCell(bBox, startColumn + resLen);
                 bBox.ondragover = e => e.preventDefault(); 
                 bBox.ondragenter = e => e.preventDefault();
                 bBox.ondrop = e => handleLearnDrop(e, 'BRINGDOWN'); 
@@ -3709,7 +3661,6 @@
 
     // --- PRO MODE ---
     function loadProQuestion(idx) {
-        clearTouchDragArtifacts();
         appState.game.currentQ = idx;
         appState.proGame.selections = { div: [], res: [] }; 
         document.getElementById('q-progress-pro').innerText = `${idx + 1} / ${appState.config.qCount}`;
@@ -3802,8 +3753,7 @@
 
     function renderProGame() {
         const idx = appState.game.currentQ, q = appState.game.questions[idx], ans = appState.proGame.answers[idx], divDisp = document.getElementById('dividend-display-pro'), quoDisp = document.getElementById('quotient-display-pro'), workArea = document.getElementById('work-area-pro'), msg = document.getElementById('message-box-pro');
-        const columnCount = Math.max(1, q.dividend.toString().length);
-        prepareWorkGrid(workArea, columnCount);
+        const offsetCalc = getBoxOffset();
         const isQuotientFull = ans.quotients.indexOf(null) === -1;
 
         divDisp.innerHTML = '';
@@ -3840,14 +3790,13 @@
 
         workArea.innerHTML = '';
         q.scaffolding.forEach((row, rIdx) => {
-            const rowDiv = createResidueRow(columnCount);
-            const startColumn = getResidueStartColumn(row.alignIndex, row.numBoxes);
+            const rowDiv = document.createElement('div'); rowDiv.className = 'residue-row';
+            rowDiv.style.marginLeft = ((row.alignIndex - row.numBoxes + 1) * offsetCalc) + 'px';
             
             let finalRemNeedsFill = (isQuotientFull && rIdx === q.scaffolding.length - 1 && ans.residues[rIdx].includes(null));
 
             for(let cIdx = 0; cIdx < row.numBoxes; cIdx++) {
                 const rBox = document.createElement('div'); rBox.className = 'drop-zone drop-zone-pro';
-                placeResidueCell(rBox, startColumn + cIdx);
                 
                 if(ans.residues[rIdx][cIdx] !== null) { rBox.innerText = ans.residues[rIdx][cIdx]; rBox.classList.add('filled'); }
                 
@@ -3875,9 +3824,12 @@
             
             if (finalRemNeedsFill) {
                 const arrow = document.createElement('div');
-                arrow.className = 'residue-arrow';
-                arrow.innerHTML = '&#8592;';
-                placeResidueCell(arrow, startColumn + row.numBoxes);
+                arrow.innerHTML = '&#8592;'; 
+                arrow.style.fontSize = '2.5rem';
+                arrow.style.color = 'var(--pro-color)';
+                arrow.style.fontWeight = 'bold';
+                arrow.style.marginLeft = '15px';
+                arrow.style.animation = 'blink-pro-anim 1.5s infinite';
                 rowDiv.appendChild(arrow);
             }
 
