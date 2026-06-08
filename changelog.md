@@ -1,9 +1,19 @@
 Changelog:
 
+[1.3.7] - MatPro-Aligned Language Start Screen
+Added
+
+Archived Previous Official Version: Preserved the V1.3.6 release as `Versions/DivisionPRO V1.3.6.html`.
+
+Changed
+
+First-use language screen: Reworked the initial language selection screen to match MatPro's proportions and visual rhythm more closely: persistent top navbar, light card surface, centered MatPro-style title hierarchy, and side-by-side primary/secondary language buttons on desktop with a single-column mobile layout.
+Navbar visibility: The top navbar is now visible on both the language selection screen and home menu, then hidden on configuration/game/result/history screens where mode-specific status bars provide the active controls.
+
 [1.3.6] - Persistent Navbar, Cross-App Language Bridge, and History Corrections
 Added
 
-Persistent top navbar: Logo, app title, subtitle, Guía del tutor button, and EN/ES toggle now live in a persistent navbar above the app card — same layout as MatPro (branding on left, actions on right). The navbar is visible on the home menu screen; hidden on language selection and game screens.
+Persistent top navbar: Logo, app title, subtitle, Guía del tutor button, and EN/ES toggle now live in a persistent navbar above the app card — same layout as MatPro (branding on left, actions on right). The navbar is visible on the home menu screen and, as of V1.3.7, also on the language selection screen.
 Language bridge: Selecting a language or toggling saves to localStorage (key: ivves_preferred_lang). On next visit — or when arriving from MatPro — the app auto-detects the saved language and skips the language selection screen.
 URL lang param: Footer link to MatPro appends ?lang=es/en; clicking it in MatPro opens DivisionPro in the same language automatically. Same mechanism works in reverse.
 Timestamp on saved sessions: Each session record now stores ts: Date.now() for reliable chronological sorting.

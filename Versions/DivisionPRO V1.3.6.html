@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DivisionesPro V1.3.7</title>
+    <title>DivisionesPro V1.3.6</title>
     <style>
         :root {
             --bg: #f6f8fc;
@@ -1537,7 +1537,7 @@
         }
 
         .app-shell {
-            width: min(1180px, calc(100% - 28px));
+            width: min(1120px, calc(100% - 28px));
             margin: 0 auto;
             padding: clamp(12px, 2vw, 22px) 0 40px;
         }
@@ -2717,55 +2717,12 @@
         @media (max-width: 860px) {
             .menu-home-grid { grid-template-columns: 1fr; }
         }
-
-        /* V1.3.7 MatPro-aligned first-use language screen */
-        #screen-lang.language-frame {
-            width: min(660px, 100%);
-            min-height: auto;
-            margin: 22px auto 0;
-            border: 1px solid var(--border);
-            border-radius: 28px;
-            background:
-                linear-gradient(180deg, rgba(255,255,255,.90), rgba(255,255,255,.82)),
-                radial-gradient(circle at 18% 0%, rgba(37,99,235,.10), transparent 32%),
-                radial-gradient(circle at 95% 5%, rgba(14,165,233,.09), transparent 34%);
-            box-shadow: var(--shadow);
-        }
-        #screen-lang.language-frame .centered-screen {
-            min-height: auto;
-            padding: clamp(24px, 5vw, 44px);
-        }
-        #screen-lang.language-frame .screen-title {
-            font-size: clamp(3rem, 8vw, 68px);
-            color: var(--text);
-        }
-        #screen-lang.language-frame .screen-subtitle {
-            color: var(--muted);
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .division-language-actions {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 12px;
-            width: min(100%, 420px);
-            margin-top: 26px;
-        }
-        .division-language-actions .btn-main,
-        .division-language-actions .btn-secondary {
-            justify-content: center;
-            min-height: 52px;
-            border-radius: 18px;
-        }
-        @media (max-width: 680px) {
-            .division-language-actions { grid-template-columns: 1fr; }
-        }
     </style>
 
 </head>
 <body>
 <main class="app-shell">
-    <nav class="topbar" id="dp-topbar" aria-label="Principal">
+    <nav class="topbar hidden" id="dp-topbar" aria-label="Principal">
         <div class="brand-lockup" aria-label="DivisionesPro">
             <div class="logo">D÷</div>
             <div class="brand-title">
@@ -2782,17 +2739,19 @@
         </div>
     </nav>
 
-    <section id="screen-lang" class="screen app-frame language-frame">
+    <section id="screen-lang" class="screen app-frame dark">
         <div class="screen-body centered-screen">
             <span class="eyebrow" id="txt-lang-eyebrow">Antes de dividir</span>
             <h1 class="screen-title" id="txt-lang-title">DivisionesPro</h1>
             <p class="screen-subtitle" id="txt-lang-subtitle">Selecciona tu idioma para comenzar la sesión.</p>
-            <div class="division-language-actions">
-                <button class="btn-main" onclick="setLanguage('es')" type="button">
+            <div class="cta-stack">
+                <button class="big-cta" onclick="setLanguage('es')" type="button">
                     <span id="txt-lang-es">Español</span>
+                    <span class="cta-icon">ES</span>
                 </button>
-                <button class="btn-secondary" onclick="setLanguage('en')" type="button">
+                <button class="big-cta light" onclick="setLanguage('en')" type="button">
                     <span id="txt-lang-en">English</span>
+                    <span class="cta-icon">EN</span>
                 </button>
             </div>
         </div>
@@ -3457,7 +3416,7 @@
         document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
         const topbar = document.getElementById('dp-topbar');
-        if (topbar) topbar.classList.toggle('hidden', id !== 'screen-menu' && id !== 'screen-lang');
+        if (topbar) topbar.classList.toggle('hidden', id !== 'screen-menu');
         if (id === 'screen-game-learn' || id === 'screen-game-pro') {
             window.dispatchEvent(new Event('resize'));
         }
