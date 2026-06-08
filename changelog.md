@@ -282,3 +282,16 @@ Bring-Down Alignment: Replaced margin-based remainder positioning with column-ba
 Touch Drag Cleanup: Added explicit cleanup for mobile drag ghosts and touch-dragging states when changing questions, screens, tabs, or when the browser cancels a pointer gesture.
 
 Mode Consistency: Applied the same remainder grid placement and drag cleanup rules to Learn and Pro modes.
+
+[1.3.3] - Unified Mobile Drag Fix
+Added
+
+Archived Previous Official Version: Preserved the V1.3.2 release as `Versions/DivisionPRO V1.3.2.html`.
+
+Fixed
+
+Third-Digit Bring-Down: Re-tested and guarded the full Learn sequence through second and third dividend digits so brought-down numbers stay aligned for every partial remainder row.
+
+Persistent Mobile Drag Artifacts: Removed the external mobile drag-drop polyfill and expanded cleanup for old `dnd-poly-*` drag images that could remain visually displaced after bringing down a digit or changing questions.
+
+Mode Consistency: Learn and Pro now use the same single drag model on mobile, with native desktop drag preserved and a touch fallback for browsers without Pointer Events.

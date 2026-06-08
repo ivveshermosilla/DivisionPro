@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DivisionesPro V1.3.3</title>
+    <title>DivisionesPro V1.3.2</title>
     <style>
         :root {
             --bg: #f6f8fc;
@@ -1495,7 +1495,7 @@
             }
         }
 
-        /* DivisionesPro V1.3.3 modern app shell */
+        /* DivisionesPro V1.3.2 modern app shell */
         :root {
             --bg-0: #eef5ff;
             --bg-1: #f8fbff;
@@ -2521,6 +2521,9 @@
         }
     </style>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/default.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/scroll-behaviour.min.js"></script>
 </head>
 <body>
 <main class="app-shell">
@@ -2839,7 +2842,10 @@
 </main>
 
 <script>
-    // --- SOPORTE TÁCTIL ---
+    // --- INIT POLYFILL TÁCTIL ---
+    if (window.MobileDragDrop) {
+        MobileDragDrop.polyfill({ dragImageTranslateOverride: MobileDragDrop.scrollBehaviourDragImageTranslateOverride });
+    }
     window.addEventListener('touchmove', function() {}, {passive: false});
 
     // --- ALINEACIÓN DE RESTOS POR COLUMNAS ---
@@ -3333,23 +3339,13 @@
 
 	    // --- TOUCH DRAG WITHOUT REPLACING THE DRAG MODEL ---
 	    let touchDragState = null;
-        const dragArtifactSelector = [
-            '.drag-ghost',
-            '.mobile-drag-image',
-            '.dnd-poly-drag-image',
-            '.dnd-poly-drag-image-snapback',
-            '.dnd-poly-drag-operation-icon',
-            '[class*="dnd-poly-drag-image"]',
-            '[class*="dnd-poly-drag-operation"]'
-        ].join(',');
 
         function clearTouchDragArtifacts() {
             const state = touchDragState;
             touchDragState = null;
             if (state && state.source) state.source.classList.remove('touch-dragging');
             document.querySelectorAll('.touch-dragging').forEach(el => el.classList.remove('touch-dragging'));
-            document.querySelectorAll(dragArtifactSelector).forEach(el => el.remove());
-            document.body.classList.remove('dnd-poly-dragging');
+            document.querySelectorAll('.drag-ghost').forEach(el => el.remove());
         }
 
 	    function buildDropEvent(payload) {
@@ -3407,18 +3403,8 @@
 
 	        state.source.classList.remove('touch-dragging');
 	        if (state.ghost) state.ghost.remove();
-            requestAnimationFrame(clearTouchDragArtifacts);
+            document.querySelectorAll('.drag-ghost').forEach(el => el.remove());
 	    }
-
-        function getTrackedTouch(event, state) {
-            const changed = Array.from(event.changedTouches || []);
-            const active = Array.from(event.touches || []);
-            return changed.find(touch => touch.identifier === state.pointerId)
-                || active.find(touch => touch.identifier === state.pointerId)
-                || changed[0]
-                || active[0]
-                || null;
-        }
 
 	    function initTouchDragSupport() {
 	        document.addEventListener('pointerdown', event => {
@@ -3451,60 +3437,10 @@
 
 	        document.addEventListener('pointerup', finishTouchDrag, { passive: false });
 	        document.addEventListener('pointercancel', finishTouchDrag, { passive: false });
-            document.addEventListener('dragend', clearTouchDragArtifacts);
-            document.addEventListener('drop', () => requestAnimationFrame(clearTouchDragArtifacts));
             window.addEventListener('blur', clearTouchDragArtifacts);
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) clearTouchDragArtifacts();
             });
-
-            if (!window.PointerEvent) {
-                document.addEventListener('touchstart', event => {
-                    const source = event.target.closest('[data-drag-type]');
-                    if (!source) return;
-                    const payload = getTouchPayload(source);
-                    const touch = event.changedTouches && event.changedTouches[0];
-                    if (!payload || !touch) return;
-                    touchDragState = {
-                        source,
-                        payload,
-                        pointerId: touch.identifier,
-                        startX: touch.clientX,
-                        startY: touch.clientY,
-                        active: false,
-                        ghost: null
-                    };
-                }, { passive: true });
-
-                document.addEventListener('touchmove', event => {
-                    const state = touchDragState;
-                    if (!state) return;
-                    const touch = getTrackedTouch(event, state);
-                    if (!touch) return;
-                    const distance = Math.hypot(touch.clientX - state.startX, touch.clientY - state.startY);
-                    if (!state.active && distance > 8) activateTouchDrag(state, touch);
-                    if (state.active) {
-                        event.preventDefault();
-                        moveDragGhost(state, touch.clientX, touch.clientY);
-                    }
-                }, { passive: false });
-
-                const finishTouchEvent = event => {
-                    const state = touchDragState;
-                    if (!state) return;
-                    const touch = getTrackedTouch(event, state);
-                    finishTouchDrag({
-                        clientX: touch ? touch.clientX : state.startX,
-                        clientY: touch ? touch.clientY : state.startY,
-                        preventDefault() {
-                            if (event.cancelable) event.preventDefault();
-                        }
-                    });
-                };
-
-                document.addEventListener('touchend', finishTouchEvent, { passive: false });
-                document.addEventListener('touchcancel', finishTouchEvent, { passive: false });
-            }
 	    }
 
 	    initTouchDragSupport();
